@@ -1,0 +1,5 @@
+name: iliagda
+depend:
+  standard-library
+  formal-prelude
+include: .
