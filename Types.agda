@@ -1,7 +1,7 @@
 module Types where
 
 open import Agda.Primitive using () renaming (Set to Type)
-open import Prelude.Init
+open import Prelude.Init hiding (module Word)
 open L using (_∷ʳ_)
 open L.Mem
 open L.NE using (_⁺∷ʳ_) renaming (length to length⁺)
@@ -16,20 +16,22 @@ open import Prelude.Decidable
 open import Prelude.InferenceRules
 open import Prelude.Ord
 
+-- import Data.Vec.Relation.Binary.Pointwise.Inductive as V
+open import Data.Vec.Relation.Binary.Pointwise.Inductive using ([]; _∷_)
+  renaming (Pointwise to VPointwise)
+
 private variable
   X : Type
-  n : ℕ
+  n n′ m m′ : ℕ
 
 -- open import Prelude.Nary
 ⟦_⟧ : X ^ n → List X
 ⟦_⟧ {n = zero}  x        = [ x ]
 ⟦_⟧ {n = suc n} (x , xs) = x ∷ ⟦ xs ⟧
 
-⟦_⟧⁺ : X ^ n → List⁺ X
-⟦_⟧⁺ {n = zero}  x        = [ x ]⁺
-⟦_⟧⁺ {n = suc n} (x , xs) = x ∷ ⟦ xs ⟧
-
--- T0D0: bake into definition of `Vowel`
+⟦_⟧⁺ : X ^ n → Vec X (suc n)
+⟦_⟧⁺ {n = zero}  x        = V.[ x ]
+⟦_⟧⁺ {n = suc n} (x , xs) = x ∷ ⟦ xs ⟧⁺
 
 data Letter : Type where
   ῆ ι ἄ ε ὰ η ϊ ά ω Ἀ ο : Letter
@@ -45,45 +47,75 @@ Consonant = _∈ ⟦ μ , ν , θ , Π , δ , χ , ƛ , ς ⟧
 -- NB: ← first define Syllables and then Word?
 
 Syllable = List Letter
-Word = List⁺ Syllable
-Verse = List Word
+
+-- T0D0: silently use suc, i.e. Word 1 ≈ words with one syllable
+data Word : ℕ → Type where
+  word : ⦃ _ : False $ n ≟ 0 ⦄ → Vec Syllable n → Word n
+-- Word = Vec Syllable ∘ suc
+∃Word = ∃ Word
+
+unword : Word n → Vec Syllable n
+unword (word sys) = sys
+
+data Words : ℕ → Type where
+  [] : Words 0
+  _∷_ : Word n → Words n′ → Words (n + n′)
+
+Verse = List ∃Word
 
 private
-  verse1 = Verse
-    ∋ ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺
-      , ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺
-      , ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧⁺
-      , ⟦ ⟦ Π , η ⟧ , ⟦ ƛ , η ⟧ , ⟦ ϊ ⟧ , ⟦ ά ⟧ , ⟦ δ , ε ⟧ , ⟦ ω ⟧ ⟧⁺
-      , ⟦ ⟦ Ἀ ⟧ , ⟦ χ , ι ⟧ , ⟦ ƛ , ῆ ⟧ , ⟦ ο , ς ⟧ ⟧⁺
-      ⟧
+  verse1 : Verse
+  verse1 =
+    -- T0D0: find a way to use n-ary notation
+    ( (-, word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺)
+    ∷ (-, word ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺)
+    ∷ (-, word ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧⁺)
+    ∷ (-, word ⟦ ⟦ Π , η ⟧ , ⟦ ƛ , η ⟧ , ⟦ ϊ ⟧ , ⟦ ά ⟧ , ⟦ δ , ε ⟧ , ⟦ ω ⟧ ⟧⁺)
+    ∷ (-, word ⟦ ⟦ Ἀ ⟧ , ⟦ χ , ι ⟧ , ⟦ ƛ , ῆ ⟧ , ⟦ ο , ς ⟧ ⟧⁺)
+    ∷ [])
 
 data Quantity : Type where
   ˘ ─ : Quantity
 unquoteDecl DecEq-Quantity = DERIVE DecEq [ quote Quantity , DecEq-Quantity ]
 
-data Foot : Type where
-  ─˘˘ {- dactyl -} : Foot
-  ──  {- sponde -} : Foot
+data Foot : (n : ℕ) → Vec Quantity n → Type where
+  ─˘˘ {- dactyl -} : Foot 3 (─ ∷ ˘ ∷ ˘ ∷ [])
+  ──  {- sponde -} : Foot 2 (─ ∷ ─ ∷ [])
 unquoteDecl DecEq-Foot = DERIVE DecEq [ quote Foot , DecEq-Foot ]
+∃∃Foot = ∃ (∃ ∘ Foot)
 
-PartialMeter = List Foot
-Meter = Vec Foot 6
--- NB: actually Vec Foot 5 ∷ ──
+-- PartialMeter : ℕ {- syllables -} → ℕ {- feet -} → Type
+-- PartialMeter n m = ∃ λ (fs : List ∃∃Foot) → (n ≡ ∑₁ fs) × (m ≡ length fs)
+
+data PartialMeter : ℕ {- syllables -} → ℕ {- feet -} → Type where
+  mkPM : (fs : List ∃∃Foot) → PartialMeter (∑₁ fs) (length fs)
+
+Meter = ∃ λ n → PartialMeter n 6
+-- Meter = (∃ λ n → PartialMeter n 5) × ∃ (Foot 2)
+-- -- NB: actually Vec Foot 5 ∷ ──
+-- data Meter : Type where
+--   mkMeter : PartialMeter n 5 → ∃ (Foot 2) → Meter
 
 private variable
   l l′ : Letter
   sy sy′ penult penult′ ult ult′ : Syllable
-  sys sys′ : List Syllable
-  w w′ : Word
-  ws ws′ : List Word
+  sys  : Vec Syllable n
+  sys′ : Vec Syllable n′
+  w  : Word n
+  w′ : Word n′
+  ws  : Words n
+  ws′ : Words n′
   q q′ : Quantity
-  qs qs′ : List Quantity
+  qs qs′ : Vec Quantity n
   mq mq′ : Maybe Quantity
-  mqs mqs′ : List (Maybe Quantity)
-  f f′ : Foot
-  pm pm′ : PartialMeter
-  m m′ : Meter
+  mqs mqs′ : Vec (Maybe Quantity) n
+  pm  : PartialMeter n m
+  pm′ : PartialMeter n′ m′
+  meter meter′ : Meter
   v v′ : Verse
+
+_∷ᵖᵐ_ : Foot n qs → PartialMeter n′ m′ → PartialMeter (n + n′) (1 + m′)
+f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 
 ─Vowel ˘Vowel HasCircumflex : Pred₀ Letter
 ─Vowel = _∈ ⟦ ῆ , η , ω ⟧
@@ -138,8 +170,8 @@ private
   _ : ─Syllable ⟦ μ , ῆ ⟧
   _ = auto
 
-Subsumes : Rel₀ (List $ Maybe X)
-Subsumes = Pointwise _≤ᵐ_
+Subsumes : Rel₀ (Vec (Maybe X) n)
+Subsumes = VPointwise _≤ᵐ_
   where
     _≤ᵐ_ : Rel₀ (Maybe X)
     _≤ᵐ_ = λ where
@@ -190,65 +222,70 @@ instance
             sy ~′ nothing
 
   -- NB: maybe generalise to `⦃ A ~ B ⦄ → [A] ~ [B]`
-  Complies-Sys-MQs : List Syllable -compliesWith- List (Maybe Quantity)
-  Complies-Sys-MQs ._~_ = Pointwise _~_
+  Complies-Sys-MQs : Vec Syllable n -compliesWith- Vec (Maybe Quantity) n
+  Complies-Sys-MQs ._~_ = VPointwise _~_
 
-  Complies-Qs-PM : List Quantity -compliesWith- PartialMeter
+  Complies-Qs-PM : Vec Quantity n -compliesWith- PartialMeter n m
   Complies-Qs-PM ._~_ = _~′_
     module ∣Complies-Qs-PM∣ where
-      data _~′_ : List Quantity → PartialMeter → Type where
+      data _~′_ : Vec Quantity n → PartialMeter n m → Type where
 
         base :
-          [] ~′ []
+          ─────────────
+          [] ~′ mkPM []
 
         sponde :
 
           qs ~′ pm
           ───────────────────────────
-          (─ ∷ ─ ∷ qs) ~′ (── ∷ pm)
+          (─ ∷ ─ ∷ qs) ~′ (── ∷ᵖᵐ pm)
 
         dactyl :
 
           qs ~′ pm
           ────────────────────────────────
-          (─ ∷ ˘ ∷ ˘ ∷ qs) ~′ (─˘˘ ∷ pm)
+          (─ ∷ ˘ ∷ ˘ ∷ qs) ~′ (─˘˘ ∷ᵖᵐ pm)
 
-  Complies-MQs-PM : List (Maybe Quantity) -compliesWith- PartialMeter
+  Complies-MQs-PM : Vec (Maybe Quantity) n -compliesWith- PartialMeter n m
   Complies-MQs-PM ._~_ = _~′_
     module ∣Complies-MQs-PM∣ where
-      data _~′_ : List (Maybe Quantity) → PartialMeter → Type where
+      data _~′_ : Vec (Maybe Quantity) n → PartialMeter n m → Type where
 
-        base :
+        base : ∀ {qs : Vec Quantity n} {pm : PartialMeter n m} →
+
           qs ~ pm
-          ──────────────────
-          (just <$> qs) ~′ pm
+          ─────────────────────
+          (V.map just qs) ~′ pm
 
         reify :
 
           ∙ Subsumes mqs mqs′
           ∙ mqs′ ~′ pm
-            ─────────────────────────────────────────────
+            ─────────────────
             mqs ~′ pm
 
-  Complies-W-MQs : Word -compliesWith- List (Maybe Quantity)
+  Complies-W-MQs : Word n -compliesWith- Vec (Maybe Quantity) n
   Complies-W-MQs ._~_ = _~′_
     module ∣Complies-W-MQs∣ where
-      data _~₀_ : Word → List (Maybe Quantity) → Type where
 
-        [1160] : ∀ {w₀} ⦃ _ : L.NE.reverse w₀ ≡ ult ∷ penult ∷ sys ⦄ →
+      data _~₀_ : Word n → Vec (Maybe Quantity) n → Type where
 
-          ∙ (sys ∷ʳ penult ∷ʳ ult) ~ (mqs ∷ʳ mq ∷ʳ mq′)
+        [1160] : ∀ {sys₀ : Vec Syllable (suc (suc n))}
+                   ⦃ _ : V.reverse sys₀ ≡ ult V.∷ penult V.∷ sys ⦄
+                   {mqs : Vec (Maybe Quantity) n} →
+
+          ∙ (sys V.∷ʳ penult V.∷ʳ ult) ~ (mqs V.∷ʳ mq V.∷ʳ mq′)
           -- mq -shouldBe- just ─
           ∙ Any HasCircumflex penult
           ∙ mq′ ≢ just ─ -- NB: should the ultima be a *doubtful vowel*
             ──────────────────────────────────────────────────────────
-            w₀ ~₀ (mqs ∷ʳ just ─ ∷ʳ just ˘)
+            word sys₀ ~₀ (mqs V.∷ʳ just ─ V.∷ʳ just ˘)
 
-      data _~′_ : Word → List (Maybe Quantity) → Type where
+      data _~′_ : Word n → Vec (Maybe Quantity) n → Type where
 
         base :
           ∙ ¬ w ~₀ mqs
-          ∙ w ∙toList ~ mqs
+          ∙ unword w ~ mqs
             ───────────────
             w ~′ mqs
 
@@ -258,40 +295,45 @@ instance
           ────────
           w ~′ mqs
 
-      ¬[1160] : length⁺ w ≡ 1 → ¬ w ~₀ mqs
-      ¬[1160] {w = sy ∷ []} refl ([1160] ⦃ () ⦄ _ _ _)
+      -- ¬[1160] : V.length sys ≡ 1 → ¬ w ~₀ mqs
+      -- ¬[1160] {w = sy ∷ []} refl ([1160] ⦃ () ⦄ _ _ _)
 
-  Complies-Ws-MQs : List Word -compliesWith- List (Maybe Quantity)
+  Complies-Ws-MQs : Words n -compliesWith- Vec (Maybe Quantity) n
   Complies-Ws-MQs ._~_ = _~′_
     module ∣Complies-Ws-MQs∣ where
-      data _~′_ : List Word → List (Maybe Quantity) → Type where
+      data _~′_ : Words n → Vec (Maybe Quantity) n → Type where
 
         [] :
 
           ────────
           [] ~′ []
 
-        _∷_ : ∀ {mqs₀} ⦃ _ : mqs₀ ≡ mqs ++ mqs′ ⦄ →
+        _∷_ : ∀ {w : Word n}
+                {mqs : Vec (Maybe Quantity) n}
+                {ws : Words n′}
+                {mqs′ : Vec (Maybe Quantity) n′}
+                {mqs₀ : Vec (Maybe Quantity) (n + n′)}
+                ⦃ _ : mqs₀ ≡ mqs V.++ mqs′ ⦄ →
 
           ∙ w  ~  mqs
           ∙ ws ~′ mqs′
             ────────────────
             (w ∷ ws) ~′ mqs₀
 
-  Complies-Ws-PM : List Word -compliesWith- PartialMeter
+  Complies-Ws-PM : Words n -compliesWith- PartialMeter n m
   Complies-Ws-PM ._~_ = _~′_
     module ∣Complies-Ws-PM∣ where
-      data _~′_ : List Word → PartialMeter → Type where
+      data _~′_ : Words n → PartialMeter n m → Type where
 
-        _~∘~_ :
+        _~∘~_ : ∀ {ws : Words n} {mqs : Vec (Maybe Quantity) n} →
 
           ∙ ws  ~ mqs
           ∙ mqs ~ pm
             ────────
             ws ~′ pm
 
---   -- Complies-V-PM : Verse -compliesWith- PartialMeter
---   -- Complies-V-PM ._~_ = ?
+-- Complies-V-PM : Verse -compliesWith- PartialMeter
+-- Complies-V-PM ._~_ = ?
 
 open ∣Complies-Sy-MQ∣
 open ∣Complies-Qs-PM∣
@@ -304,52 +346,44 @@ open ∣Complies-Ws-PM∣
 -- μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος
 
 private
-  _ : ⟦ ─ , ˘ , ˘ ⟧ ~ ⟦ ─˘˘ ⟧
+  _ : (─ ∷ ˘ ∷ ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
   _ = dactyl base
 
-  _ : ⟦ just ─ , just ˘ , just ˘ ⟧ ~ ⟦ ─˘˘ ⟧
+  _ : (just ─ ∷ just ˘ ∷ just ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
   _ = base (dactyl base)
 
-  _ : ⟦ just ─ , nothing , just ˘ ⟧ ~ ⟦ ─˘˘ ⟧
+  _ : (just ─ ∷ nothing ∷ just ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
   _ = reify (refl ∷ tt ∷ refl ∷ []) $ base (dactyl base)
 
-  _ : ⟦ nothing , nothing , just ˘ ⟧ ~ ⟦ ─˘˘ ⟧
+  _ : (nothing ∷ nothing ∷ just ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
   _ = reify (tt ∷ tt ∷ refl ∷ []) $ base (dactyl base)
 
-  H₁ : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ~ ⟦ just ─ , just ˘ ⟧
+  H₁ : word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ~ (just ─ ∷ just ˘ ∷ [])
   H₁ = fromBelow $ [1160] {sys = []} {mqs = []} h auto contradict
     where
-      h : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧ ~ ⟦ just ─ , nothing ⟧
+      h : (⟦ μ , ῆ ⟧ ∷ ⟦ ν , ι , ν ⟧ ∷ []) ~ (just ─ ∷ nothing ∷ [])
       h = long (inj₁ auto)
         ∷ ambiguous contradict contradict
         ∷ []
 
-  H₂ : ⟦ ⟦ ἄ ⟧ ⟧⁺ ~ ⟦ nothing ⟧
-  H₂ = base (¬[1160] auto)
-            (ambiguous contradict contradict ∷ [])
+  H₂ : word ⟦ ⟦ ἄ ⟧ ⟧⁺ ~ V.[ nothing ]
+  H₂ = base (λ ()) (ambiguous contradict contradict ∷ [])
 
-  H : ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ , ⟦ ⟦ ἄ ⟧ ⟧⁺ ⟧
-    ~ ⟦ just ─ , just ˘ , nothing ⟧
+  H : (word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ∷ word ⟦ ⟦ ἄ ⟧ ⟧⁺ ∷ [])
+    ~ (just ─ ∷ just ˘ ∷ nothing ∷ [])
   H = H₁ ∷ H₂ ∷ []
 
-  μῆνιν-ἄ : ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ , ⟦ ⟦ ἄ ⟧ ⟧⁺ ⟧ ~ ⟦ ─˘˘ ⟧
+  μῆνιν-ἄ : (word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ∷ word ⟦ ⟦ ἄ ⟧ ⟧⁺ ∷ [])
+          ~ mkPM [ -, -, ─˘˘ ]
   μῆνιν-ἄ = H ~∘~ [1169]
     where
-      [1169] : ⟦ just ─ , just ˘ , nothing ⟧ ~ ⟦ ─˘˘ ⟧
+      [1169] : (just ─ ∷ just ˘ ∷ nothing ∷ []) ~ mkPM [ -, -, ─˘˘ ]
       [1169] = reify (refl ∷ refl ∷ tt ∷ []) $ base (dactyl base)
 
-  _ : ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ , ⟦ ⟦ ῆ ⟧ ⟧⁺ ⟧
-    ≁ ⟦ just ─ , just ─ , just ─ ⟧
-  _ = λ where
-      (base _ (_ ∷ long p ∷ _) ∷ _) → contradict p
-      (_∷_ {mqs′ = mqs′} ⦃ absurd ⦄ (fromBelow ([1160] x x₁ x₂)) _) →
-        WOOOT {mqs′ = mqs′} absurd
-    where
-      WOOOT : just ─ ∷ just ─ ∷ [ just ─ ] ≢ mqs ∷ʳ just ─ ∷ʳ just ˘ ++ mqs′
-      WOOOT {mqs = []} ()
-      WOOOT {mqs = _ ∷ _ ∷ []} ()
-      WOOOT {mqs = _ ∷ _ ∷ _ ∷ []} ()
-      WOOOT {mqs = _ ∷ _ ∷ _ ∷ _ ∷ mqs} ()
+  ABSURD : (word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ∷ word ⟦ ⟦ ῆ ⟧ ⟧⁺ ∷ [])
+         ≁ (just ─ ∷ just ─ ∷ just ─ ∷ [])
+  ABSURD (base _ (_ ∷ long ─ι ∷ _) ∷ _) = contradict ─ι
+  ABSURD (_∷_ ⦃ () ⦄ (fromBelow ([1160] {mqs = []} _ _ _)) _)
 
   -- L₂ : ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺ ~ ⟦ nothing , just ─ , just ˘ ⟧
   -- L₂ = {!base!}
