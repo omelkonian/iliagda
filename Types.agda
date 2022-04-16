@@ -2,11 +2,13 @@ module Types where
 
 open import Agda.Primitive using () renaming (Set to Type)
 open import Prelude.Init
-open L.Mem
 open L using (_∷ʳ_)
+open L.Mem
+open L.NE using (_⁺∷ʳ_) renaming (length to length⁺)
 open Unary using () renaming (_∪_ to _∪₁_; _⊆_ to _⊆₁_)
 open import Prelude.General
 open import Prelude.Lists
+open import Prelude.ToList
 open import Prelude.Functor
 open import Prelude.Bifunctor
 open import Prelude.DecEq
@@ -18,17 +20,14 @@ private variable
   X : Type
   n : ℕ
 
+-- open import Prelude.Nary
 ⟦_⟧ : X ^ n → List X
 ⟦_⟧ {n = zero}  x        = [ x ]
 ⟦_⟧ {n = suc n} (x , xs) = x ∷ ⟦ xs ⟧
 
--- data Vowel : Type where
---   α η ε
-
--- data Accent : Type where
---   accute
---   grave
---   cirmuflex
+⟦_⟧⁺ : X ^ n → List⁺ X
+⟦_⟧⁺ {n = zero}  x        = [ x ]⁺
+⟦_⟧⁺ {n = suc n} (x , xs) = x ∷ ⟦ xs ⟧
 
 -- T0D0: bake into definition of `Vowel`
 
@@ -45,23 +44,18 @@ Consonant = _∈ ⟦ μ , ν , θ , Π , δ , χ , ƛ , ς ⟧
 
 -- NB: ← first define Syllables and then Word?
 
--- Word = List Letter
 Syllable = List Letter
-Word = List Syllable -- T0D0: List ↝ List⁺
+Word = List⁺ Syllable
 Verse = List Word
 
 private
   verse1 = Verse
-    ∋ ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧
-      , ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧
-      , ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧
-      , ⟦ ⟦ Π , η ⟧ , ⟦ ƛ , η ⟧ , ⟦ ϊ ⟧ , ⟦ ά ⟧ , ⟦ δ , ε ⟧ , ⟦ ω ⟧ ⟧
-      , ⟦ ⟦ Ἀ ⟧ , ⟦ χ , ι ⟧ , ⟦ ƛ , ῆ ⟧ , ⟦ ο , ς ⟧ ⟧
+    ∋ ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺
+      , ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺
+      , ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧⁺
+      , ⟦ ⟦ Π , η ⟧ , ⟦ ƛ , η ⟧ , ⟦ ϊ ⟧ , ⟦ ά ⟧ , ⟦ δ , ε ⟧ , ⟦ ω ⟧ ⟧⁺
+      , ⟦ ⟦ Ἀ ⟧ , ⟦ χ , ι ⟧ , ⟦ ƛ , ῆ ⟧ , ⟦ ο , ς ⟧ ⟧⁺
       ⟧
-
--- NB: actually (w : Word) → Vec Quantity (length w) → Type
--- OMIT, no sensible definition within word boundaries
--- Word → List Quantity → Type
 
 data Quantity : Type where
   ˘ ─ : Quantity
@@ -81,6 +75,7 @@ private variable
   sy sy′ penult penult′ ult ult′ : Syllable
   sys sys′ : List Syllable
   w w′ : Word
+  ws ws′ : List Word
   q q′ : Quantity
   qs qs′ : List Quantity
   mq mq′ : Maybe Quantity
@@ -105,12 +100,10 @@ Diphthong : Pred₀ (Letter × Letter)
 Diphthong = _∈ [ (ε , ι) ]
 
 VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
-VowelBeforeTwoConsonants (v , c , c′) =
-  Vowel v × Consonant c × Consonant c′
+VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
 
 VowelBeforeDoubleConsonant : Pred₀ (Letter × Letter)
-VowelBeforeDoubleConsonant (v , c) =
-  Vowel v × DoubleConsonant c
+VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c
 
 Any× : Pred₀ (X × X) → Pred₀ (List X)
 Any× P = Any P ∘ pairs
@@ -121,7 +114,7 @@ triples = map (map₁ proj₁) ∘ pairs ∘ pairs
 Any×₃ : Pred₀ (X × X × X) → Pred₀ (List X)
 Any×₃ P = Any P ∘ triples
 
--- T0D0: model Syllables more property
+-- T0D0: model Syllables more properly
 
 -- (522)
 ─Syllable : Pred₀ Syllable
@@ -129,6 +122,10 @@ Any×₃ P = Any P ∘ triples
          ∪₁ Any× Diphthong -- /
          ∪₁ Any×₃ VowelBeforeTwoConsonants  -- \ by position
          ∪₁ Any× VowelBeforeDoubleConsonant -- /
+
+-- (519)
+˘Syllable : Pred₀ Syllable
+˘Syllable = Any ˘Vowel -- × All (¬ ─Vowel)
 
 private
   _ : ¬ ─Syllable ⟦ ν , ι , ν ⟧
@@ -138,17 +135,8 @@ private
     (inj₂ (inj₂ (inj₁ vcc))) → contradict vcc
     (inj₂ (inj₂ (inj₂ vdc))) → contradict vdc
 
--- (519)
-˘Syllable : Pred₀ Syllable
-˘Syllable = Any ˘Vowel -- × All (¬ ─Vowel)
-
--- private
---   _ : ˘Syllable
-
--- μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος
-
-_ : ─Syllable ⟦ μ , ῆ ⟧
-_ = auto
+  _ : ─Syllable ⟦ μ , ῆ ⟧
+  _ = auto
 
 Subsumes : Rel₀ (List $ Maybe X)
 Subsumes = Pointwise _≤ᵐ_
@@ -170,6 +158,7 @@ private
 
 -- A complies with B
 record _-compliesWith-_ (A B : Type) : Type₁ where
+  infix 0 _~_
   field _~_ : A → B → Type
   _≁_ : A → B → Type
   _≁_ = ¬_ ∘₂ _~_
@@ -224,7 +213,6 @@ instance
           ────────────────────────────────
           (─ ∷ ˘ ∷ ˘ ∷ qs) ~′ (─˘˘ ∷ pm)
 
-  -- NB: Quantity ↝ ∀ (A : Type) → ...
   Complies-MQs-PM : List (Maybe Quantity) -compliesWith- PartialMeter
   Complies-MQs-PM ._~_ = _~′_
     module ∣Complies-MQs-PM∣ where
@@ -242,65 +230,78 @@ instance
             ─────────────────────────────────────────────
             mqs ~′ pm
 
-{-
-  Complies-Sys-PM : List Syllable -compliesWith- PartialMeter
-  Complies-Sys-PM ._~_ = _~′_
-    module ∣Complies-Sys-PM∣ where
-      -- _~′_ : List Syllable → PartialMeter → Type
-      -- sys ~′ pm = ∃ λ (mqs : List $ Maybe Quantity)
-      --   → (sys ~ mqs) × (mqs ~ pm)
-      data _~′_ : List Syllable → PartialMeter → Type where
+  Complies-W-MQs : Word -compliesWith- List (Maybe Quantity)
+  Complies-W-MQs ._~_ = _~′_
+    module ∣Complies-W-MQs∣ where
+      data _~₀_ : Word → List (Maybe Quantity) → Type where
 
-        ~-trans :
-          ∙ sys ~ mqs
-          ∙ mqs ~ pm
-            ────────────────
-            sys ~′ pm
--}
+        [1160] : ∀ {w₀} ⦃ _ : L.NE.reverse w₀ ≡ ult ∷ penult ∷ sys ⦄ →
 
--- TEST :
---   ∙ (sy ∷ w) ~ (mq ∷ mqs)
---   ∙ Any HasCircumflex sy
---     ────────────────────────
---     mq ≡ just ─
--- TEST (∣Complies-Sy-MQ∣.long x ∷ _) circum = {!!}
--- TEST (∣Complies-Sy-MQ∣.short x ∷ _) circum = cong just {!!}
---   -- T0D0: make Agda understand syllables
--- TEST (∣Complies-Sy-MQ∣.ambiguous ¬─v _ ∷ _) circum = {!!}
+          ∙ (sys ∷ʳ penult ∷ʳ ult) ~ (mqs ∷ʳ mq ∷ʳ mq′)
+          -- mq -shouldBe- just ─
+          ∙ Any HasCircumflex penult
+          ∙ mq′ ≢ just ─ -- NB: should the ultima be a *doubtful vowel*
+            ──────────────────────────────────────────────────────────
+            w₀ ~₀ (mqs ∷ʳ just ─ ∷ʳ just ˘)
 
-Complies-W-MQs : Word -compliesWith- List (Maybe Quantity)
-Complies-W-MQs ._~_ = _~′_
-  module ∣Complies-W-MQs∣ where
-    data _~′_ : Word → List (Maybe Quantity) → Type where
+      data _~′_ : Word → List (Maybe Quantity) → Type where
 
-      base :
-        ∙ length w < 2
-        ∙ w ~ mqs
-          ────────────────────
+        base :
+          ∙ ¬ w ~₀ mqs
+          ∙ w ∙toList ~ mqs
+            ───────────────
+            w ~′ mqs
+
+        fromBelow :
+
+          w ~₀ mqs
+          ────────
           w ~′ mqs
 
-      [1660] :
-        -- NB: what happens here is what Conor McBride calls "green slime"
-        ∙ (w ∷ʳ penult ∷ʳ ult) ~ (mqs ∷ʳ mq ∷ʳ mq′)
-        -- mq_penult -shouldBe- just ─
-        ∙ Any HasCircumflex penult
-        ∙ mq′ ≢ just ─
-          ─────────────────────────────────────────────────
-          (w ∷ʳ penult ∷ʳ ult) ~′ (mqs ∷ʳ just ─ ∷ʳ just ˘)
+      ¬[1160] : length⁺ w ≡ 1 → ¬ w ~₀ mqs
+      ¬[1160] {w = sy ∷ []} refl ([1160] ⦃ () ⦄ _ _ _)
 
-  -- Complies-V-PM : Verse -compliesWith- PartialMeter
-  -- Complies-V-PM ._~_ = ?
+  Complies-Ws-MQs : List Word -compliesWith- List (Maybe Quantity)
+  Complies-Ws-MQs ._~_ = _~′_
+    module ∣Complies-Ws-MQs∣ where
+      data _~′_ : List Word → List (Maybe Quantity) → Type where
 
+        [] :
 
+          ────────
+          [] ~′ []
 
+        _∷_ : ∀ {mqs₀} ⦃ _ : mqs₀ ≡ mqs ++ mqs′ ⦄ →
 
+          ∙ w  ~  mqs
+          ∙ ws ~′ mqs′
+            ────────────────
+            (w ∷ ws) ~′ mqs₀
 
+  Complies-Ws-PM : List Word -compliesWith- PartialMeter
+  Complies-Ws-PM ._~_ = _~′_
+    module ∣Complies-Ws-PM∣ where
+      data _~′_ : List Word → PartialMeter → Type where
 
-open ∣Complies-Sy-MQ∣  using (long; short; ambiguous)
-open ∣Complies-Qs-PM∣  using (base; sponde; dactyl)
-open ∣Complies-MQs-PM∣ using (base; reify)
--- open ∣Complies-Sys-PM∣ using (~-trans)
-open ∣Complies-W-MQs∣ using ([1660]) renaming (_~′_ to _~ʷ_)
+        _~∘~_ :
+
+          ∙ ws  ~ mqs
+          ∙ mqs ~ pm
+            ────────
+            ws ~′ pm
+
+--   -- Complies-V-PM : Verse -compliesWith- PartialMeter
+--   -- Complies-V-PM ._~_ = ?
+
+open ∣Complies-Sy-MQ∣
+open ∣Complies-Qs-PM∣
+open ∣Complies-MQs-PM∣
+-- open ∣Complies-Sys-PM∣
+open ∣Complies-W-MQs∣
+open ∣Complies-Ws-MQs∣
+open ∣Complies-Ws-PM∣
+
+-- μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος
 
 private
   _ : ⟦ ─ , ˘ , ˘ ⟧ ~ ⟦ ─˘˘ ⟧
@@ -315,161 +316,83 @@ private
   _ : ⟦ nothing , nothing , just ˘ ⟧ ~ ⟦ ─˘˘ ⟧
   _ = reify (tt ∷ tt ∷ refl ∷ []) $ base (dactyl base)
 
-  H : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧ ~ ⟦ just ─ , nothing ⟧
-  H = long (inj₁ auto)
-    ∷ ambiguous contradict contradict
-    ∷ []
+  H₁ : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ~ ⟦ just ─ , just ˘ ⟧
+  H₁ = fromBelow $ [1160] {sys = []} {mqs = []} h auto contradict
+    where
+      h : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧ ~ ⟦ just ─ , nothing ⟧
+      h = long (inj₁ auto)
+        ∷ ambiguous contradict contradict
+        ∷ []
 
-  _ : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧ ~ʷ ⟦ just ─ , just ˘ ⟧
-  _ = [1660] {w = []} {mqs = []} H auto contradict
+  H₂ : ⟦ ⟦ ἄ ⟧ ⟧⁺ ~ ⟦ nothing ⟧
+  H₂ = base (¬[1160] auto)
+            (ambiguous contradict contradict ∷ [])
+
+  H : ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ , ⟦ ⟦ ἄ ⟧ ⟧⁺ ⟧
+    ~ ⟦ just ─ , just ˘ , nothing ⟧
+  H = H₁ ∷ H₂ ∷ []
+
+  μῆνιν-ἄ : ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ , ⟦ ⟦ ἄ ⟧ ⟧⁺ ⟧ ~ ⟦ ─˘˘ ⟧
+  μῆνιν-ἄ = H ~∘~ [1169]
+    where
+      [1169] : ⟦ just ─ , just ˘ , nothing ⟧ ~ ⟦ ─˘˘ ⟧
+      [1169] = reify (refl ∷ refl ∷ tt ∷ []) $ base (dactyl base)
+
+  _ : ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ , ⟦ ⟦ ῆ ⟧ ⟧⁺ ⟧
+    ≁ ⟦ just ─ , just ─ , just ─ ⟧
+  _ = λ where
+      (base _ (_ ∷ long p ∷ _) ∷ _) → contradict p
+      (_∷_ {mqs′ = mqs′} ⦃ absurd ⦄ (fromBelow ([1160] x x₁ x₂)) _) →
+        WOOOT {mqs′ = mqs′} absurd
+    where
+      WOOOT : just ─ ∷ just ─ ∷ [ just ─ ] ≢ mqs ∷ʳ just ─ ∷ʳ just ˘ ++ mqs′
+      WOOOT {mqs = []} ()
+      WOOOT {mqs = _ ∷ _ ∷ []} ()
+      WOOOT {mqs = _ ∷ _ ∷ _ ∷ []} ()
+      WOOOT {mqs = _ ∷ _ ∷ _ ∷ _ ∷ mqs} ()
+
+  -- L₂ : ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺ ~ ⟦ nothing , just ─ , just ˘ ⟧
+  -- L₂ = {!base!}
+  -- -- base auto (ambiguous contradict contradict ∷ [])
+
+  -- -- L₂ : ⟦ ⟦ ἄ ⟧ , ⟦ ῆ ⟧ , ⟦ δ , ε ⟧ ⟧⁺ ≁ ⟦ nothing , just ─ , just ˘ ⟧
+
+  -- L : ⟦ ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ , ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺ ⟧
+  --   ~ ⟦ just ─ , just ˘ , nothing , just ─ , just ˘ ⟧
+  -- L = H₁ ∷ L₂ ∷ []
 
 {-
-private
-  _ : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ε , ν ⟧ , ⟦ ε ⟧ ⟧ ~ ⟦ ─˘˘ ⟧
-  _ = ~-trans {mqs = ⟦ just ─ , just ˘ , just ˘ ⟧}
-              ( long (inj₁ (there $′ here $′ here refl))
-              ∷ short (there $′ here $′ here refl)
-              ∷ short (here (here refl))
-              ∷ [])
-              (reify (refl ∷ refl ∷ refl ∷ [])
-              (base (dactyl base)))
-  -- postulate NIN : ⟦ sy , ⟦ ν , ι , ν ⟧ ⟧ ~ ⟦ ˘ ⟧
+  οὐλομένην, ἣ μυρί᾽ Ἀχαιοῖς ἄλγε᾽ ἔθηκε,
 
-  _ : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ , ⟦ ἄ ⟧ ⟧ ~ ⟦ ─˘˘ ⟧
-  _ = ~-trans {mqs = ⟦ just ─ , just ˘ , nothing ⟧}
-              ( long (inj₁ (there $′ here $′ here refl))
-              ∷ {!!}
-              ∷ ambiguous {!!} (λ x → {!!})
-              ∷ [])
-              (reify (refl ∷ refl ∷ tt ∷ [])
-              (base (dactyl base)))
+  πολλὰς δ᾽ ἰφθίμους ψυχὰς Ἄϊδι προΐαψεν
+  ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν
+  οἰωνοῖσί τε πᾶσι, Διὸς δ᾽ ἐτελείετο βουλή,
+  ἐξ οὗ δὴ τὰ πρῶτα διαστήτην ἐρίσαντε
+  Ἀτρεΐδης τε ἄναξ ἀνδρῶν καὶ δῖος Ἀχιλλεύς.
+  τίς τ᾽ ἄρ σφωε θεῶν ἔριδι ξυνέηκε μάχεσθαι;
+  Λητοῦς καὶ Διὸς υἱός: ὃ γὰρ βασιλῆϊ χολωθεὶς
+  νοῦσον ἀνὰ στρατὸν ὄρσε κακήν, ὀλέκοντο δὲ λαοί,
+  οὕνεκα τὸν Χρύσην ἠτίμασεν ἀρητῆρα
+  Ἀτρεΐδης: ὃ γὰρ ἦλθε θοὰς ἐπὶ νῆας Ἀχαιῶν
+  λυσόμενός τε θύγατρα φέρων τ᾽ ἀπερείσι᾽ ἄποινα,
+  στέμματ᾽ ἔχων ἐν χερσὶν ἑκηβόλου Ἀπόλλωνος
+  χρυσέῳ ἀνὰ σκήπτρῳ, καὶ λίσσετο πάντας Ἀχαιούς,
+  Ἀτρεΐδα δὲ μάλιστα δύω, κοσμήτορε λαῶν:
+  Ἀτρεΐδαι τε καὶ ἄλλοι ἐϋκνήμιδες Ἀχαιοί,
+  ὑμῖν μὲν θεοὶ δοῖεν Ὀλύμπια δώματ᾽ ἔχοντες
+  ἐκπέρσαι Πριάμοιο πόλιν, εὖ δ᾽ οἴκαδ᾽ ἱκέσθαι:
+  παῖδα δ᾽ ἐμοὶ λύσαιτε φίλην, τὰ δ᾽ ἄποινα δέχεσθαι,
+  ἁζόμενοι Διὸς υἱὸν ἑκηβόλον Ἀπόλλωνα.
 
-  _ : ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ , ⟦ ἄ ⟧ ⟧ ~ ⟦ ─˘˘ ⟧
-  _ = ~-trans {mqs = ⟦ just ─ , nothing , nothing ⟧}
-              ( long (inj₁ (there $′ here $′ here refl))
-              ∷ ambiguous (λ{ x → {!x!} }) (λ x → {!!})
-              ∷ ambiguous {!!} (λ x → {!!})
-              ∷ [])
-              (reify (refl ∷ tt ∷ tt ∷ []) (base (dactyl base)))
+  ἔνθ᾽ ἄλλοι μὲν πάντες ἐπευφήμησαν Ἀχαιοὶ
+  αἰδεῖσθαί θ᾽ ἱερῆα καὶ ἀγλαὰ δέχθαι ἄποινα:
+  ἀλλ᾽ οὐκ Ἀτρεΐδῃ Ἀγαμέμνονι ἥνδανε θυμῷ,
+  ἀλλὰ κακῶς ἀφίει, κρατερὸν δ᾽ ἐπὶ μῦθον ἔτελλε:
+  μή σε γέρον κοίλῃσιν ἐγὼ παρὰ νηυσὶ κιχείω
+  ἢ νῦν δηθύνοντ᾽ ἢ ὕστερον αὖτις ἰόντα,
+  μή νύ τοι οὐ χραίσμῃ σκῆπτρον καὶ στέμμα θεοῖο:
+  τὴν δ᾽ ἐγὼ οὐ λύσω: πρίν μιν καὶ γῆρας ἔπεισιν
+  ἡμετέρῳ ἐνὶ οἴκῳ ἐν Ἄργεϊ τηλόθι πάτρης
+  ἱστὸν ἐποιχομένην καὶ ἐμὸν λέχος ἀντιόωσαν:
+  ἀλλ᾽ ἴθι μή μ᾽ ἐρέθιζε σαώτερος ὥς κε νέηαι.--
 -}
-
-{-
--- #NOT : List (Maybe Quantity) → List Quantity
--- #NOT = fix $ (refine ∘ reverse) ∘ refine
-
--- refine : List (Maybe Quantity) → List (Maybe Quantity)
--- refine = id
-data _~◐′_ : List Syllable → PartialMeter → Type where
-
-  sy  ~ˢ just ─
-  sy′ ~ˢ just ─
-  v ~◐ pm
-  ─────────────────────────
-  sy ∷ sy′ ∷ v ~◐′ ── ∷ pm
-
-data _~◐_ : Verse → PartialMeter → Type where
-
-  let (sy ∷ sy′ ∷ []) = L.take 2 (L.flatten v) in
-
-  sy  ~ˢ just ─
-  sy′ ~ˢ just ─
-  v ~◐ pm
-
-  ─────────────────
-  (sy ∷ sy′ ∷ w) ∷ v ~◐
-  (sy ∷ []) ∷ (sy′ ∷ w) ∷ v ~◐
--}
--- data _ˡ~ᵖᵐ_ : List (Maybe Quantity) → PartialMeter → Type where
-
---   base :
---     [] ˡ~ᵖᵐ []
-
---   sponde : ∀ {x : Maybe Quantity} →
-
---     ∙ mqs ˡ~ᵖᵐ pm
---     ∙ x ≢ just ˘       -- M.All (_≡ ─) x
---       ───────────────────────────────────
---       (x ∷ just ─ ∷ mqs) ˡ~ᵖᵐ (── ∷ pm)
-
---   dactyl : ∀ {x y z : Maybe Quantity} →
-
---     ∙ mqs ˡ~ᵖᵐ pm
---     ∙ x ≢ just ˘ -- M.All (_≡ ─) x
---     ∙ ((y ≡ just ˘) × (z ≢ just ─)) -- M.All (_≡ ˘) z)
---     ⊎ ((z ≡ just ˘) × (y ≢ just ─)) -- M.All (_≡ ˘) y)
---       ─────────────────────────────────────────────
---       (x ∷ y ∷ z ∷ mqs) ˡ~ᵖᵐ (─˘˘ ∷ pm)
-
--- _ : (nothing ∷ nothing ∷ []) ˡ~ᵖᵐ [ ── ]
--- _ = {!!}
-
--- _ : (nothing ∷ nothing ∷ nothing ∷ []) ˡ~ᵖᵐ [ ─˘˘ ]
--- _ = {!!}
-
--- _ : (nothing ∷ nothing ∷ nothing ∷ nothing ∷ nothing ∷ []) ˡ~ᵖᵐ
---     (── ∷ ─˘˘ ∷ [])
--- _ = {!!}
-
--- _ : (nothing ∷ nothing ∷ nothing ∷ nothing ∷ nothing ∷ []) ˡ~ᵖᵐ
---     (─˘˘ ∷ ── ∷ [])
--- _ = {!!}
-
--- H : (just ─ ∷ nothing ∷ just ─ ∷ just ─ ∷ []) ˡ~ᵖᵐ (── ∷ ── ∷ [])
--- H = {!sponde!}
--- -}
-
--- {-
--- -- e.g. verse1 ~ ─˘˘ | ─˘˘ | ── | ─˘˘ | ─˘˘ | ──
--- inferQuantities : Verse → List (Maybe Quantity)
-
--- _~_ : Verse → Meter → Type
--- v ~ m = ??? v ˡ∼ᵖᵐ V.toList m
-
--- data _~_ : Verse → Meter → Type where
-
-
---   ~ˢ ─
---   ~ˢ ˘
---   ~ˢ ˘
-
---   ────────────────────
---   verse ∷ ~ ─˘˘ ...
-
--- data _EPIC∼_ : Verse → EpicMeter → Type where
--- -}
-
--- {-
---   οὐλομένην, ἣ μυρί᾽ Ἀχαιοῖς ἄλγε᾽ ἔθηκε,
-
---   πολλὰς δ᾽ ἰφθίμους ψυχὰς Ἄϊδι προΐαψεν
---   ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν
---   οἰωνοῖσί τε πᾶσι, Διὸς δ᾽ ἐτελείετο βουλή,
---   ἐξ οὗ δὴ τὰ πρῶτα διαστήτην ἐρίσαντε
---   Ἀτρεΐδης τε ἄναξ ἀνδρῶν καὶ δῖος Ἀχιλλεύς.
---   τίς τ᾽ ἄρ σφωε θεῶν ἔριδι ξυνέηκε μάχεσθαι;
---   Λητοῦς καὶ Διὸς υἱός: ὃ γὰρ βασιλῆϊ χολωθεὶς
---   νοῦσον ἀνὰ στρατὸν ὄρσε κακήν, ὀλέκοντο δὲ λαοί,
---   οὕνεκα τὸν Χρύσην ἠτίμασεν ἀρητῆρα
---   Ἀτρεΐδης: ὃ γὰρ ἦλθε θοὰς ἐπὶ νῆας Ἀχαιῶν
---   λυσόμενός τε θύγατρα φέρων τ᾽ ἀπερείσι᾽ ἄποινα,
---   στέμματ᾽ ἔχων ἐν χερσὶν ἑκηβόλου Ἀπόλλωνος
---   χρυσέῳ ἀνὰ σκήπτρῳ, καὶ λίσσετο πάντας Ἀχαιούς,
---   Ἀτρεΐδα δὲ μάλιστα δύω, κοσμήτορε λαῶν:
---   Ἀτρεΐδαι τε καὶ ἄλλοι ἐϋκνήμιδες Ἀχαιοί,
---   ὑμῖν μὲν θεοὶ δοῖεν Ὀλύμπια δώματ᾽ ἔχοντες
---   ἐκπέρσαι Πριάμοιο πόλιν, εὖ δ᾽ οἴκαδ᾽ ἱκέσθαι:
---   παῖδα δ᾽ ἐμοὶ λύσαιτε φίλην, τὰ δ᾽ ἄποινα δέχεσθαι,
---   ἁζόμενοι Διὸς υἱὸν ἑκηβόλον Ἀπόλλωνα.
-
---   ἔνθ᾽ ἄλλοι μὲν πάντες ἐπευφήμησαν Ἀχαιοὶ
---   αἰδεῖσθαί θ᾽ ἱερῆα καὶ ἀγλαὰ δέχθαι ἄποινα:
---   ἀλλ᾽ οὐκ Ἀτρεΐδῃ Ἀγαμέμνονι ἥνδανε θυμῷ,
---   ἀλλὰ κακῶς ἀφίει, κρατερὸν δ᾽ ἐπὶ μῦθον ἔτελλε:
---   μή σε γέρον κοίλῃσιν ἐγὼ παρὰ νηυσὶ κιχείω
---   ἢ νῦν δηθύνοντ᾽ ἢ ὕστερον αὖτις ἰόντα,
---   μή νύ τοι οὐ χραίσμῃ σκῆπτρον καὶ στέμμα θεοῖο:
---   τὴν δ᾽ ἐγὼ οὐ λύσω: πρίν μιν καὶ γῆρας ἔπεισιν
---   ἡμετέρῳ ἐνὶ οἴκῳ ἐν Ἄργεϊ τηλόθι πάτρης
---   ἱστὸν ἐποιχομένην καὶ ἐμὸν λέχος ἀντιόωσαν:
---   ἀλλ᾽ ἴθι μή μ᾽ ἐρέθιζε σαώτερος ὥς κε νέηαι.--
--- -}
