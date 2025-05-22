@@ -5,7 +5,7 @@ open import Prelude.Init hiding (module Word)
 open L using (_∷ʳ_)
 open L.Mem
 open L.NE using (_⁺∷ʳ_) renaming (length to length⁺)
-open Unary using () renaming (_∪_ to _∪₁_; _⊆_ to _⊆₁_)
+open Unary using () renaming (_∪_ to _∪₁_; _∩_ to _∩¹_; _⊆_ to _⊆₁_)
 open import Prelude.General
 open import Prelude.Lists
 open import Prelude.ToList
@@ -20,75 +20,89 @@ open import Prelude.Ord
 open import Data.Vec.Relation.Binary.Pointwise.Inductive using ([]; _∷_)
   renaming (Pointwise to VPointwise)
 
+open import ListNotation
+
 private variable
   X : Type
   n n′ m m′ : ℕ
 
--- open import Prelude.Nary
-⟦_⟧ : X ^ n → List X
-⟦_⟧ {n = zero}  x        = [ x ]
-⟦_⟧ {n = suc n} (x , xs) = x ∷ ⟦ xs ⟧
-
-⟦_⟧⁺ : X ^ n → Vec X (suc n)
-⟦_⟧⁺ {n = zero}  x        = V.[ x ]
-⟦_⟧⁺ {n = suc n} (x , xs) = x ∷ ⟦ xs ⟧⁺
-
+-- INCOMPLETE: ADD AS NEEDED
 data Letter : Type where
-  ῆ ι ἄ ε ὰ η ϊ ά ω Ἀ ο : Letter
-  μ ν θ Π δ χ ƛ ς : Letter
+  -- vowels
+  α ἄ ὰ ά Ἀ
+   ε έ ἔ
+   ῆ ἣ η
+   ι ϊ ί ῖ
+   ο
+   ὐ υ
+   ω : Letter
+  -- consonants
+  γ δ θ κ ƛ μ ν Π ρ ς χ : Letter
 -- Letter = Vowel ⊎ Consonant
 unquoteDecl DecEq-Letter = DERIVE DecEq [ quote Letter , DecEq-Letter ]
 
 Vowel Consonant : Pred₀ Letter
-Vowel = _∈ ⟦ ῆ , ι , ἄ , ε , ὰ , η , ϊ , ά , ω , Ἀ , ο ⟧
+Vowel = _∈
+  ( α ∷ ἄ ∷ ὰ ∷ ά ∷ Ἀ
+  ∷ ε ∷ έ ∷ ἔ
+  ∷ ῆ ∷ ἣ ∷ η
+  ∷ ι ∷ ϊ ∷ ί ∷ ῖ
+  ∷ ο
+  ∷ ὐ ∷ υ
+  ∷ ω
+  ∷ []
+  )
+Consonant = _∈ [ γ ⨾ δ ⨾ θ ⨾ κ ⨾ ƛ ⨾ μ ⨾ ν ⨾ Π ⨾ ρ ⨾ ς ⨾ χ ]
 -- Consonant = ¬_ ∘ Vowel
-Consonant = _∈ ⟦ μ , ν , θ , Π , δ , χ , ƛ , ς ⟧
 
--- NB: ← first define Syllables and then Word?
-
+-- NB: loose definition of a syllable for now
+-- TODO? proper inductive definition of words/syllables
 Syllable = List Letter
+-- Syllable = List⁺ Letter
 
--- T0D0: silently use suc, i.e. Word 1 ≈ words with one syllable
-data Word : ℕ → Type where
-  word : ⦃ _ : False $ n ≟ 0 ⦄ → Vec Syllable n → Word n
--- Word = Vec Syllable ∘ suc
+data Word : ℕ {- syllables -} → Type where
+  word : {_ : auto∶ n ≢ 0} → Vec Syllable n → Word n
 ∃Word = ∃ Word
+
+_ : Word 3
+_ = word ([ μ ⨾ ῆ ]  ∷ ([ ν ⨾ ι ⨾ ν ] ∷ ([ δ ⨾ ε ] ∷ [])))
 
 unword : Word n → Vec Syllable n
 unword (word sys) = sys
 
 data Words : ℕ → Type where
-  [] : Words 0
+  []  : Words 0
   _∷_ : Word n → Words n′ → Words (n + n′)
 
 Verse = List ∃Word
 
-private
-  verse1 : Verse
-  verse1 =
-    -- T0D0: find a way to use n-ary notation
-    ( (-, word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺)
-    ∷ (-, word ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺)
-    ∷ (-, word ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧⁺)
-    ∷ (-, word ⟦ ⟦ Π , η ⟧ , ⟦ ƛ , η ⟧ , ⟦ ϊ ⟧ , ⟦ ά ⟧ , ⟦ δ , ε ⟧ , ⟦ ω ⟧ ⟧⁺)
-    ∷ (-, word ⟦ ⟦ Ἀ ⟧ , ⟦ χ , ι ⟧ , ⟦ ƛ , ῆ ⟧ , ⟦ ο , ς ⟧ ⟧⁺)
-    ∷ [])
+_ : Verse
+_ =
+  [ -, word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
+  ⨾ -, word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
+  ⨾ -, word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
+  ⨾ -, word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ⨾ [ δ ⨾ ε ] ⨾ [ ω ] ]
+  ⨾ -, word [ [ Ἀ ] ⨾ [ χ ⨾ ι ] ⨾ [ ƛ ⨾ ῆ ] ⨾ [ ο ⨾ ς ] ]
+  ]
 
 data Quantity : Type where
-  ˘ ─ : Quantity
+  · {- short -} : Quantity
+  ─ {- long  -} : Quantity
 unquoteDecl DecEq-Quantity = DERIVE DecEq [ quote Quantity , DecEq-Quantity ]
 
-data Foot : (n : ℕ) → Vec Quantity n → Type where
-  ─˘˘ {- dactyl -} : Foot 3 (─ ∷ ˘ ∷ ˘ ∷ [])
+data Foot : (n : ℕ) {- syllables -} → Vec Quantity n → Type where
+  ─·· {- dactyl -} : Foot 3 (─ ∷ · ∷ · ∷ [])
   ──  {- sponde -} : Foot 2 (─ ∷ ─ ∷ [])
 unquoteDecl DecEq-Foot = DERIVE DecEq [ quote Foot , DecEq-Foot ]
 ∃∃Foot = ∃ (∃ ∘ Foot)
+
+Feet = List ∃∃Foot
 
 -- PartialMeter : ℕ {- syllables -} → ℕ {- feet -} → Type
 -- PartialMeter n m = ∃ λ (fs : List ∃∃Foot) → (n ≡ ∑₁ fs) × (m ≡ length fs)
 
 data PartialMeter : ℕ {- syllables -} → ℕ {- feet -} → Type where
-  mkPM : (fs : List ∃∃Foot) → PartialMeter (∑₁ fs) (length fs)
+  mkPM : (fs : Feet) → PartialMeter (∑₁ fs) (length fs)
 
 Meter = ∃ λ n → PartialMeter n 6
 -- Meter = (∃ λ n → PartialMeter n 5) × ∃ (Foot 2)
@@ -117,19 +131,36 @@ private variable
 _∷ᵖᵐ_ : Foot n qs → PartialMeter n′ m′ → PartialMeter (n + n′) (1 + m′)
 f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 
-─Vowel ˘Vowel HasCircumflex : Pred₀ Letter
-─Vowel = _∈ ⟦ ῆ , η , ω ⟧
-˘Vowel = _∈ ⟦ ε , ο ⟧
-HasCircumflex = _∈ ⟦ ῆ ⟧
+-- (519)
+─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
+─Vowel = _∈ [ ῆ ⨾ η ⨾ ἣ ⨾ ω ]
+·Vowel = _∈ [ ἔ ⨾ ε ⨾ έ ⨾ ο ]
+-- Doubtful = _∈ [ ἄ ⨾ ὰ ⨾ ά ⨾ Ἀ ⨾ ι ⨾ ϊ ⨾ ί ⨾ υ ] -- (n)either long or short
+Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
+HasCircumflex = _∈ [ ῆ ]
 
 HasCircumflex⇒─Vowel : HasCircumflex ⊆₁ ─Vowel
 HasCircumflex⇒─Vowel (here refl) = auto
 
+-- (518)
 DoubleConsonant : Pred₀ Letter
 DoubleConsonant = _∈ [] -- ζ ξ ψ
 
+-- (504)
 Diphthong : Pred₀ (Letter × Letter)
-Diphthong = _∈ [ (ε , ι) ]
+Diphthong = _∈
+  [ (α , ι)
+  ⨾ (α , υ)
+  ⨾ (ε , ι)
+  ⨾ (ε , υ)
+  ⨾ (η , υ)
+  ⨾ (ο , ι)
+  ⨾ (ο , ῖ)
+  ⨾ (ο , υ)
+  ⨾ (ο , ὐ)
+  ⨾ (υ , ι)
+  ⨾ (ω , υ)
+  ]
 
 VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
 VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
@@ -155,19 +186,27 @@ Any×₃ P = Any P ∘ triples
          ∪₁ Any×₃ VowelBeforeTwoConsonants  -- \ by position
          ∪₁ Any× VowelBeforeDoubleConsonant -- /
 
--- (519)
-˘Syllable : Pred₀ Syllable
-˘Syllable = Any ˘Vowel -- × All (¬ ─Vowel)
+-- (519)??
+·Syllable : Pred₀ Syllable
+-- ·Syllable = ¬_ ∘ ─Syllable
+·Syllable = Any ·Vowel
+-- ·Syllable = All (¬ ─Vowel)
 
 private
-  _ : ¬ ─Syllable ⟦ ν , ι , ν ⟧
-  _ = λ where
-    (inj₁ ─v) → contradict ─v
-    (inj₂ (inj₁ di)) → contradict di
-    (inj₂ (inj₂ (inj₁ vcc))) → contradict vcc
-    (inj₂ (inj₂ (inj₂ vdc))) → contradict vdc
+  _ : ¬ ─Syllable [ ν ⨾ ι ⨾ ν ]
+  _ = auto
 
-  _ : ─Syllable ⟦ μ , ῆ ⟧
+  _ : ¬ ·Syllable [ ν ⨾ ι ⨾ ν ]
+  _ = auto
+
+  _ : ─Syllable [ μ ⨾ ῆ ]
+  _ = auto
+
+  -- * not actually syllables... see NB on Syllable type
+  _ : ─Syllable [ η ⨾ ε ]
+  _ = auto
+
+  _ : ·Syllable [ η ⨾ ε ]
   _ = auto
 
 Subsumes : Rel₀ (Vec (Maybe X) n)
@@ -179,14 +218,13 @@ Subsumes = VPointwise _≤ᵐ_
       x        y        → x ≡ y
 -- T0D0: Subsumes ⁇
 
-private
-  _ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
-               (just q  ∷ just q′ ∷ nothing ∷ [])
-  _ = tt ∷ refl ∷ refl ∷ []
+_ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
+             (just q  ∷ just q′ ∷ nothing ∷ [])
+_ = tt ∷ refl ∷ refl ∷ []
 
-  _ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
-               (just q  ∷ just q′ ∷ just q ∷ [])
-  _ = tt ∷ refl ∷ tt ∷ []
+_ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
+             (just q  ∷ just q′ ∷ just q ∷ [])
+_ = tt ∷ refl ∷ tt ∷ []
 
 -- A complies with B
 record _-compliesWith-_ (A B : Type) : Type₁ where
@@ -210,18 +248,22 @@ instance
 
         short :
 
-          ˘Syllable sy
+          ·Syllable sy
           ───────────────
-          sy ~′ just ˘
+          sy ~′ just ·
 
         ambiguous :
 
           ∙ ¬ ─Syllable sy
-          ∙ ¬ ˘Syllable sy
+          ∙ ¬ ·Syllable sy
             ───────────────
             sy ~′ nothing
 
-  -- NB: maybe generalise to `⦃ A ~ B ⦄ → [A] ~ [B]`
+  -- ** more general instance of `Complies-Sys-MQs`
+  -- Complies-Vec : ∀ {A B : Type} ⦃ _ : A -compliesWith- B ⦄ →
+  --   Vec A n -compliesWith- Vec B n
+  -- Complies-Vec ._~_ = VPointwise _~_
+
   Complies-Sys-MQs : Vec Syllable n -compliesWith- Vec (Maybe Quantity) n
   Complies-Sys-MQs ._~_ = VPointwise _~_
 
@@ -244,7 +286,7 @@ instance
 
           qs ~′ pm
           ────────────────────────────────
-          (─ ∷ ˘ ∷ ˘ ∷ qs) ~′ (─˘˘ ∷ᵖᵐ pm)
+          (─ ∷ · ∷ · ∷ qs) ~′ (─·· ∷ᵖᵐ pm)
 
   Complies-MQs-PM : Vec (Maybe Quantity) n -compliesWith- PartialMeter n m
   Complies-MQs-PM ._~_ = _~′_
@@ -278,9 +320,9 @@ instance
       data _~₀_ : Word n → Vec (Maybe Quantity) n → Type where
 
         [1160] : ∀ {sys₀ : Vec Syllable (suc (suc n))}
-                   ⦃ _ : V.reverse sys₀ ≡ ult V.∷ penult V.∷ sys ⦄
+                   ⦃ _ : V.reverse sys₀ ≡ ult ∷ penult ∷ sys ⦄
                    {mqs₀ : Vec (Maybe Quantity) (suc (suc n))}
-                   ⦃ _ : V.reverse mqs₀ ≡ just ˘ ∷ just ─ ∷ mqs ⦄ →
+                   ⦃ _ : V.reverse mqs₀ ≡ just · ∷ just ─ ∷ mqs ⦄ →
 
           ∙ sys₀ ~ (mqs V.∷ʳ mq V.∷ʳ mq′)
           -- mq -shouldBe- just ─
@@ -297,7 +339,7 @@ instance
 
         base : ∀ {w : Word n} {mqs : Vec (Maybe Quantity) n} →
 
-          ∙ ¬ w ~₀ mqs
+          ∙ ¬ w ~₀ mqs -- change to ∀ mqs′ → w ≁₀ mqs′
           ∙ unword w ~ mqs
             ───────────────
             w ~′ mqs
@@ -360,126 +402,173 @@ open ∣Complies-W-MQs∣
 open ∣Complies-Ws-MQs∣
 open ∣Complies-Ws-PM∣
 
+-- ** decision procedures
+
+instance
+  Dec-Complies-Sy-MQ : _~_ ⁇²
+  Dec-Complies-Sy-MQ {x = sy}{mq} .dec
+    with ¿ ─Syllable sy ¿ | ¿ ·Syllable sy ¿ | mq
+  ... | yes ─sy | _ | just ─
+    = yes $ long ─sy
+  ... | _ | yes ·sy | just ·
+    = yes $ short ·sy
+  ... | no ¬─sy | no ¬·sy | nothing
+    = yes $ ambiguous ¬─sy ¬·sy
+  ... | _ | no ¬·sy | just ·
+    = no λ where (short ·sy) → ¬·sy ·sy
+  ... | no ¬─sy | _ | just ─
+    = no λ where (long ─sy) → ¬─sy ─sy
+  ... | yes ─sy | _ | nothing
+    = no λ where (ambiguous ¬─sy _) → ¬─sy ─sy
+  ... | _ | yes ·sy | nothing
+    = no λ where (ambiguous _ ¬·sy) → ¬·sy ·sy
+
+  import Data.Vec.Relation.Binary.Pointwise.Inductive as VPointwise
+
+  Dec-Complies-Sys-MQs : _~_ {A = Vec Syllable n} ⁇²
+  Dec-Complies-Sys-MQs .dec = VPointwise.decidable dec² _ _
+--
+
 -- μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος
 
 private
-  _ : (─ ∷ ˘ ∷ ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
+  _ : [ ─ ⨾ · ⨾ · ] ~ mkPM [ -, -, ─·· ]
   _ = dactyl base
 
-  _ : (just ─ ∷ just ˘ ∷ just ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
+  _ : (just ─ ∷ just · ∷ just · ∷ []) ~ mkPM [ -, -, ─·· ]
   _ = base (dactyl base)
 
-  _ : (just ─ ∷ nothing ∷ just ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
+  _ : (just ─ ∷ nothing ∷ just · ∷ []) ~ mkPM [ -, -, ─·· ]
   _ = reify (refl ∷ tt ∷ refl ∷ []) $ base (dactyl base)
 
-  _ : (nothing ∷ nothing ∷ just ˘ ∷ []) ~ mkPM [ -, -, ─˘˘ ]
+  _ : (nothing ∷ nothing ∷ just · ∷ []) ~ mkPM [ -, -, ─·· ]
   _ = reify (tt ∷ tt ∷ refl ∷ []) $ base (dactyl base)
 
-  μῆνιν : word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ~ (just ─ ∷ just ˘ ∷ [])
+  μῆνιν : word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ~ (just ─ ∷ just · ∷ [])
   μῆνιν = fromBelow $ [1160] {sys = []} {mqs = []} h auto contradict
     where
-      h : (⟦ μ , ῆ ⟧ ∷ ⟦ ν , ι , ν ⟧ ∷ []) ~ (just ─ ∷ nothing ∷ [])
-      h = long (inj₁ auto)
-        ∷ ambiguous contradict contradict
-        ∷ []
+      h : ([ μ ⨾ ῆ ] ∷ [ ν ⨾ ι ⨾ ν ] ∷ []) ~ (just ─ ∷ nothing ∷ [])
+      h = auto
 
-  μῆνιν-ἄ : (word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ∷ word ⟦ ⟦ ἄ ⟧ ⟧⁺ ∷ [])
-          ~ mkPM [ -, -, ─˘˘ ]
-  μῆνιν-ἄ = (μῆνιν ∷ base (λ ()) (ambiguous contradict contradict ∷ []) ∷ [])
-        ~∘~ [1169]
+  *μῆνιν-ἄ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ἄ ] ] ∷ [])
+           ~ mkPM [ -, -, ─·· ]
+  *μῆνιν-ἄ = (μῆνιν ∷ base (λ ()) (ambiguous contradict contradict ∷ []) ∷ [])
+         ~∘~ [1169]
     where
-      [1169] : (just ─ ∷ just ˘ ∷ nothing ∷ []) ~ mkPM [ -, -, ─˘˘ ]
+      [1169] : (just ─ ∷ just · ∷ nothing ∷ []) ~ mkPM [ -, -, ─·· ]
       [1169] = reify (refl ∷ refl ∷ tt ∷ []) $ base (dactyl base)
 
-  μῆνιν-ῆ : (word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺ ∷ word ⟦ ⟦ ῆ ⟧ ⟧⁺ ∷ [])
-         ≁ (just ─ ∷ just ─ ∷ just ─ ∷ [])
-  μῆνιν-ῆ (base _ (_ ∷ long ─ι ∷ _) ∷ _) = contradict ─ι
-  μῆνιν-ῆ (_∷_ {mqs = _ ∷ _ ∷ []} ⦃ () ⦄
-               (fromBelow ([1160] ⦃ refl ⦄ ⦃ refl ⦄ _ _ _)) _)
+  *μῆνιν-ῆ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ῆ ] ] ∷ [])
+           ≁ (just ─ ∷ just ─ ∷ just ─ ∷ [])
+  *μῆνιν-ῆ = λ where
+    (base _ (_ ∷ long ─ι ∷ _) ∷ _) → contradict ─ι
+    (_∷_ {mqs = _ ∷ _ ∷ []} ⦃ () ⦄ (fromBelow ([1160] ⦃ refl ⦄ ⦃ refl ⦄ _ _ _)) _)
 
-  ἄειδε : word ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺
-        ~ (nothing ∷ just ─ ∷ just ˘ ∷ [])
-  ἄειδε = base (¬[1160] contradict)
-               ( ambiguous contradict contradict
-               ∷ long (inj₂ $ inj₁ auto)
-               ∷ short (there $′ here auto)
-               ∷ [])
+  ἄειδε : word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
+        ~ (nothing ∷ just ─ ∷ just · ∷ [])
+  ἄειδε = base (¬[1160] contradict) auto
 
   μῆνιν-ἄειδε :
-    ( word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺
-    ∷ []) ~ ( just ─ ∷ just ˘ ∷ nothing
-            ∷ just ─ ∷ just ˘
+    ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
+    ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
+    ∷ []) ~ ( just ─ ∷ just · ∷ nothing
+            ∷ just ─ ∷ just ·
             ∷ [])
   μῆνιν-ἄειδε = μῆνιν ∷ ἄειδε ∷ []
 
-  θε : word ⟦ ⟦ θ , ε ⟧ ⟧⁺
-     ~ V.[ just ˘ ]
-  θε = base (λ ()) (short auto ∷ [])
+  *θε : word [ [ θ ⨾ ε ] ]
+      ~ V.[ just · ]
+  *θε = base (λ ()) auto
 
-  μῆνιν-ἄειδε-θε :
-    ( word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ θ , ε ⟧ ⟧⁺
-    ∷ []) ~ mkPM ((-, -, ─˘˘) ∷ (-, -, ─˘˘) ∷ [])
-  μῆνιν-ἄειδε-θε = (μῆνιν ∷ ἄειδε ∷ θε ∷ [])
-               ~∘~ reify (refl ∷ refl ∷ tt ∷ refl ∷ refl ∷ refl ∷ [])
-                         (base $′ dactyl $′ dactyl base)
+  *μῆνιν-ἄειδε-θε :
+    ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
+    ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
+    ∷ word [ [ θ ⨾ ε ] ]
+    ∷ []) ~ mkPM ((-, -, ─··) ∷ (-, -, ─··) ∷ [])
+  *μῆνιν-ἄειδε-θε = (μῆνιν ∷ ἄειδε ∷ *θε ∷ [])
+                ~∘~ reify (refl ∷ refl ∷ tt ∷ refl ∷ refl ∷ refl ∷ [])
+                          (base $′ dactyl $′ dactyl base)
 
-  θεὰ : word ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧⁺
-      ~ (just ˘ ∷ nothing ∷ [])
-  θεὰ = base (¬[1160] contradict)
-             (short auto ∷ ambiguous contradict contradict ∷ [])
+  θεὰ : word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
+      ~ (just · ∷ nothing ∷ [])
+  θεὰ = base (¬[1160] contradict) auto
 
-  Πη : word ⟦ ⟦ Π , η ⟧ ⟧⁺
-     ~ (just ─ ∷ [])
-  Πη = base (λ ()) (long auto ∷ [])
+  *Πη : word [ [ Π ⨾ η ] ]
+      ~ (just ─ ∷ [])
+  *Πη = base (λ ()) auto
 
-  μῆνιν-ἄειδε-θεὰ-Πη :
-    ( word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ Π , η ⟧ ⟧⁺
-    ∷ []) ~ mkPM ((-, -, ─˘˘) ∷ (-, -, ─˘˘) ∷ (-, -, ──) ∷ [])
-  μῆνιν-ἄειδε-θεὰ-Πη = (μῆνιν ∷ ἄειδε ∷ θεὰ ∷ Πη ∷ [])
-               ~∘~ reify ( refl ∷ refl ∷ tt
-                         ∷ refl ∷ refl ∷ refl
-                         ∷ tt ∷ refl
-                         ∷ [])
-                         (base $′ dactyl $′ dactyl $′ sponde base)
+  *μῆνιν-ἄειδε-θεὰ-Πη :
+    ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
+    ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
+    ∷ word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
+    ∷ word [ [ Π ⨾ η ] ]
+    ∷ []) ~ mkPM ((-, -, ─··) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ [])
+  *μῆνιν-ἄειδε-θεὰ-Πη = (μῆνιν ∷ ἄειδε ∷ θεὰ ∷ *Πη ∷ [])
+                    ~∘~ reify (refl ∷ refl ∷ tt ∷ refl ∷ refl ∷ refl ∷ tt ∷ refl ∷ [])
+                          (base $′ dactyl $′ dactyl $′ sponde base)
 
-  Πηƛηϊά : word ⟦ ⟦ Π , η ⟧ , ⟦ ƛ , η ⟧ , ⟦ ϊ ⟧ , ⟦ ά ⟧ ⟧⁺
-     ~ (just ─ ∷ just ─ ∷ nothing ∷ nothing ∷ [])
-  Πηƛηϊά = base (¬[1160] contradict)
-                ( long auto
-                ∷ long auto
-                ∷ ambiguous contradict contradict
-                ∷ ambiguous contradict contradict
-                ∷ [])
+  Πηƛηϊά : word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ]
+         ~ (just ─ ∷ just ─ ∷ nothing ∷ nothing ∷ [])
+  Πηƛηϊά = base (¬[1160] contradict) auto
 
+  -- NOT YET A VERSE
   μῆνιν-ἄειδε-θεὰ-Πηƛηϊά :
-    ( word ⟦ ⟦ μ , ῆ ⟧ , ⟦ ν , ι , ν ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ ἄ ⟧ , ⟦ ε , ι ⟧ , ⟦ δ , ε ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ θ , ε ⟧ , ⟦ ὰ ⟧ ⟧⁺
-    ∷ word ⟦ ⟦ Π , η ⟧ , ⟦ ƛ , η ⟧ , ⟦ ϊ ⟧ , ⟦ ά ⟧ ⟧⁺
-    ∷ []) ~ mkPM ((-, -, ─˘˘) ∷ (-, -, ─˘˘) ∷ (-, -, ──) ∷ (-, -, ─˘˘) ∷ [])
+    ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
+    ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
+    ∷ word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
+    ∷ word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ]
+    ∷ []) ~ mkPM ((-, -, ─··) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ (-, -, ─··) ∷ [])
   μῆνιν-ἄειδε-θεὰ-Πηƛηϊά = (μῆνιν ∷ ἄειδε ∷ θεὰ ∷ Πηƛηϊά ∷ [])
-               ~∘~ reify ( refl ∷ refl ∷ tt
-                         ∷ refl ∷ refl ∷ refl
-                         ∷ tt ∷ refl
-                         ∷ refl ∷ tt ∷ tt
+               ~∘~ reify ( refl ∷ refl
+                         ∷ tt ∷ refl ∷ refl
+                         ∷ refl ∷ tt
+                         ∷ refl ∷ refl ∷ tt ∷ tt
                          ∷ [])
                          (base $′ dactyl $′ dactyl $′ sponde $′ dactyl base)
 
-    -- ⟦ ⟦ δ , ε ⟧ , ⟦ ω ⟧ ⟧⁺ ~ [ just ˘ , just ─ ]
-    -- ⟦ ⟦ δ , ε , ω ⟧ ⟧⁺ ~ [ just ─ ]
+    -- [ [ δ ⨾ ε ] ⨾ [ ω ] ] ~ [ just · ⨾ just ─ ]
+    -- [ [ δ ⨾ ε ⨾ ω ] ] ~ [ just ─ ]
 
-    -- ∷ (-, word ⟦ ⟦ δ , ε ⟧ , ⟦ ω ⟧ ⟧⁺)
-    -- ∷ (-, word ⟦ ⟦ Ἀ ⟧ , ⟦ χ , ι ⟧ , ⟦ ƛ , ῆ ⟧ , ⟦ ο , ς ⟧ ⟧⁺)
+    -- ∷ (-, word [ [ δ ⨾ ε ] ⨾ [ ω ] ])
+    -- ∷ (-, word [ [ Ἀ ] ⨾ [ χ ⨾ ι ] ⨾ [ ƛ ⨾ ῆ ] ⨾ [ ο ⨾ ς ] ])
     -- ∷ [])
-{-
-  οὐλομένην, ἣ μυρί᾽ Ἀχαιοῖς ἄλγε᾽ ἔθηκε,
 
+  -- TODO: μῆνιν-ἄειδε-θεὰ-Πηƛηϊά-⋯Αχιλλεως⋯
+
+  -- οὐλομένην, ἣ μυρί᾽ Ἀχαιοῖς ἄλγε᾽ ἔθηκε,
+
+  οὐλομένην : word [ [ ο ⨾ ὐ ] ⨾ [ ƛ ⨾ ο ] ⨾ [ μ ⨾ έ ] ⨾ [ ν ⨾ η ⨾ ν ] ]
+            ~ [ just ─ ⨾ just · ⨾ just · ⨾ just ─ ]
+  οὐλομένην = base (¬[1160] contradict) auto
+
+  _ἣ : word [ [ ἣ ] ] ~ [ just ─ ]
+  _ἣ = base (λ ()) auto
+
+  μυρί : word [ [ μ ⨾ υ ] ⨾ [ ρ ⨾ ί ] ] ~ [ nothing ⨾ nothing ]
+  μυρί = base (¬[1160] contradict) auto
+
+  Ἀχαιοῖς : word [ [ Ἀ ] ⨾ [ χ ⨾ α ⨾ ι ] ⨾ [ ο ⨾ ῖ ⨾ ς ] ]
+          ~ [ nothing ⨾ just ─ ⨾ just ─ ]
+  Ἀχαιοῖς = base (¬[1160] contradict) auto
+
+  ἄλγε᾽ : word [ [ ἄ ⨾ ƛ ] ⨾ [ γ ⨾ ε ] ] ~ [ nothing ⨾ just · ]
+  ἄλγε᾽ = base (¬[1160] contradict) auto
+
+  ἔθηκε : word [ [ ἔ ] ⨾ [ θ ⨾ η ] ⨾ [ κ ⨾ ε ] ] ~ [ just · ⨾ just ─ ⨾ just · ]
+  ἔθηκε = base (¬[1160] contradict) auto
+
+  οὐλομένην-ἣ-μυρί᾽-Ἀχαιοῖς-ἄλγε᾽-ἔθηκε :
+    ( word [ [ ο ⨾ ὐ ] ⨾ [ ƛ ⨾ ο ] ⨾ [ μ ⨾ έ ] ⨾ [ ν ⨾ η ⨾ ν ] ]
+    ∷ word [ [ ἣ ] ]
+    ∷ word [ [ μ ⨾ υ ] ⨾ [ ρ ⨾ ί ] ]
+    ∷ word [ [ Ἀ ] ⨾ [ χ ⨾ α ⨾ ι ] ⨾ [ ο ⨾ ῖ ⨾ ς ] ]
+    ∷ word [ [ ἄ ⨾ ƛ ] ⨾ [ γ ⨾ ε ] ]
+    ∷ word [ [ ἔ ] ⨾ [ θ ⨾ η ] ⨾ [ κ ⨾ ε ] ]
+    ∷ []
+    ) ~ mkPM ((-, -, ─··) ∷ (-, -, ──) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ [])
+  οὐλομένην-ἣ-μυρί᾽-Ἀχαιοῖς-ἄλγε᾽-ἔθηκε = {!!}
+    -- use [1180, 1184], maybe a proper definition of 6-foot verse?
+{-
   πολλὰς δ᾽ ἰφθίμους ψυχὰς Ἄϊδι προΐαψεν
   ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν
   οἰωνοῖσί τε πᾶσι, Διὸς δ᾽ ἐτελείετο βουλή,
@@ -512,3 +601,10 @@ private
   ἱστὸν ἐποιχομένην καὶ ἐμὸν λέχος ἀντιόωσαν:
   ἀλλ᾽ ἴθι μή μ᾽ ἐρέθιζε σαώτερος ὥς κε νέηαι.--
 -}
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
