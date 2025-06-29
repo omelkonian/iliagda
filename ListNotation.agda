@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module ListNotation where
 
 open import Data.List using ([]; _∷_)
