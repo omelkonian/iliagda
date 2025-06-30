@@ -50,6 +50,11 @@ data Words : ℕ → Type where
   []  : Words 0
   _∷_ : Word n → Words n′ → Words (n + n′)
 
+unwords : Words n → Vec Syllable n
+unwords = λ where
+  [] → []
+  (w ∷ ws) → unword w V.++ unwords ws
+
 Verse = List ∃Word
 
 _ : Verse
@@ -64,10 +69,7 @@ _ =
 variable
   l l′ : Letter
   sy sy′ sy″ penult penult′ ult ult′ : Syllable
-  sys  : Vec Syllable n
-  sys′ : Vec Syllable n′
-  w  : Word n
-  w′ : Word n′
-  ws  : Words n
-  ws′ : Words n′
+  sys sys′ sys″ : Vec Syllable n
+  w  w′ : Word n
+  ws ws′ : Words n
   v v′ : Verse

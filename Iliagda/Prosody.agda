@@ -2,43 +2,7 @@ module Iliagda.Prosody where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
-
-data Quantity : Type where
-  · {- short -} : Quantity
-  ─ {- long  -} : Quantity
-unquoteDecl DecEq-Quantity = DERIVE DecEq [ quote Quantity , DecEq-Quantity ]
-
-data Foot : (n : ℕ) {- syllables -} → Vec Quantity n → Type where
-  ─·· {- dactyl -} : Foot 3 (─ ∷ · ∷ · ∷ [])
-  ──  {- sponde -} : Foot 2 (─ ∷ ─ ∷ [])
-unquoteDecl DecEq-Foot = DERIVE DecEq [ quote Foot , DecEq-Foot ]
-∃∃Foot = ∃ (∃ ∘ Foot)
-
-Feet = List ∃∃Foot
-
--- PartialMeter : ℕ {- syllables -} → ℕ {- feet -} → Type
--- PartialMeter n m = ∃ λ (fs : List ∃∃Foot) → (n ≡ ∑₁ fs) × (m ≡ length fs)
-
-data PartialMeter : ℕ {- syllables -} → ℕ {- feet -} → Type where
-  mkPM : (fs : Feet) → PartialMeter (∑₁ fs) (length fs)
-
-Meter = ∃ λ n → PartialMeter n 6
--- Meter = (∃ λ n → PartialMeter n 5) × ∃ (Foot 2)
--- -- NB: actually Vec Foot 5 ∷ ──
--- data Meter : Type where
---   mkMeter : PartialMeter n 5 → ∃ (Foot 2) → Meter
-
-variable
-  q q′ : Quantity
-  qs qs′ : Vec Quantity n
-  mq mq′ mq″ : Maybe Quantity
-  mqs mqs′ : Vec (Maybe Quantity) n
-  pm  : PartialMeter n m
-  pm′ : PartialMeter n′ m′
-  meter meter′ : Meter
-
-_∷ᵖᵐ_ : Foot n qs → PartialMeter n′ m′ → PartialMeter (n + n′) (1 + m′)
-f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
+open import Iliagda.Prosody.Core
 
 -- (519)
 ─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
@@ -120,22 +84,27 @@ private
   _ : ·Syllable [ η ⨾ ε ]
   _ = auto
 
+-- _≤ᵐ_ : Rel₀ (Maybe X)
+-- _≤ᵐ_ = λ where
+--   nothing  (just _) → ⊤
+--   x        y        → x ≡ y
+
+private variable x : X; mx : Maybe X
+
+data _≤ᵐ_ : Rel₀ (Maybe X) where
+  forget : nothing ≤ᵐ just x
+  refl   : mx      ≤ᵐ mx
+
 Subsumes : Rel₀ (Vec (Maybe X) n)
 Subsumes = VPointwise _≤ᵐ_
-  where
-    _≤ᵐ_ : Rel₀ (Maybe X)
-    _≤ᵐ_ = λ where
-      nothing  (just _) → ⊤
-      x        y        → x ≡ y
--- T0D0: Subsumes ⁇
 
 _ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
              (just q  ∷ just q′ ∷ nothing ∷ [])
-_ = tt ∷ refl ∷ refl ∷ []
+_ =           forget  ∷ refl    ∷ refl    ∷ []
 
 _ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
-             (just q  ∷ just q′ ∷ just q ∷ [])
-_ = tt ∷ refl ∷ tt ∷ []
+             (just q  ∷ just q′ ∷ just q  ∷ [])
+_ =           forget  ∷ refl    ∷ forget  ∷ []
 
 -- A complies with B
 record _-compliesWith-_ (A B : Type) : Type₁ where
@@ -178,12 +147,12 @@ instance
   Complies-Sys-MQs : Vec Syllable n -compliesWith- Vec (Maybe Quantity) n
   Complies-Sys-MQs ._~_ = VPointwise _~_
 
-  Complies-Qs-PM : Vec Quantity n -compliesWith- PartialMeter n m
+  Complies-Qs-PM : Vec Quantity n -compliesWith- Meter n m
   Complies-Qs-PM ._~_ = _~′_
     module ∣Complies-Qs-PM∣ where
-      data _~′_ : Vec Quantity n → PartialMeter n m → Type where
+      data _~′_ : Vec Quantity n → Meter n m → Type where
 
-        base :
+        [] :
           ─────────────
           [] ~′ mkPM []
 
@@ -199,12 +168,12 @@ instance
           ────────────────────────────────
           (─ ∷ · ∷ · ∷ qs) ~′ (─·· ∷ᵖᵐ pm)
 
-  Complies-MQs-PM : Vec (Maybe Quantity) n -compliesWith- PartialMeter n m
-  Complies-MQs-PM ._~_ = _~′_
+  Complies-MQs-PM : Vec (Maybe Quantity) n -compliesWith- Hexameter n
+  Complies-MQs-PM ._~_ = _~″_
     module ∣Complies-MQs-PM∣ where
-      data _~′_ : Vec (Maybe Quantity) n → PartialMeter n m → Type where
+      data _~′_ : Vec (Maybe Quantity) n → Hexameter n → Type where
 
-        base : ∀ {qs : Vec Quantity n} {pm : PartialMeter n m} →
+        just : ∀ {qs : Vec Quantity n} {pm : Hexameter n} →
 
           qs ~ pm
           ─────────────────────
@@ -216,6 +185,18 @@ instance
           ∙ mqs′ ~′ pm
             ─────────────────
             mqs ~′ pm
+
+      mkLastLong : Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
+      mkLastLong {n = 0} = id
+      mkLastLong {n = suc n} = V._[ lastIndex ]≔ just ─
+        where lastIndex : Fin (suc n)
+              lastIndex = F.fromℕ n
+
+      data _~″_ : Vec (Maybe Quantity) n → Hexameter n → Type where
+        [1184] :
+          mkLastLong mqs ~′ pm
+          ────────────────────
+          mqs ~″ pm
 
 CircumflexPenult : Pred₀ (Word (suc (suc n)))
 CircumflexPenult (word w)
@@ -283,12 +264,12 @@ instance
             ────────────────
             (w ∷ ws) ~′ mqs₀
 
-  Complies-Ws-PM : Words n -compliesWith- PartialMeter n m
-  Complies-Ws-PM ._~_ = _~↑′_
+  Complies-Ws-HM : Words n -compliesWith- Hexameter n′
+  Complies-Ws-HM ._~_ = _~↑′_
     -- NB: note duality with [1160]
-    module ∣Complies-Ws-PM∣ where
+    module ∣Complies-Ws-HM∣ where
 
-      data _~′_ : Words n → PartialMeter n m → Type where
+      data _~′_ : Words n → Hexameter n → Type where
 
         _~∘~_ : ∀ {ws : Words n} {mqs : Vec (Maybe Quantity) n} →
           ∙ ws  ~ mqs
@@ -298,14 +279,7 @@ instance
 
       open import Iliagda.Prosody.Synizesis
 
-      private
-        MQ  = Maybe Quantity
-        MQS = ∃ λ n → Vec (Maybe Quantity) n
-
-        -- ⟦_⟧ : ∀ {sys sys′} (syn : sys -synizizes*- sys′) → MQS → MQS
-        -- ⟦_⟧ = {!!}
-
-      data _~↑′_ : Words n → PartialMeter n m → Type where
+      data _~↑′_ : Words n → Hexameter n′ → Type where
 
         fromBelow :
           ws ~′ pm
@@ -313,28 +287,14 @@ instance
           ws ~↑′ pm
 
         -- synizesis
-        -- TODO: change index bounds
-        [586] : ∀ {ws : Words n} {mqs : Vec (Maybe Quantity) n} →
+        [586] : ∀ {ws : Words n} {mqs : Vec (Maybe Quantity) n}
+                  {sys′ : Vec Syllable n′} {pm : Hexameter n′} →
+          ∀ (syn : unwords ws -synizizes*- sys′) →
           ∙ ws ~ mqs
-          ∙ mqs ≁ pm -- change to ∀ mqs′ → ws ~ mqs′ → mqs′ ≁ pm
-          -- TODO: add these
-          -- ∀ (syn : unword ws -synizizes*- sys′) →
-          -- ∙ (⟦ syn ⟧ mqs) ~′ pm
+          ∙ (∀ (pm : Hexameter n) → mqs ≁ pm)
+          ∙ synizize syn mqs ~ pm -- TODO: accept only minimal synizeses
             ──────────────────────────────────────────────────────────
             ws ~↑′ pm
-
-      --   [586] : -- let sys = L.concat ws in
-      --     ∙ ¬ ws ~′ pm
-      --   -- ∙ sys ~synizise~ sys′{(i,j),...}
-
-      --   -- ∙ ws[(i,j)/...] ~′ pm
-
-      --   -- ∙ ws[sys/sys′] ~′ pm
-      --       ──────────────────────────────────────────────────────────
-      --       ws ~↑′ pm
-
--- Complies-V-PM : Verse -compliesWith- PartialMeter
--- Complies-V-PM ._~_ = ?
 
 open ∣Complies-Sy-MQ∣ public
   hiding (_~′_)
@@ -347,7 +307,7 @@ open ∣Complies-W-MQs∣ public
   hiding (_~′_)
 open ∣Complies-Ws-MQs∣ public
   hiding (_~′_)
-open ∣Complies-Ws-PM∣ public
+open ∣Complies-Ws-HM∣ public
   hiding (_~′_)
 
 -- -}

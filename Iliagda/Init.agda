@@ -21,18 +21,25 @@ open import Prelude.DecEq public
 open import Prelude.Decidable public
 open import Prelude.InferenceRules public
 open import Prelude.Ord public
+open import Prelude.Semigroup public
+open import Prelude.Monoid public
+  renaming (ε to ∅)
 open import Prelude.Anyable public
 instance
   Anyable-List⁺ : Anyable {ℓ} List⁺
   Anyable-List⁺ .Any P = Any P ∘ toList
 open import Prelude.Allable public
 
--- import Data.Vec.Relation.Binary.Pointwise.Inductive as V
-open import Data.Vec.Relation.Binary.Pointwise.Inductive using ([]; _∷_) public
+open import Relation.Nullary.Decidable.Core public
+  using () renaming (map′ to mapDec)
+
+module VP where
+  open import Data.Vec.Relation.Binary.Pointwise.Inductive public
+open VP using ([]; _∷_) public
   renaming (Pointwise to VPointwise)
 
 open import ListNotation public
 
 variable
-  X : Type
+  X Y A B C : Type
   n n′ m m′ : ℕ

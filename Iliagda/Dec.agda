@@ -3,10 +3,33 @@ module Iliagda.Dec where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
+open import Iliagda.Prosody.Core
 open import Iliagda.Prosody
 
+-- ** VPointwise
 instance
-  Dec-Complies-Sy-MQ : _~_ ⁇²
+  Dec-VPointwise : ∀ {_~_ : X → Y → Type ℓ} {xs : Vec X n} {ys : Vec Y n} →
+    ⦃ _~_ ⁇² ⦄ → VPointwise _~_ xs ys ⁇
+  Dec-VPointwise .dec = VP.decidable dec² _ _
+    where import Data.Vec.Relation.Binary.Pointwise.Inductive as VP
+
+-- ** Subsumes
+module _ ⦃ _ : DecEq X ⦄ where instance
+  Dec-≤ᵐ : ∀ {mx my : Maybe X} → (mx ≤ᵐ my) ⁇
+  Dec-≤ᵐ {mx = mx} {my = my} .dec
+    with eq ← mx ≟ my
+    with mx | my
+  ... | nothing | just _  = yes forget
+  ... | just _  |  _      = mapDec (λ where refl → refl) (λ where refl → refl) eq
+  ... | _       | nothing = mapDec (λ where refl → refl) (λ where refl → refl) eq
+
+_ : Subsumes (nothing ∷ just ─ ∷ nothing ∷ [])
+             (just q  ∷ just ─ ∷ just q  ∷ [])
+_ = auto
+
+-- ** Complies-with
+instance
+  Dec-Complies-Sy-MQ : _~_ {A = Syllable} {B = Maybe Quantity} ⁇²
   Dec-Complies-Sy-MQ {x = sy}{mq} .dec
     with ¿ ─Syllable sy ¿ | ¿ ·Syllable sy ¿ | mq
   ... | yes ─sy | _ | just ─
@@ -24,7 +47,9 @@ instance
   ... | _ | yes ·sy | nothing
     = no λ where (ambiguous _ ¬·sy) → ¬·sy ·sy
 
-  import Data.Vec.Relation.Binary.Pointwise.Inductive as VPointwise
+_ : _~_ {A = Vec Syllable n} {B = Vec (Maybe Quantity) n} ⁇²
+_ = it
 
-  Dec-Complies-Sys-MQs : _~_ {A = Vec Syllable n} ⁇²
-  Dec-Complies-Sys-MQs .dec = VPointwise.decidable dec² _ _
+-- instance
+--   Dec-Complies-Qs-PM : _~_ {A = Vec Quantity n} {B = Meter n m} ⁇²
+--   Dec-Complies-Qs-PM {x = mqs}{pm} .dec = {!mqs pm!}
