@@ -78,25 +78,24 @@ DoubleVowel (v , v′) = Vowel v × Vowel v′
 VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
 VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
 
-
-Any× : Pred₀ (X × X) → Pred₀ (List X)
-Any× P = Any P ∘ pairs
+-- TODO: generalize?
+Any× : Pred₀ (X × X) → Pred₀ (List⁺ X)
+Any× P = Any P ∘ pairs ∘ toList
 
 triples : List X → List (X × X × X)
 triples = map (map₁ proj₁) ∘ pairs ∘ pairs
 
-Any×₃ : Pred₀ (X × X × X) → Pred₀ (List X)
-Any×₃ P = Any P ∘ triples
-
--- T0D0: model Syllables more properly
+Any×₃ : Pred₀ (X × X × X) → Pred₀ (List⁺ X)
+Any×₃ P = Any P ∘ triples ∘ toList
 
 -- (522)
 ─Syllable : Pred₀ Syllable
-─Syllable = Any ─Vowel     -- \ by nature
-         ∪₁ Any× Diphthong -- /
-         ∪₁ Any×₃ VowelBeforeTwoConsonants  -- \ by position
-         ∪₁ Any× VowelBeforeDoubleConsonant -- /
-         ∪₁ Any× DoubleVowel -- by synizesis
+─Syllable
+  =  Any ─Vowel     -- \ by nature
+  ∪₁ Any× Diphthong -- /
+  ∪₁ Any×₃ VowelBeforeTwoConsonants  -- \ by position
+  ∪₁ Any× VowelBeforeDoubleConsonant -- /
+  ∪₁ Any× DoubleVowel -- by synizesis
 
 -- (519)??
 ·Syllable : Pred₀ Syllable

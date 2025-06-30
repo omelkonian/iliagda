@@ -5,13 +5,9 @@ open import Iliagda.Morphology
 
 import Data.Maybe as M
 
-private
-  first = L.head
-  last  = L.last
-
 FirstVowel LastVowel : Pred₀ Syllable
-FirstVowel = M.Any.Any Vowel ∘ first
-LastVowel  = M.Any.Any Vowel ∘ last
+FirstVowel = Vowel ∘ head
+LastVowel  = Vowel ∘ last
 
 {-
 FirstVowel = λ where
@@ -27,7 +23,7 @@ data _-synizizes*-_ : List Syllable → List Syllable → Type
 private
   _~_ = _-synizizes*-_
 
-  _⁀_ = _++_
+  _⁀_ = L.NE._⁺++⁺_
 
 
 

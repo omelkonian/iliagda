@@ -22,11 +22,13 @@ _ : (nothing ∷ nothing ∷ just · ∷ []) ~ mkPM [ -, -, ─·· ]
 _ = reify (tt ∷ tt ∷ refl ∷ []) $ base (dactyl base)
 
 μῆνιν : word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ~ (just ─ ∷ just · ∷ [])
-μῆνιν = fromBelow $′ [1160] {sys = []} {mqs = []} h auto contradict
+μῆνιν = fromBelow $′
+  [1160] {sys = []} {mqs = []} h auto contradict
   where
     h : ([ μ ⨾ ῆ ] ∷ [ ν ⨾ ι ⨾ ν ] ∷ []) ~ (just ─ ∷ nothing ∷ [])
     h = auto
 
+{-
 *μῆνιν-ἄ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ἄ ] ] ∷ [])
           ~ mkPM [ -, -, ─·· ]
 *μῆνιν-ἄ = fromBelow $′

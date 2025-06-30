@@ -33,8 +33,8 @@ Consonant = _∈ [ γ ⨾ δ ⨾ θ ⨾ κ ⨾ ƛ ⨾ μ ⨾ ν ⨾ Π ⨾ ρ �
 
 -- NB: loose definition of a syllable for now
 -- TODO? proper inductive definition of words/syllables
-Syllable = List Letter
--- Syllable = List⁺ Letter
+-- Syllable = List Letter
+Syllable = List⁺ Letter
 
 data Word : ℕ {- syllables -} → Type where
   word : {_ : auto∶ n ≢ 0} → Vec Syllable n → Word n
