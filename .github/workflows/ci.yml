@@ -6,11 +6,11 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.1
+      - uses: actions/checkout@v3
       - uses: omelkonian/setup-agda@master
         with:
           agda-version: 2.6.3
           stdlib-version: 1.7.2
-          libraries: omelkonian/formal-prelude#4c575b
-          main: Main
+          libraries: omelkonian/formal-prelude#aa15166
+          main: Iliagda
           token: ${{ secrets.GITHUB_TOKEN }}
