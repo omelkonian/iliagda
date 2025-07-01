@@ -15,16 +15,14 @@ instance
 
 -- ** Subsumes
 module _ ⦃ _ : DecEq X ⦄ where instance
-  Dec-≤ᵐ : ∀ {mx my : Maybe X} → (mx ≤ᵐ my) ⁇
-  Dec-≤ᵐ {mx = mx} {my = my} .dec
-    with eq ← mx ≟ my
-    with mx | my
-  ... | nothing | just _  = yes forget
-  ... | just _  |  _      = mapDec (λ where refl → refl) (λ where refl → refl) eq
-  ... | _       | nothing = mapDec (λ where refl → refl) (λ where refl → refl) eq
+  Dec-masks : ∀ {mx : Maybe X}{y} → (mx -masks- y) ⁇
+  Dec-masks {mx = mx} {y = y} .dec
+    with mx
+  ... | nothing = yes mask
+  ... | just x  = mapDec (λ where refl → refl) (λ where refl → refl) (x ≟ y)
 
-_ : Subsumes (nothing ∷ just ─ ∷ nothing ∷ [])
-             (just q  ∷ just ─ ∷ just q  ∷ [])
+_ : (nothing ∷ just ─ ∷ nothing ∷ []) -masks*-
+    (q       ∷ ─      ∷ q       ∷ [])
 _ = auto
 
 -- ** Complies-with
@@ -52,4 +50,4 @@ _ = it
 
 -- instance
 --   Dec-Complies-Qs-PM : _~_ {A = Vec Quantity n} {B = Meter n m} ⁇²
---   Dec-Complies-Qs-PM {x = mqs}{pm} .dec = {!mqs pm!}
+--   Dec-Complies-Qs-PM {x = qs}{pm} .dec = {!qs!}

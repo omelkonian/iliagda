@@ -91,20 +91,20 @@ private
 
 private variable x : X; mx : Maybe X
 
-data _≤ᵐ_ : Rel₀ (Maybe X) where
-  forget : nothing ≤ᵐ just x
-  refl   : mx      ≤ᵐ mx
+data _-masks-_ : Maybe X → X → Type where
+  mask : nothing -masks- x
+  refl : just x  -masks- x
 
-Subsumes : Rel₀ (Vec (Maybe X) n)
-Subsumes = VPointwise _≤ᵐ_
+_-masks*-_ : Vec (Maybe X) n → Vec X n → Type
+_-masks*-_ = VPointwise _-masks-_
 
-_ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
-             (just q  ∷ just q′ ∷ nothing ∷ [])
-_ =           forget  ∷ refl    ∷ refl    ∷ []
+_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
+    (q       ∷ q′      ∷ q       ∷ [])
+_ = mask     ∷ refl    ∷ mask    ∷ []
 
-_ : Subsumes (nothing ∷ just q′ ∷ nothing ∷ [])
-             (just q  ∷ just q′ ∷ just q  ∷ [])
-_ =           forget  ∷ refl    ∷ forget  ∷ []
+_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
+    (q       ∷ q′      ∷ q       ∷ [])
+_ = mask     ∷ refl    ∷ mask    ∷ []
 
 -- A complies with B
 record _-compliesWith-_ (A B : Type) : Type₁ where
@@ -169,34 +169,21 @@ instance
           (─ ∷ · ∷ · ∷ qs) ~′ (─·· ∷ᵖᵐ pm)
 
   Complies-MQs-PM : Vec (Maybe Quantity) n -compliesWith- Hexameter n
-  Complies-MQs-PM ._~_ = _~″_
+  Complies-MQs-PM ._~_ = _~′_
     module ∣Complies-MQs-PM∣ where
+
+      -- (1184)
+      -- The last syllable of a verse is considered long (due to pause).
+      mkLastLong : n > 0 → Vec Quantity n → Vec Quantity n
+      mkLastLong {n = suc _} _ = V._[ F.fromℕ _ ]≔ ─
+
       data _~′_ : Vec (Maybe Quantity) n → Hexameter n → Type where
 
-        just : ∀ {qs : Vec Quantity n} {pm : Hexameter n} →
-
-          qs ~ pm
-          ─────────────────────
-          V.map just qs ~′ pm
-
         reify :
-
-          ∙ Subsumes mqs mqs′
-          ∙ mqs′ ~′ pm
-            ─────────────────
+          ∙ mqs -masks*- qs
+          ∙ mkLastLong (Hex>0 pm) qs ~ pm
+            ─────────────────────────────
             mqs ~′ pm
-
-      mkLastLong : Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
-      mkLastLong {n = 0} = id
-      mkLastLong {n = suc n} = V._[ lastIndex ]≔ just ─
-        where lastIndex : Fin (suc n)
-              lastIndex = F.fromℕ n
-
-      data _~″_ : Vec (Maybe Quantity) n → Hexameter n → Type where
-        [1184] :
-          mkLastLong mqs ~′ pm
-          ────────────────────
-          mqs ~″ pm
 
 CircumflexPenult : Pred₀ (Word (suc (suc n)))
 CircumflexPenult (word w)
