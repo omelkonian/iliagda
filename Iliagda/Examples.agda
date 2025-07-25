@@ -1,5 +1,4 @@
 -- {-# OPTIONS --allow-unsolved-metas #-}
--- ** analysis of actual Iliad verses
 module Iliagda.Examples where
 
 open import Iliagda.Init
@@ -24,11 +23,10 @@ _ = dactyl []
 -- _ = reify (tt ∷ tt ∷ refl ∷ []) $ base (dactyl base)
 
 μῆνιν : word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ~ (just ─ ∷ just · ∷ [])
-μῆνιν = fromBelow $′
-  [1160] {sys = []} {mqs = []} h auto contradict
+μῆνιν = base ⋯
   where
-    h : ([ μ ⨾ ῆ ] ∷ [ ν ⨾ ι ⨾ ν ] ∷ []) ~ (just ─ ∷ nothing ∷ [])
-    h = auto
+    ⋯ : ([ μ ⨾ ῆ ] ∷ [ ν ⨾ ι ⨾ ν ] ∷ []) ~ (just ─ ∷ nothing ∷ [])
+    ⋯ = auto
 
 -- *μῆνιν-ἄ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ἄ ] ] ∷ [])
 --           ~ mkPM [ -, -, ─·· ]
@@ -39,15 +37,15 @@ _ = dactyl []
 --     [1169] : (just ─ ∷ just · ∷ nothing ∷ []) ~ mkPM [ -, -, ─·· ]
 --     [1169] = reify (refl ∷ refl ∷ tt ∷ []) $ base (dactyl base)
 
-*μῆνιν-ῆ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ῆ ] ] ∷ [])
-          ≁ (just ─ ∷ just ─ ∷ just ─ ∷ [])
-*μῆνιν-ῆ = λ where
-  (base _ (_ ∷ long ─ι ∷ _) ∷ _) → contradict ─ι
-  (_∷_ {mqs = _ ∷ _ ∷ []} ⦃ () ⦄ (fromBelow ([1160] ⦃ refl ⦄ ⦃ refl ⦄ _ _ _)) _)
+-- *μῆνιν-ῆ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ῆ ] ] ∷ [])
+--           ≁ (just ─ ∷ just ─ ∷ just ─ ∷ [])
+-- *μῆνιν-ῆ = λ where
+--   (base _ (_ ∷ long ─ι ∷ _) ∷ _) → contradict ─ι
+--   (_∷_ {mqs = _ ∷ _ ∷ []} ⦃ () ⦄ (fromBelow ([1160] ⦃ refl ⦄ ⦃ refl ⦄ _ _ _)) _)
 
 ἄειδε : word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
       ~ (nothing ∷ just ─ ∷ just · ∷ [])
-ἄειδε = base (¬[1160] contradict) auto
+ἄειδε = base auto
 
 μῆνιν-ἄειδε :
   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
@@ -59,7 +57,7 @@ _ = dactyl []
 
 *θε : word [ [ θ ⨾ ε ] ]
     ~ V.[ just · ]
-*θε = base (λ ()) auto
+*θε = base auto
 
 -- *μῆνιν-ἄειδε-θε :
 --   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
@@ -73,11 +71,11 @@ _ = dactyl []
 
 θεὰ : word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
     ~ (just · ∷ nothing ∷ [])
-θεὰ = base (¬[1160] contradict) auto
+θεὰ = base auto
 
 *Πη : word [ [ Π ⨾ η ] ]
     ~ (just ─ ∷ [])
-*Πη = base (λ ()) auto
+*Πη = base auto
 
 -- *μῆνιν-ἄειδε-θεὰ-Πη :
 --   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
@@ -92,7 +90,7 @@ _ = dactyl []
 
 *Πηƛηϊά : word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ]
         ~ (just ─ ∷ just ─ ∷ nothing ∷ nothing ∷ [])
-*Πηƛηϊά = base (¬[1160] contradict) auto
+*Πηƛηϊά = base auto
 
 -- *μῆνιν-ἄειδε-θεὰ-Πηƛηϊά :
 --   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
@@ -111,13 +109,15 @@ _ = dactyl []
 
 Πηƛηϊάδεω : word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ⨾ [ δ ⨾ ε ] ⨾ [ ω ] ]
           ~ (just ─ ∷ just ─ ∷ nothing ∷ nothing ∷ just · ∷ just ─ ∷ [])
-Πηƛηϊάδεω = base (¬[1160] contradict) auto
+Πηƛηϊάδεω = base auto
 
 Ἀχιλῆος : word [ [ Ἀ ] ⨾ [ χ ⨾ ι ] ⨾ [ ƛ ⨾ ῆ ] ⨾ [ ο ⨾ ς ] ]
         ~ (nothing ∷ nothing ∷ just ─ ∷ just · ∷ [])
-Ἀχιλῆος = fromBelow $′
-  [1160] {mq = just ─} {mq′ = just ·} auto auto contradict
-  -- TODO: decision procedure to avoid giving mq/mq′
+Ἀχιλῆος = base ⋯
+  where
+  ⋯ : ([ Ἀ ] ∷ [ χ ⨾ ι ] ∷ [ ƛ ⨾ ῆ ] ∷ [ ο ⨾ ς ] ∷ [])
+    ~ (nothing ∷ nothing ∷ just ─ ∷ just · ∷ [])
+  ⋯ = auto
 
 _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος :
   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
@@ -167,10 +167,11 @@ _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος = μῆνι
   ∷ [])
 μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος =
   [586] *syn _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος
-    {!!}
-    (reify {qs = ─ ∷ · ∷ · ∷ ─ ∷ · ∷ · ∷ ─ ∷ ─ ∷ ─ ∷ · ∷ · ∷ ─ ∷ · ∷ · ∷ ─ ∷ · ∷ []}
-           auto
-           $′ dactyl $′ dactyl $′ sponde $′ dactyl $′ dactyl $′ sponde [])
+    auto
+    auto
+    -- (reify {qs = ─ ∷ · ∷ · ∷ ─ ∷ · ∷ · ∷ ─ ∷ ─ ∷ ─ ∷ · ∷ · ∷ ─ ∷ · ∷ · ∷ ─ ∷ · ∷ []}
+    --        auto
+    --        $′ dactyl $′ dactyl $′ sponde $′ dactyl $′ dactyl $′ sponde [])
 
 
 {-  foot [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ⨾ [ ἄ ] ]     -- (-, -, ─··)

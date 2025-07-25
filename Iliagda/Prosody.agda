@@ -112,6 +112,21 @@ record _-compliesWith-_ (A B : Type) : Type₁ where
   field _~_ : A → B → Type
   _≁_ : A → B → Type
   _≁_ = ¬_ ∘₂ _~_
+
+  NonDerivable NonDerivable∃ : A → Type
+  NonDerivable  a = ∀ b → a ≁ b
+  NonDerivable∃ a = ¬ ∃ λ b → a ~ b
+
+  NonDerivable′ NonDerivable∃′ : B → Type
+  NonDerivable′  b = ∀ a → a ≁ b
+  NonDerivable∃′ b = ¬ ∃ λ a → a ~ b
+
+  NonDerivable∃⇒ : ∀ {a} → NonDerivable∃ a → NonDerivable a
+  NonDerivable∃⇒ ∄b b a~b = ∄b (b , a~b)
+
+  NonDerivable∃′⇒ : ∀ {b} → NonDerivable∃′ b → NonDerivable′ b
+  NonDerivable∃′⇒ ∄a a a~b = ∄a (a , a~b)
+
 open _-compliesWith-_ ⦃ ... ⦄ public
 
 instance
@@ -147,26 +162,27 @@ instance
   Complies-Sys-MQs : Vec Syllable n -compliesWith- Vec (Maybe Quantity) n
   Complies-Sys-MQs ._~_ = VPointwise _~_
 
+data _ˢ~ᵐ_ : Vec Quantity n → Meter n m → Type where
+
+  [] :
+    ─────────────
+    [] ˢ~ᵐ mkPM []
+
+  sponde :
+
+    qs ˢ~ᵐ pm
+    ───────────────────────────
+    (─ ∷ ─ ∷ qs) ˢ~ᵐ (── ∷ᵖᵐ pm)
+
+  dactyl :
+
+    qs ˢ~ᵐ pm
+    ────────────────────────────────
+    (─ ∷ · ∷ · ∷ qs) ˢ~ᵐ (─·· ∷ᵖᵐ pm)
+
+instance
   Complies-Qs-PM : Vec Quantity n -compliesWith- Meter n m
-  Complies-Qs-PM ._~_ = _~′_
-    module ∣Complies-Qs-PM∣ where
-      data _~′_ : Vec Quantity n → Meter n m → Type where
-
-        [] :
-          ─────────────
-          [] ~′ mkPM []
-
-        sponde :
-
-          qs ~′ pm
-          ───────────────────────────
-          (─ ∷ ─ ∷ qs) ~′ (── ∷ᵖᵐ pm)
-
-        dactyl :
-
-          qs ~′ pm
-          ────────────────────────────────
-          (─ ∷ · ∷ · ∷ qs) ~′ (─·· ∷ᵖᵐ pm)
+  Complies-Qs-PM ._~_ = _ˢ~ᵐ_
 
   Complies-MQs-PM : Vec (Maybe Quantity) n -compliesWith- Hexameter n
   Complies-MQs-PM ._~_ = _~′_
@@ -175,7 +191,8 @@ instance
       -- (1184)
       -- The last syllable of a verse is considered long (due to pause).
       mkLastLong : n > 0 → Vec Quantity n → Vec Quantity n
-      mkLastLong {n = suc _} _ = V._[ F.fromℕ _ ]≔ ─
+      mkLastLong {n = suc n} _ = V._[ ultIndex ]≔ ─
+        where ultIndex = F.fromℕ n
 
       data _~′_ : Vec (Maybe Quantity) n → Hexameter n → Type where
 
@@ -185,17 +202,46 @@ instance
             ─────────────────────────────
             mqs ~′ pm
 
-CircumflexPenult : Pred₀ (Word (suc (suc n)))
+CircumflexPenult : Pred₀ (Word (2 + n))
 CircumflexPenult (word w)
   with _ ∷ penult ∷ _ ← V.reverse w
   = Any HasCircumflex penult
+
+circumflexPenult? : (w : Word (2 + n)) → Dec (CircumflexPenult w)
+circumflexPenult? (word w)
+  with _ ∷ penult ∷ _ ← V.reverse w
+  = dec
 
 instance
   Complies-W-MQs : Word n -compliesWith- Vec (Maybe Quantity) n
   Complies-W-MQs ._~_ = _~′_
     module ∣Complies-W-MQs∣ where
+      -- (1160)
+      -- The vowel of the ultima in every circumflex on the penult is short.
+      mkShortUltima : n > 1 → Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
+      mkShortUltima {n = suc n@(suc _)} (s≤s (s≤s _)) = V._[ lastIndex ]≔ just ·
+        where lastIndex = F.fromℕ n
 
-      -- NB: replace with intrinsic function call graph (constructor C₁ ⋯ Cₙ).
+      [1160] : Word n → Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
+      [1160] {n} w
+        with ¿ n > 1 ¿
+      ... | no _ = id
+      ... | yes n>1@(s≤s (s≤s _)) =
+        if ⌊ circumflexPenult? w ⌋ then
+        -- NB: should we also require that the ultima be a *doubtful vowel*?
+          mkShortUltima n>1
+        else
+          id
+
+      data _~′_ (w : Word n) : Vec (Maybe Quantity) n → Type where
+
+        base : ∀ {mqs} →
+
+          unword w ~ mqs
+          ─────────────────
+          w ~′ [1160] w mqs
+
+{-
       data _~↓_ : Word n → Vec (Maybe Quantity) n → Type where
 
         [1160] : ∀ {sys₀ : Vec Syllable (suc (suc n))}
@@ -218,9 +264,9 @@ instance
 
         base : ∀ {w : Word n} {mqs : Vec (Maybe Quantity) n} →
 
-          ∙ ¬ w ~↓ mqs -- change to ∀ mqs′ → w ≁↓ mqs′
+          ∙ (∀ mqs′ → ¬ w ~↓ mqs′) -- (1160) does not apply
           ∙ unword w ~ mqs
-            ───────────────
+            ──────────────────────
             w ~′ mqs
 
         fromBelow :
@@ -228,6 +274,7 @@ instance
           w ~↓ mqs
           ────────
           w ~′ mqs
+-}
 
   Complies-Ws-MQs : Words n -compliesWith- Vec (Maybe Quantity) n
   Complies-Ws-MQs ._~_ = _~′_
@@ -278,14 +325,12 @@ instance
                   {sys′ : Vec Syllable n′} {pm : Hexameter n′} →
           ∀ (syn : unwords ws -synizizes*- sys′) →
           ∙ ws ~ mqs
-          ∙ (∀ (pm : Hexameter n) → mqs ≁ pm)
+          ∙ NonDerivable mqs
           ∙ synizize syn mqs ~ pm -- TODO: accept only minimal synizeses
-            ──────────────────────────────────────────────────────────
+            ─────────────────────
             ws ~↑′ pm
 
 open ∣Complies-Sy-MQ∣ public
-  hiding (_~′_)
-open ∣Complies-Qs-PM∣ public
   hiding (_~′_)
 open ∣Complies-MQs-PM∣ public
   hiding (_~′_)

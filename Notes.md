@@ -12,8 +12,14 @@ There's a connection between proving decidability of our rules and defeasible lo
 Is there a connection between our "Maybe Quantity" (ambiguous roles) with 3-valued logic?
 
 
+# CONTRIBUTIONS
 
-
+- Type-checked prosody rules
+-
+- Deciding derivability
+  ⇒ proof-by-computation for automatic closed-term proving
+- Deciding non-derivability
+  ⇒ provably the most "unmetrical" lyric of Homer :)
 
 
 # BIBLIOGRAPHY

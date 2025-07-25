@@ -19,6 +19,12 @@ Feet = List ∃∃Foot
 data Meter : ℕ {- syllables -} → ℕ {- feet -} → Type where
   mkPM : (fs : Feet) → Meter (∑₁ fs) (length fs)
 
+-- record Meter (n : ℕ {- syllables -}) (m : ℕ {- feet -}) : Type where
+--   field
+--     fs : Feet
+--     syllables : n ≡ ∑₁ feet
+--     feet      : m ≡ length fs
+
 Hexameter : ℕ {- syllables -} → Type
 Hexameter n = Meter n 6
 
@@ -26,7 +32,8 @@ unmkPM : Meter n m → Feet
 unmkPM (mkPM fs) = fs
 
 ∑₁≡0 : ∀ {P : Pred₀ ℕ} {ps : List (∃ P)} →
-  ∑₁ ps ≡ 0 → All ((_≡ 0) ∘ proj₁) ps
+  ∑₁ ps ≡ 0 →
+  All ((_≡ 0) ∘ proj₁) ps
 ∑₁≡0 {ps = []} _ = []
 ∑₁≡0 {ps = _ ∷ _} eq = Nat.m+n≡0⇒m≡0 _ eq ∷ ∑₁≡0 (Nat.m+n≡0⇒n≡0 _ eq)
 
@@ -35,6 +42,37 @@ Meter-sum≡ (mkPM _) = refl
 
 Meter-length≡ : (meter : Meter n m) → m ≡ length (unmkPM meter)
 Meter-length≡ (mkPM _) = refl
+
+Foot≢0 : ∀ {qs} → ¬ Foot 0 qs
+Foot≢0 ()
+
+emptyFeet′ : (fs : Feet) → All ((_≡ 0) ∘ proj₁) fs → fs ≡ []
+emptyFeet′ [] [] = refl
+emptyFeet′ ((.0 , _ , f) ∷ _) (refl ∷ _) = ⊥-elim $ Foot≢0 f
+
+emptyFeet : (fs : Feet) → ∑₁ fs ≡ 0 → fs ≡ []
+emptyFeet fs sum0 = emptyFeet′ fs (∑₁≡0 sum0)
+
+IsEmptyMeter : Pred₀ (Meter n m)
+IsEmptyMeter (mkPM fs) = fs ≡ []
+
+IsEmptyMeter⇒≡0 : (pm : Meter n m) → IsEmptyMeter pm → n ≡ 0 × m ≡ 0
+IsEmptyMeter⇒≡0 (mkPM .[]) refl = refl , refl
+
+emptyMeter-n′ : (pm : Meter n m) → n ≡ 0 → IsEmptyMeter pm
+emptyMeter-n′ (mkPM fs) = emptyFeet fs
+
+emptyMeter-m′ : (pm : Meter n m) → m ≡ 0 → IsEmptyMeter pm
+emptyMeter-m′ (mkPM []) refl = refl
+
+emptyMeter-n : (pm : Meter 0 m) → IsEmptyMeter pm
+emptyMeter-n = flip emptyMeter-n′ refl
+
+emptyMeter-m : (pm : Meter n 0) → IsEmptyMeter pm
+emptyMeter-m = flip emptyMeter-m′ refl
+
+emptyMeter : (pm : Meter 0 0) → IsEmptyMeter pm
+emptyMeter = flip emptyMeter-n′ refl
 
 Hex≢0 : ¬ Hexameter 0
 Hex≢0 hm
