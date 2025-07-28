@@ -1,10 +1,38 @@
 -- ** decision procedures
+{-# OPTIONS --safe #-}
 module Iliagda.Dec where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
+open import Iliagda.Dec.Core
+open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody
+
+-- ** synezesis
+instance
+  Dec-syn : (sys -synizizes*- sys′) ⁇
+  Dec-syn {sys = []} {sys′ = []} .dec = yes []
+  Dec-syn {sys = []} {sys′ = _ ∷ _} .dec = no λ ()
+  Dec-syn {sys = _ ∷ _} {sys′ = []} .dec = no λ ()
+  Dec-syn {sys = sy ∷ sys} {sys′ = sy′ ∷ sys′} .dec
+    with sy ≟ sy′
+  ... | yes refl
+    =  mapDec (_ ∷_) uncons ¿ sys -synizizes*- sys′ ¿
+  ... | no sy≢
+    with sys
+  ... | []
+    = no λ where (_ ∷ _) → ⊥-elim $ sy≢ refl
+  ... | sy↓ ∷ sys
+    = mapDec
+      (λ (lv , syn , eq) → (lv ∺ syn) ⦃ eq ⦄)
+      (λ where ((lv ∺ syn) ⦃ eq ⦄) → lv , syn , eq
+               (_ ∷ _) → ⊥-elim $ sy≢ refl)
+       ¿ (LastVowel sy × FirstVowel sy↓)
+       × (sys -synizizes*- sys′)
+       × (sy′ ≡ sy ⁀ sy↓)
+       ¿
+
 
 -- ** VPointwise
 instance
@@ -75,14 +103,14 @@ norm∃Foot : ∃∃Foot → 𝔑
 norm∃Foot (_ , qs , _) = normQuantities qs
 
 normMeter : Meter n m → 𝔑
-normMeter (mkPM fs) = concatMap norm∃Foot fs
+normMeter (mkPM fs) = L.concatMap norm∃Foot fs
 
 normMeter≡ : (pm : Meter n m) → length (normMeter pm) ≡ n
 normMeter≡ (mkPM []) = refl
 normMeter≡ (mkPM ((n , qs , f) ∷ fs)) =
   let open ≡-Reasoning in
   begin
-    length (concatMap norm∃Foot ((n , qs , f) ∷ fs))
+    length (L.concatMap norm∃Foot ((n , qs , f) ∷ fs))
   ≡⟨⟩
     length (V.toList qs ++ concatMap norm∃Foot fs)
   ≡⟨ L.length-++ (V.toList qs) ⟩
@@ -379,7 +407,7 @@ instance
 
 onlyHexameters :
   List (∃ $ Meter n) → List (Hexameter n)
-onlyHexameters = mapMaybe onlyHexameter
+onlyHexameters = L.mapMaybe onlyHexameter
   module _ where
   onlyHexameter : ∃ (Meter n) → Maybe (Meter n 6)
   onlyHexameter (m , pm) with m ≟ 6

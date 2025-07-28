@@ -1,4 +1,4 @@
--- {-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --safe #-}
 module Iliagda.Examples where
 
 open import Iliagda.Init

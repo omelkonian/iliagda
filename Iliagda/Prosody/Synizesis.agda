@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Synizesis where
 
 open import Iliagda.Init
@@ -9,7 +10,7 @@ FirstVowel LastVowel : Pred₀ Syllable
 FirstVowel = Vowel ∘ head
 LastVowel  = Vowel ∘ last
 
-_⁀_ : Op₂ Syllable
+_⁀_ : Syllable → Syllable → Syllable
 _⁀_ = L.NE._⁺++⁺_
 
 data _-synizizes*-_ : Vec Syllable n → Vec Syllable n′ → Type
@@ -62,29 +63,6 @@ uncons {sys = []} (_ ∷ []) = []
 uncons {sys = _ ∷ _} ((_ ∺ _) ⦃ eq ⦄) = ⊥-elim $ ⁀-irrefl eq
 uncons {sys = _ ∷ _} {sys′ = _ ∷ _} (_ ∷ syn) = syn
 
-instance
-  Dec-syn : (sys -synizizes*- sys′) ⁇
-  Dec-syn {sys = []} {sys′ = []} .dec = yes []
-  Dec-syn {sys = []} {sys′ = _ ∷ _} .dec = no λ ()
-  Dec-syn {sys = _ ∷ _} {sys′ = []} .dec = no λ ()
-  Dec-syn {sys = sy ∷ sys} {sys′ = sy′ ∷ sys′} .dec
-    with sy ≟ sy′
-  ... | yes refl
-    =  mapDec (_ ∷_) uncons ¿ sys -synizizes*- sys′ ¿
-  ... | no sy≢
-    with sys
-  ... | []
-    = no λ where (_ ∷ _) → ⊥-elim $ sy≢ refl
-  ... | sy↓ ∷ sys
-    = mapDec
-      (λ (lv , syn , eq) → (lv ∺ syn) ⦃ eq ⦄)
-      (λ where ((lv ∺ syn) ⦃ eq ⦄) → lv , syn , eq
-               (_ ∷ _) → ⊥-elim $ sy≢ refl)
-       ¿ (LastVowel sy × FirstVowel sy↓)
-       × (sys -synizizes*- sys′)
-       × (sy′ ≡ sy ⁀ sy↓)
-       ¿
-
 syn-refl : sys ~ sys
 syn-refl {sys = []} = []
 syn-refl {sys = _ ∷ sys} = _ ∷ syn-refl {sys = sys}
@@ -92,19 +70,6 @@ syn-refl {sys = _ ∷ sys} = _ ∷ syn-refl {sys = sys}
 syn-++ˡ : sys ~ sys′ → (sys″ V.++ sys) -synizizes*- (sys″ V.++ sys′)
 syn-++ˡ {sys″ = []} = id
 syn-++ˡ {sys″ = _ ∷ sys″} = (_ ∷_) ∘ syn-++ˡ {sys″ = sys″}
-
-postulate
-  syn-++ʳ : sys ~ sys′ → (sys V.++ sys″) -synizizes*- (sys′ V.++ sys″)
--- private
---   cast : .(eq : m ≡ n) → Vec A m → Vec A n
---   cast {n = zero}  eq []       = []
---   cast {n = suc _} eq (x ∷ xs) = x ∷ cast (cong Nat.pred eq) xs
-
---   ++-identityʳ : ∀ .(eq : n + zero ≡ n) (xs : Vec A n) → cast eq (xs V.++ []) ≡ xs
---   ++-identityʳ eq []       = refl
---   ++-identityʳ eq (x ∷ xs) = cong (x ∷_) (++-identityʳ (cong Nat.pred eq) xs)
--- syn-++ʳ {sys = sys} {sys″ = []} rewrite ++-identityʳ (Nat.+-identityʳ _) sys = {!!}
--- syn-++ʳ {sys″ = x ∷ sys″} = {!!}
 
 open import Iliagda.Prosody.Core
 

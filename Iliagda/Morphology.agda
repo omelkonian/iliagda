@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Morphology where
 
 open import Iliagda.Init
@@ -15,7 +16,6 @@ data Letter : Type where
   -- consonants
   γ δ θ κ ƛ μ ν Π ρ ς χ : Letter
 -- Letter = Vowel ⊎ Consonant
-unquoteDecl DecEq-Letter = DERIVE DecEq [ quote Letter , DecEq-Letter ]
 
 Vowel Consonant : Pred₀ Letter
 Vowel = _∈
@@ -33,7 +33,6 @@ Consonant = _∈ [ γ ⨾ δ ⨾ θ ⨾ κ ⨾ ƛ ⨾ μ ⨾ ν ⨾ Π ⨾ ρ �
 
 -- NB: loose definition of a syllable for now
 -- TODO? proper inductive definition of words/syllables
--- Syllable = List Letter
 Syllable = List⁺ Letter
 
 data Word : ℕ {- syllables -} → Type where

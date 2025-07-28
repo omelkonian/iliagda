@@ -1,8 +1,10 @@
+{-# OPTIONS --safe --large-indices --no-forced-argument-recursion #-}
 module Iliagda.Prosody where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
+open import Iliagda.Dec.Core
 
 -- (519)
 ─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
@@ -11,9 +13,6 @@ open import Iliagda.Prosody.Core
 -- Doubtful = _∈ [ ἄ ⨾ ὰ ⨾ ά ⨾ Ἀ ⨾ ι ⨾ ϊ ⨾ ί ⨾ υ ] -- (n)either long or short
 Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
 HasCircumflex = _∈ [ ῆ ]
-
-HasCircumflex⇒─Vowel : HasCircumflex ⊆₁ ─Vowel
-HasCircumflex⇒─Vowel (here refl) = auto
 
 -- (518)
 DoubleConsonant : Pred₀ Letter
@@ -41,16 +40,6 @@ DoubleVowel (v , v′) = Vowel v × Vowel v′
 
 VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
 VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
-
--- TODO: generalize?
-Any× : Pred₀ (X × X) → Pred₀ (List⁺ X)
-Any× P = Any P ∘ pairs ∘ toList
-
-triples : List X → List (X × X × X)
-triples = map (map₁ proj₁) ∘ pairs ∘ pairs
-
-Any×₃ : Pred₀ (X × X × X) → Pred₀ (List⁺ X)
-Any×₃ P = Any P ∘ triples ∘ toList
 
 -- (522)
 ─Syllable : Pred₀ Syllable
@@ -83,11 +72,6 @@ private
 
   _ : ·Syllable [ η ⨾ ε ]
   _ = auto
-
--- _≤ᵐ_ : Rel₀ (Maybe X)
--- _≤ᵐ_ = λ where
---   nothing  (just _) → ⊤
---   x        y        → x ≡ y
 
 private variable x : X; mx : Maybe X
 
@@ -192,7 +176,7 @@ instance
       -- The last syllable of a verse is considered long (due to pause).
       mkLastLong : n > 0 → Vec Quantity n → Vec Quantity n
       mkLastLong {n = suc n} _ = V._[ ultIndex ]≔ ─
-        where ultIndex = F.fromℕ n
+        where ultIndex = Fi.fromℕ n
 
       data _~′_ : Vec (Maybe Quantity) n → Hexameter n → Type where
 
@@ -220,7 +204,7 @@ instance
       -- The vowel of the ultima in every circumflex on the penult is short.
       mkShortUltima : n > 1 → Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
       mkShortUltima {n = suc n@(suc _)} (s≤s (s≤s _)) = V._[ lastIndex ]≔ just ·
-        where lastIndex = F.fromℕ n
+        where lastIndex = Fi.fromℕ n
 
       [1160] : Word n → Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
       [1160] {n} w

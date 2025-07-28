@@ -1,5 +1,6 @@
 name: iliagda
 depend:
   standard-library
-  formal-prelude
+  standard-library-classes
+  standard-library-meta
 include: .

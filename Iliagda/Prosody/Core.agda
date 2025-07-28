@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Core where
 
 open import Iliagda.Init
@@ -6,24 +7,16 @@ open import Iliagda.Morphology
 data Quantity : Type where
   · {- short -} : Quantity
   ─ {- long  -} : Quantity
-unquoteDecl DecEq-Quantity = DERIVE DecEq [ quote Quantity , DecEq-Quantity ]
 
 data Foot : (n : ℕ) {- syllables -} → Vec Quantity n → Type where
   ─·· {- dactyl -} : Foot 3 (─ ∷ · ∷ · ∷ [])
   ──  {- sponde -} : Foot 2 (─ ∷ ─ ∷ [])
-unquoteDecl DecEq-Foot = DERIVE DecEq [ quote Foot , DecEq-Foot ]
 ∃∃Foot = ∃ (∃ ∘ Foot)
 
 Feet = List ∃∃Foot
 
 data Meter : ℕ {- syllables -} → ℕ {- feet -} → Type where
   mkPM : (fs : Feet) → Meter (∑₁ fs) (length fs)
-
--- record Meter (n : ℕ {- syllables -}) (m : ℕ {- feet -}) : Type where
---   field
---     fs : Feet
---     syllables : n ≡ ∑₁ feet
---     feet      : m ≡ length fs
 
 Hexameter : ℕ {- syllables -} → Type
 Hexameter n = Meter n 6
