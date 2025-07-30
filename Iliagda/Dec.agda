@@ -1,5 +1,5 @@
 -- ** decision procedures
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
 module Iliagda.Dec where
 
 open import Iliagda.Init
@@ -55,9 +55,9 @@ _ = auto
 
 -- ** Complies-with
 instance
-  Dec-Complies-Sy-MQ : _~_ {A = Syllable} {B = Maybe Quantity} ⁇²
-  Dec-Complies-Sy-MQ {x = sy}{mq} .dec
-    with ¿ ─Syllable sy ¿ | ¿ ·Syllable sy ¿ | mq
+  Dec-Complies-Sy-MQ : _~_ {A = Syllable × Context} {B = Maybe Quantity} ⁇²
+  Dec-Complies-Sy-MQ {x = sy , ctx}{mq} .dec
+    with ¿ ─Syllable ctx sy ¿ | ¿ ·Syllable ctx sy ¿ | mq
   ... | yes ─sy | _ | just ─
     = yes $ long ─sy
   ... | _ | yes ·sy | just ·
@@ -73,7 +73,7 @@ instance
   ... | _ | yes ·sy | nothing
     = no λ where (ambiguous _ ¬·sy) → ¬·sy ·sy
 
-_ : _~_ {A = Vec Syllable n} {B = Vec (Maybe Quantity) n} ⁇²
+_ : _~_ {A = Vec Syllable n × Context} {B = Vec (Maybe Quantity) n} ⁇²
 _ = it
 
 --
@@ -330,14 +330,6 @@ record {A B : Type} (R : A → B → Type)
     complete : ∀ {a b} → R a b → b ∈ allRel a
 -}
 
-satisfied′ : ∀ {A : Type} {P : A → Type} {xs : List A}
-  → Any P xs
-  → ∃ λ x → x ∈ xs × P x
-satisfied′ = λ where
-  (here px)   → -, here refl , px
-  (there pxs) → let x , x∈ , px = satisfied′ pxs
-                in  x , there x∈ , px
-
 allMasks :
   (mqs : Vec (Maybe Quantity) n) →
   ∃ λ (qss : List (Vec Quantity n)) →
@@ -470,3 +462,12 @@ instance
     with nonDerivableM? mqs
   ... | yes ∄pm = yes λ pm pm~ → ∄pm (pm , pm~)
   ... | no  ∃pm = no λ pm≁ → ∃pm (uncurry pm≁)
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}

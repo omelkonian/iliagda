@@ -21,9 +21,13 @@ Is there a connection between our "Maybe Quantity" (ambiguous roles) with 3-valu
 - Deciding non-derivability
   ⇒ provably the most "unmetrical" lyric of Homer :)
 
-
 # BIBLIOGRAPHY
 
+
+# TODO
+
+- Decidability: higher in the relation tower
+- Syllabification
 
 # DUMP
 

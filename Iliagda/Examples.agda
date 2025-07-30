@@ -1,4 +1,4 @@
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
 module Iliagda.Examples where
 
 open import Iliagda.Init
@@ -8,118 +8,29 @@ open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody
 open import Iliagda.Dec
 
--- ** Verse I: μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος
-
 _ : [ ─ ⨾ · ⨾ · ] ~ mkPM [ -, -, ─·· ]
 _ = dactyl []
 
--- _ : (just ─ ∷ just · ∷ just · ∷ []) ~ mkPM [ -, -, ─·· ]
--- _ = base (dactyl base)
+-- ** Verse I: μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος
 
--- _ : (just ─ ∷ nothing ∷ just · ∷ []) ~ mkPM [ -, -, ─·· ]
--- _ = reify (refl ∷ tt ∷ refl ∷ []) $ base (dactyl base)
+μῆνιν : word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] , ∅ ~ [ just ─ ⨾ just · ]
+μῆνιν = base {mqs = [ just ─ ⨾ nothing ]} auto
 
--- _ : (nothing ∷ nothing ∷ just · ∷ []) ~ mkPM [ -, -, ─·· ]
--- _ = reify (tt ∷ tt ∷ refl ∷ []) $ base (dactyl base)
-
-μῆνιν : word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ~ (just ─ ∷ just · ∷ [])
-μῆνιν = base ⋯
-  where
-    ⋯ : ([ μ ⨾ ῆ ] ∷ [ ν ⨾ ι ⨾ ν ] ∷ []) ~ (just ─ ∷ nothing ∷ [])
-    ⋯ = auto
-
--- *μῆνιν-ἄ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ἄ ] ] ∷ [])
---           ~ mkPM [ -, -, ─·· ]
--- *μῆνιν-ἄ = fromBelow $′
---   (μῆνιν ∷ base (λ ()) (ambiguous contradict contradict ∷ []) ∷ [])
---   ~∘~ [1169]
---   where
---     [1169] : (just ─ ∷ just · ∷ nothing ∷ []) ~ mkPM [ -, -, ─·· ]
---     [1169] = reify (refl ∷ refl ∷ tt ∷ []) $ base (dactyl base)
-
--- *μῆνιν-ῆ : (word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ] ∷ word [ [ ῆ ] ] ∷ [])
---           ≁ (just ─ ∷ just ─ ∷ just ─ ∷ [])
--- *μῆνιν-ῆ = λ where
---   (base _ (_ ∷ long ─ι ∷ _) ∷ _) → contradict ─ι
---   (_∷_ {mqs = _ ∷ _ ∷ []} ⦃ () ⦄ (fromBelow ([1160] ⦃ refl ⦄ ⦃ refl ⦄ _ _ _)) _)
-
-ἄειδε : word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
-      ~ (nothing ∷ just ─ ∷ just · ∷ [])
+ἄειδε : word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ] , [ θ ] ~ [ nothing ⨾ just ─ ⨾ just · ]
 ἄειδε = base auto
 
-μῆνιν-ἄειδε :
-  ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
-  ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
-  ∷ []) ~ ( just ─ ∷ just · ∷ nothing
-          ∷ just ─ ∷ just ·
-          ∷ [])
-μῆνιν-ἄειδε = μῆνιν ∷ ἄειδε ∷ []
-
-*θε : word [ [ θ ⨾ ε ] ]
-    ~ V.[ just · ]
-*θε = base auto
-
--- *μῆνιν-ἄειδε-θε :
---   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
---   ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
---   ∷ word [ [ θ ⨾ ε ] ]
---   ∷ []) ~ mkPM ((-, -, ─··) ∷ (-, -, ─··) ∷ [])
--- *μῆνιν-ἄειδε-θε = fromBelow $′
---   (μῆνιν ∷ ἄειδε ∷ *θε ∷ [])
---   ~∘~ reify (refl ∷ refl ∷ tt ∷ refl ∷ refl ∷ refl ∷ [])
---             (base $′ dactyl $′ dactyl base)
-
-θεὰ : word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
-    ~ (just · ∷ nothing ∷ [])
+θεὰ : word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ] , [ Π ]  ~ [ just · ⨾ nothing ]
 θεὰ = base auto
 
-*Πη : word [ [ Π ⨾ η ] ]
-    ~ (just ─ ∷ [])
-*Πη = base auto
-
--- *μῆνιν-ἄειδε-θεὰ-Πη :
---   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
---   ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
---   ∷ word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
---   ∷ word [ [ Π ⨾ η ] ]
---   ∷ []) ~ mkPM ((-, -, ─··) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ [])
--- *μῆνιν-ἄειδε-θεὰ-Πη = fromBelow $′
---   (μῆνιν ∷ ἄειδε ∷ θεὰ ∷ *Πη ∷ [])
---   ~∘~ reify (refl ∷ refl ∷ tt ∷ refl ∷ refl ∷ refl ∷ tt ∷ refl ∷ [])
---             (base $′ dactyl $′ dactyl $′ sponde base)
-
-*Πηƛηϊά : word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ]
-        ~ (just ─ ∷ just ─ ∷ nothing ∷ nothing ∷ [])
-*Πηƛηϊά = base auto
-
--- *μῆνιν-ἄειδε-θεὰ-Πηƛηϊά :
---   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
---   ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
---   ∷ word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
---   ∷ word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ]
---   ∷ []) ~ mkPM ((-, -, ─··) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ (-, -, ─··) ∷ [])
--- *μῆνιν-ἄειδε-θεὰ-Πηƛηϊά = fromBelow $′
---   (μῆνιν ∷ ἄειδε ∷ θεὰ ∷ *Πηƛηϊά ∷ [])
---   ~∘~ reify ( refl ∷ refl
---             ∷ tt ∷ refl ∷ refl
---             ∷ refl ∷ tt
---             ∷ refl ∷ refl ∷ tt ∷ tt
---             ∷ [])
---             (base $′ dactyl $′ dactyl $′ sponde $′ dactyl base)
-
-Πηƛηϊάδεω : word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ⨾ [ δ ⨾ ε ] ⨾ [ ω ] ]
-          ~ (just ─ ∷ just ─ ∷ nothing ∷ nothing ∷ just · ∷ just ─ ∷ [])
+Πηƛηϊάδεω : word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ⨾ [ δ ⨾ ε ] ⨾ [ ω ] ] , ∅
+          ~ [ just ─ ⨾ just ─ ⨾ nothing ⨾ nothing ⨾ just · ⨾ just ─ ]
 Πηƛηϊάδεω = base auto
 
-Ἀχιλῆος : word [ [ Ἀ ] ⨾ [ χ ⨾ ι ] ⨾ [ ƛ ⨾ ῆ ] ⨾ [ ο ⨾ ς ] ]
-        ~ (nothing ∷ nothing ∷ just ─ ∷ just · ∷ [])
-Ἀχιλῆος = base ⋯
-  where
-  ⋯ : ([ Ἀ ] ∷ [ χ ⨾ ι ] ∷ [ ƛ ⨾ ῆ ] ∷ [ ο ⨾ ς ] ∷ [])
-    ~ (nothing ∷ nothing ∷ just ─ ∷ just · ∷ [])
-  ⋯ = auto
+Ἀχιλῆος : word [ [ Ἀ ] ⨾ [ χ ⨾ ι ] ⨾ [ ƛ ⨾ ῆ ] ⨾ [ ο ⨾ ς ] ] , ∅
+        ~ [ nothing ⨾ nothing ⨾ just ─ ⨾ just · ]
+Ἀχιλῆος = base {mqs = [ nothing ⨾ nothing ⨾ just ─ ⨾ just · ]} auto
 
-_μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος :
+_v1 :
   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
   ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
   ∷ word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
@@ -132,7 +43,7 @@ _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος :
   ∷ just ─ ∷ just ─ ∷ nothing ∷ nothing ∷ just · ∷ just ─
   ∷ nothing ∷ nothing ∷ just ─ ∷ just ·
   ∷ [])
-_μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος = μῆνιν ∷ ἄειδε ∷ θεὰ ∷ Πηƛηϊάδεω ∷ Ἀχιλῆος ∷ []
+_v1 = μῆνιν ∷ ἄειδε ∷ θεὰ ∷ Πηƛηϊάδεω ∷ Ἀχιλῆος ∷ []
 
 *syn :
   ( [ μ ⨾ ῆ ] ∷ [ ν ⨾ ι ⨾ ν ]
@@ -150,7 +61,7 @@ _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος = μῆνι
   ∷ [] )
 *syn = auto
 
-μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος :
+v1 :
   ( word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
   ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
   ∷ word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
@@ -165,15 +76,6 @@ _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος = μῆνι
   ∷ (-, -, ─··)
   ∷ (-, -, ──)
   ∷ [])
-μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος =
-  [586] *syn _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος
-    auto
-    auto
-    -- (reify {qs = ─ ∷ · ∷ · ∷ ─ ∷ · ∷ · ∷ ─ ∷ ─ ∷ ─ ∷ · ∷ · ∷ ─ ∷ · ∷ · ∷ ─ ∷ · ∷ []}
-    --        auto
-    --        $′ dactyl $′ dactyl $′ sponde $′ dactyl $′ dactyl $′ sponde [])
-
-
 {-  foot [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ⨾ [ ἄ ] ]     -- (-, -, ─··)
   ∷ foot [ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ⨾ [ θ ⨾ ε ] ]     -- (-, -, ─··)
   ∷ foot [ [ ὰ ] ⨾ [ Π ⨾ η ] ]                     -- (-, -, ──)
@@ -182,31 +84,31 @@ _μῆνιν-ἄειδε-θεὰ-Πηƛηϊάδεω-Ἀχιλῆος = μῆνι
   ∷ foot [ [ ƛ ⨾ ῆ ] ⨾ [ ο ⨾ ς ] ]                 -- (-, -, ──)
   ∷ []
 -}
+v1 = [586] *syn _v1 auto auto
 
-{-
 -- ** Verse II: οὐλομένην, ἣ μυρί᾽ Ἀχαιοῖς ἄλγε᾽ ἔθηκε,
 
-οὐλομένην : word [ [ ο ⨾ ὐ ] ⨾ [ ƛ ⨾ ο ] ⨾ [ μ ⨾ έ ] ⨾ [ ν ⨾ η ⨾ ν ] ]
+οὐλομένην : word [ [ ο ⨾ ὐ ] ⨾ [ ƛ ⨾ ο ] ⨾ [ μ ⨾ έ ] ⨾ [ ν ⨾ η ⨾ ν ] ] , ∅
           ~ [ just ─ ⨾ just · ⨾ just · ⨾ just ─ ]
-οὐλομένην = base (¬[1160] contradict) auto
+οὐλομένην = base auto
 
-_ἣ : word [ [ ἣ ] ] ~ [ just ─ ]
-_ἣ = base (λ ()) auto
+_ἣ : word [ [ ἣ ] ] , [ μ ] ~ [ just ─ ]
+_ἣ = base auto
 
-μυρί : word [ [ μ ⨾ υ ] ⨾ [ ρ ⨾ ί ] ] ~ [ nothing ⨾ nothing ]
-μυρί = base (¬[1160] contradict) auto
+μυρί : word [ [ μ ⨾ υ ] ⨾ [ ρ ⨾ ί ] ] , ∅ ~ [ nothing ⨾ nothing ]
+μυρί = base auto
 
-Ἀχαιοῖς : word [ [ Ἀ ] ⨾ [ χ ⨾ α ⨾ ι ] ⨾ [ ο ⨾ ῖ ⨾ ς ] ]
+Ἀχαιοῖς : word [ [ Ἀ ] ⨾ [ χ ⨾ α ⨾ ι ] ⨾ [ ο ⨾ ῖ ⨾ ς ] ] , ∅
         ~ [ nothing ⨾ just ─ ⨾ just ─ ]
-Ἀχαιοῖς = base (¬[1160] contradict) auto
+Ἀχαιοῖς = base auto
 
-ἄλγε᾽ : word [ [ ἄ ⨾ ƛ ] ⨾ [ γ ⨾ ε ] ] ~ [ nothing ⨾ just · ]
-ἄλγε᾽ = base (¬[1160] contradict) auto
+ἄλγε᾽ : word [ [ ἄ ⨾ ƛ ] ⨾ [ γ ⨾ ε ] ] , ∅ ~ [ just ─ ⨾ just · ]
+ἄλγε᾽ = base auto
 
-ἔθηκε : word [ [ ἔ ] ⨾ [ θ ⨾ η ] ⨾ [ κ ⨾ ε ] ] ~ [ just · ⨾ just ─ ⨾ just · ]
-ἔθηκε = base (¬[1160] contradict) auto
+ἔθηκε : word [ [ ἔ ] ⨾ [ θ ⨾ η ] ⨾ [ κ ⨾ ε ] ] , ∅ ~ [ just · ⨾ just ─ ⨾ just · ]
+ἔθηκε = base auto
 
-οὐλομένην-ἣ-μυρί᾽-Ἀχαιοῖς-ἄλγε᾽-ἔθηκε :
+v2 :
   ( word [ [ ο ⨾ ὐ ] ⨾ [ ƛ ⨾ ο ] ⨾ [ μ ⨾ έ ] ⨾ [ ν ⨾ η ⨾ ν ] ]
   ∷ word [ [ ἣ ] ]
   ∷ word [ [ μ ⨾ υ ] ⨾ [ ρ ⨾ ί ] ]
@@ -214,11 +116,63 @@ _ἣ = base (λ ()) auto
   ∷ word [ [ ἄ ⨾ ƛ ] ⨾ [ γ ⨾ ε ] ]
   ∷ word [ [ ἔ ] ⨾ [ θ ⨾ η ] ⨾ [ κ ⨾ ε ] ]
   ∷ []
-  ) ~ mkPM ((-, -, ─··) ∷ (-, -, ──) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ (-, -, ─··) ∷ (-, -, ──) ∷ [])
-οὐλομένην-ἣ-μυρί᾽-Ἀχαιοῖς-ἄλγε᾽-ἔθηκε = {!!}
-  -- use [1180, 1184], maybe a proper definition of 6-foot verse?
+  ) ~ mkPM
+  ( (-, -, ─··)
+  ∷ (-, -, ──)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ──)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ──)
+  ∷ [])
+v2 = fromBelow
+   $ (οὐλομένην ∷ _ἣ ∷ μυρί ∷ Ἀχαιοῖς ∷ ἄλγε᾽ ∷ ἔθηκε ∷ [])
+   ~∘~ auto
+
+-- πολλὰς δ᾽ ἰφθίμους ψυχὰς Ἄϊδι προΐαψεν
+
+πολλὰς : word [ [ π ⨾ ο ⨾ ƛ ] ⨾ [ ƛ ⨾ ὰ ⨾ ς ] ] , [ δ ] ~ [ just ─ ⨾ just ─ ]
+πολλὰς = base auto
+
+δ᾽ἰφθίμους : word [ [ δ{-᾽-} ⨾ ἰ ⨾ φ ] ⨾ [ θ ⨾ ί ] ⨾ [ μ ⨾ ο ⨾ υ ⨾ ς ] ] ,  [ ψ ]
+           ~ [ just ─ ⨾ nothing ⨾ just ─ ]
+δ᾽ἰφθίμους = base auto
+
+ψυχὰς : word [ [ ψ ⨾ υ ] ⨾ [ χ ⨾ ὰ ⨾ ς ] ] , ∅ ~ [ nothing ⨾ nothing ]
+ψυχὰς = base auto
+
+Ἄϊδι : word [  [ Ἄ ] ⨾ [ ϊ ] ⨾ [ δ ⨾ ι ] ] , [ π ⨾ ρ ]
+     ~ [ nothing ⨾ nothing ⨾ just ─ ]
+Ἄϊδι = base auto
+
+προΐαψεν : word [ [ π ⨾ ρ ⨾ ο ] ⨾ [ ΐ ] ⨾ [ α ] ⨾ [ ψ ⨾ ε ⨾ ν ] ] , ∅
+         ~ [ just · ⨾ nothing ⨾ just ─ ⨾ just · ]
+προΐαψεν = base auto
+
+v3 :
+  ( word [ [ π ⨾ ο ⨾ ƛ ] ⨾ [ ƛ ⨾ ὰ ⨾ ς ] ]
+  ∷ word [ [ δ{-᾽-} ⨾ ἰ ⨾ φ ] ⨾ [ θ ⨾ ί ] ⨾ [ μ ⨾ ο ⨾ υ ⨾ ς ] ]
+  ∷ word [ [ ψ ⨾ υ ] ⨾ [ χ ⨾ ὰ ⨾ ς ] ]
+  ∷ word [  [ Ἄ ] ⨾ [ ϊ ] ⨾ [ δ ⨾ ι ] ]
+  ∷ word [ [ π ⨾ ρ ⨾ ο ] ⨾ [ ΐ ] ⨾ [ α ] ⨾ [ ψ ⨾ ε ⨾ ν ] ]
+  ∷ []
+  ) ~ mkPM
+  ( (-, -, ──)
+  ∷ (-, -, ──)
+
+  -- ** both options apply!
+  ∷ (-, -, ──)
+  ∷ (-, -, ─··)
+  -- ∷ (-, -, ─··)
+  -- ∷ (-, -, ──)
+
+  ∷ (-, -, ─··)
+  ∷ (-, -, ──)
+  ∷ [])
+v3 = fromBelow
+   $ (πολλὰς ∷ δ᾽ἰφθίμους ∷ ψυχὰς ∷ Ἄϊδι ∷ προΐαψεν ∷ [])
+   ~∘~ auto
+
 {-
-πολλὰς δ᾽ ἰφθίμους ψυχὰς Ἄϊδι προΐαψεν
 ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν
 οἰωνοῖσί τε πᾶσι, Διὸς δ᾽ ἐτελείετο βουλή,
 ἐξ οὗ δὴ τὰ πρῶτα διαστήτην ἐρίσαντε

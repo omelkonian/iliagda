@@ -28,6 +28,7 @@ private
   Pred₀ A = A → Type
 
 -- ** list notation
+
 pattern [_] x = x ∷ []
 pattern [_⨾_] x y = x ∷ [ y ]
 pattern [_⨾_⨾_] x y z = x ∷ [ y ⨾ z ]
@@ -117,3 +118,13 @@ module _ (f : A → Maybe B) where
     with y∈
   ... | here refl = x , here refl , fx≡
   ... | there y∈′ = map₂′ (map₁′ there) (∈-mapMaybe⁻ y∈′)
+
+-- ** membership
+
+satisfied′ : ∀ {A : Type} {P : A → Type} {xs : List A}
+  → Any P xs
+  → ∃ λ x → x ∈ xs × P x
+satisfied′ = λ where
+  (here px)   → _ , here refl , px
+  (there pxs) → let x , x∈ , px = satisfied′ pxs
+                in  x , there x∈ , px

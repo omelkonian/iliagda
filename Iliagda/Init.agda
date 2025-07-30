@@ -15,7 +15,7 @@ open import Data.Unit public
 open import Data.Sum public
   using (_⊎_; inj₁; inj₂; isInj₁; isInj₂)
 open import Data.Product public
-  using (_×_; _,_; proj₁; proj₂; Σ; Σ-syntax; ∃; ∃-syntax; -,_; curry; uncurry)
+  using (_×_; _,_; proj₁; proj₂; ∃; ∃-syntax; -,_; curry; uncurry)
 
 module 𝔹 where
   open import Data.Bool public
@@ -120,6 +120,8 @@ open import Class.Decidable public
 open import Class.Semigroup public
 open import Class.Monoid public
   renaming (ε to ∅)
+open import Class.Foldable public
+open import Class.Traversable public
 open import Class.Anyable public
 open import Class.Allable public
 open import Class.ToList public
@@ -129,6 +131,7 @@ open import Class.FromN public
 
 open import Tactic.Defaults public
 open import Tactic.Derive.DecEq public
+-- open import Tactic.Derive.DecEqFast public
 
 variable
   ℓ ℓ′ ℓ″ : Level
