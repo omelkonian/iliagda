@@ -130,8 +130,8 @@ open import Class.ToN public
 open import Class.FromN public
 
 open import Tactic.Defaults public
-open import Tactic.Derive.DecEq public
--- open import Tactic.Derive.DecEqFast public
+-- open import Tactic.Derive.DecEq public
+open import Tactic.Derive.DecEqFast public
 
 variable
   ℓ ℓ′ ℓ″ : Level

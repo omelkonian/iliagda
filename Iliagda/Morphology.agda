@@ -3,40 +3,31 @@ module Iliagda.Morphology where
 
 open import Iliagda.Init
 
--- INCOMPLETE: ADD AS NEEDED
+-- INCOMPLETE: add as needed
 data Letter : Type where
   -- vowels
-  Ἀ Ἄ α ἄ ὰ ά
-   ε έ ἔ
-   η ῆ ἣ
+  Ἀ Ἄ α ἄ ὰ ά ᾶ
+   ε έ ἔ ὲ ἑ ἐ
+   η ῆ ἣ ἡ ή
    ι ί ἰ ῖ ϊ ΐ
-   ο
-   υ ὐ
-   ω : Letter
+   ο ὸ
+   υ ὐ ὺ ῦ ύ
+   ω ώ
   -- consonants
-  Γ γ Δ δ Ζ ζ Θ θ Κ κ Λ ƛ Μ μ Ν ν Ξ ξ Π π Ρ ρ Σ σ ς Τ τ Φ φ Χ χ Ψ ψ : Letter
--- Letter = Vowel ⊎ Consonant
+   Β β Γ γ Δ δ Ζ ζ Θ θ Κ κ Λ ƛ Μ μ Ν ν Ξ ξ
+   Π π Ρ ρ Σ σ ς Τ τ Φ φ Χ χ Ψ ψ
+   : Letter
 
 Consonant Vowel : Pred₀ Letter
 Consonant = _∈
-  ( Γ ∷ γ ∷ Δ ∷ δ ∷ Ζ ∷ ζ
+  ( Β ∷ β ∷ Γ ∷ γ ∷ Δ ∷ δ ∷ Ζ ∷ ζ
   ∷ Θ ∷ θ ∷ Κ ∷ κ ∷ Λ ∷ ƛ ∷ Μ ∷ μ ∷ Ν ∷ ν
   ∷ Ξ ∷ ξ ∷ Π ∷ π ∷ Ρ ∷ ρ ∷ Σ ∷ σ ∷ ς
   ∷ Τ ∷ τ ∷ Φ ∷ φ ∷ Χ ∷ χ ∷ Ψ ∷ ψ ∷ [])
 Vowel = ¬_ ∘ Consonant
 
--- NB: loose definition of a syllable for now
--- TODO? proper inductive definition of words/syllables
+-- TODO: syllabification
 Syllable = List⁺ Letter
-
--- record Syllable∈ : Type where
---   field
---     n : ℕ
---     w : Word n
---     i : Fin n
-
---   getSyllable : Syllable
---   getSyllable = w ‼ i
 
 data Word : ℕ {- syllables -} → Type where
   word : {_ : auto∶ n ≢ 0} → Vec Syllable n → Word n

@@ -1,5 +1,4 @@
--- {-# OPTIONS --safe --large-indices --no-forced-argument-recursion #-}
-{-# OPTIONS --large-indices --no-forced-argument-recursion #-}
+{-# OPTIONS --safe --large-indices --no-forced-argument-recursion #-}
 module Iliagda.Prosody where
 
 open import Iliagda.Init
@@ -9,11 +8,13 @@ open import Iliagda.Dec.Core
 
 -- (519)
 ─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
-─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ω ]
-·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ο ]
--- Doubtful = _∈ [ ἄ ⨾ ὰ ⨾ ά ⨾ Ἀ ⨾ ι ⨾ ϊ ⨾ ί ⨾ υ ] -- (n)either long or short
+-- INCOMPLETE: add as needed
+─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ἡ ⨾ ή ⨾ ω ⨾ ώ ]
+-- INCOMPLETE: add as needed
+·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ὲ ⨾ ἑ ⨾ ἐ ⨾ ο ⨾ ὸ ]
 Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
-HasCircumflex = _∈ [ ῆ ⨾ ῖ ]
+-- INCOMPLETE: add as needed
+HasCircumflex = _∈ [ ῆ ⨾ ῖ ⨾ ῦ ⨾ ᾶ ]
 
 -- (518)
 DoubleConsonant : Pred₀ Letter
@@ -22,15 +23,21 @@ DoubleConsonant = _∈ [ Ζ ⨾ ζ ⨾ Ξ ⨾ ξ ⨾ Ψ ⨾ ψ ]
 -- (504)
 Diphthong : Pred₀ (Letter × Letter)
 Diphthong = _∈
+-- INCOMPLETE: add as needed
   [ (α , ι)
   ⨾ (α , υ)
+  ⨾ (α , ὐ)
   ⨾ (ε , ι)
+  ⨾ (ε , ί)
   ⨾ (ε , υ)
+  ⨾ (ε , ῦ)
   ⨾ (η , υ)
   ⨾ (ο , ι)
   ⨾ (ο , ῖ)
+  ⨾ (ο , ἰ)
   ⨾ (ο , υ)
   ⨾ (ο , ὐ)
+  ⨾ (ο , ὺ)
   ⨾ (υ , ι)
   ⨾ (ω , υ)
   ]

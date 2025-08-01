@@ -28,6 +28,8 @@ Is there a connection between our "Maybe Quantity" (ambiguous roles) with 3-valu
 
 - Decidability: higher in the relation tower
 - Syllabification
+- Consider punctuation? (e.g. comma, apostrophe)
+- Work on chars/strings instead of enum Letters
 
 # DUMP
 

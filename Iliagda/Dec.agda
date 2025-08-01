@@ -1,5 +1,5 @@
 -- ** decision procedures
--- {-# OPTIONS --safe #-}
+{-# OPTIONS --safe #-}
 module Iliagda.Dec where
 
 open import Iliagda.Init
@@ -32,7 +32,6 @@ instance
        × (sys -synizizes*- sys′)
        × (sy′ ≡ sy ⁀ sy↓)
        ¿
-
 
 -- ** VPointwise
 instance

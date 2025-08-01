@@ -1,4 +1,4 @@
--- {-# OPTIONS --safe #-}
+{-# OPTIONS --safe #-}
 module Iliagda.Examples where
 
 open import Iliagda.Init
@@ -6,6 +6,7 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody
+open import Iliagda.Dec.Core
 open import Iliagda.Dec
 
 _ : [ ─ ⨾ · ⨾ · ] ~ mkPM [ -, -, ─·· ]
@@ -172,9 +173,100 @@ v3 = fromBelow
    $ (πολλὰς ∷ δ᾽ἰφθίμους ∷ ψυχὰς ∷ Ἄϊδι ∷ προΐαψεν ∷ [])
    ~∘~ auto
 
+-- ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν
+
+ἡρώων : word [ [ ἡ ⨾ ρ ] ⨾ [ ώ ] ⨾ [ ω ⨾ ν ] ] , ∅
+      ~ [ just ─ ⨾ just ─ ⨾ just ─ ]
+ἡρώων = base auto
+
+αὐτοὺς : word [ [ α ⨾ ὐ ] ⨾ [ τ ⨾ ο ⨾ ὺ ⨾ ς ] ] , [ δ ]
+      ~ [ just ─ ⨾ just ─ ]
+αὐτοὺς = base auto
+
+δὲ : word [ [ δ ⨾ ὲ ] ] , ∅ ~ [ just · ]
+δὲ = base auto
+
+ἑλώρια : word [ [ ἑ ] ⨾ [ ƛ ⨾ ώ ] ⨾ [ ρ ⨾ ι ] ⨾ [ α ] ] , [ τ ]
+       ~ [ just · ⨾ just ─ ⨾ nothing ⨾ nothing ]
+ἑλώρια = base auto
+
+τεῦχε : word [ [ τ ⨾ ε ⨾ ῦ ] ⨾ [ χ ⨾ ε ] ] , [ κ ]
+      ~ [ just ─ ⨾ just · ]
+τεῦχε = base {mqs = [ just ─ ⨾ just · ]} auto
+
+κύνεσσιν : word [ [ κ ⨾ ύ ] ⨾ [ ν ⨾ ε ⨾ σ ] ⨾ [ σ ⨾ ι ⨾ ν ] ] , ∅
+         ~ [ nothing ⨾ just ─ ⨾ nothing ]
+κύνεσσιν = base auto
+
+v4 :
+  ( word [ [ ἡ ⨾ ρ ] ⨾ [ ώ ] ⨾ [ ω ⨾ ν ] ]
+  ∷ word [ [ α ⨾ ὐ ] ⨾ [ τ ⨾ ο ⨾ ὺ ⨾ ς ] ]
+  ∷ word [ [ δ ⨾ ὲ ] ]
+  ∷ word [ [ ἑ ] ⨾ [ ƛ ⨾ ώ ] ⨾ [ ρ ⨾ ι ] ⨾ [ α ] ]
+  ∷ word [ [ τ ⨾ ε ⨾ ῦ ] ⨾ [ χ ⨾ ε ] ]
+  ∷ word [ [ κ ⨾ ύ ] ⨾ [ ν ⨾ ε ⨾ σ ] ⨾ [ σ ⨾ ι ⨾ ν ] ]
+  ∷ []
+  ) ~ mkPM
+  ( (-, -, ──)
+  ∷ (-, -, ──)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ──)
+  ∷ [])
+v4 = fromBelow
+   $ (ἡρώων ∷ αὐτοὺς ∷ δὲ ∷ ἑλώρια ∷ τεῦχε ∷ κύνεσσιν ∷ [])
+   ~∘~ auto
+
+-- οἰωνοῖσί τε πᾶσι, Διὸς δ᾽ ἐτελείετο βουλή,
+
+οἰωνοῖσί : word [ [ ο ⨾ ἰ ] ⨾ [ ω ] ⨾ [ ν ⨾ ο ⨾ ῖ ] ⨾ [ σ ⨾ ί ] ] , [ τ ]
+         ~ [ just ─ ⨾ just ─ ⨾ just ─ ⨾ just · ]
+οἰωνοῖσί = base {mqs = [ just ─ ⨾ just ─ ⨾ just ─ ⨾ nothing ]} auto
+
+τε : word [ [ τ ⨾ ε ] ] , [ π ]
+   ~ [ just · ]
+τε = base auto
+
+πᾶσι : word [ [ π ⨾ ᾶ ] ⨾ [ σ ⨾ ι ] ] , [ Δ ]
+     ~ [ nothing ⨾ just · ]
+πᾶσι = base {mqs = [ nothing ⨾ nothing ]} auto
+
+Διὸς : word [ [ Δ ⨾ ι ] ⨾ [ ὸ ⨾ ς ] ] , [ δ ]
+     ~ [ nothing ⨾ just ─ ]
+Διὸς = base auto
+
+δ᾽ἐτελείετο
+  : word [ [ δ{-᾽-} ⨾ ἐ ] ⨾ [ τ ⨾ ε ] ⨾ [ ƛ ⨾ ε ⨾ ί ] ⨾ [ ε ] ⨾ [ τ ⨾ ο ] ] , [ β ]
+  ~ [ just · ⨾ just · ⨾ just ─ ⨾ just · ⨾ just · ]
+δ᾽ἐτελείετο = base auto
+
+βουλή : word [ [ β ⨾ ο ⨾ υ ] ⨾ [ ƛ ⨾ ή ] ] , ∅
+      ~ [ just ─ ⨾ just ─ ]
+βουλή = base auto
+
+v5 :
+  ( word [ [ ο ⨾ ἰ ] ⨾ [ ω ] ⨾ [ ν ⨾ ο ⨾ ῖ ] ⨾ [ σ ⨾ ί ] ]
+  ∷ word [ [ τ ⨾ ε ] ]
+  ∷ word [ [ π ⨾ ᾶ ] ⨾ [ σ ⨾ ι ] ]
+  ∷ word [ [ Δ ⨾ ι ] ⨾ [ ὸ ⨾ ς ] ]
+  ∷ word [ [ δ{-᾽-} ⨾ ἐ ] ⨾ [ τ ⨾ ε ] ⨾ [ ƛ ⨾ ε ⨾ ί ] ⨾ [ ε ] ⨾ [ τ ⨾ ο ] ]
+  ∷ word [ [ β ⨾ ο ⨾ υ ] ⨾ [ ƛ ⨾ ή ] ]
+  ∷ []
+  ) ~ mkPM
+  ( (-, -, ──)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ─··)
+  ∷ (-, -, ──)
+  ∷ [])
+v5 = fromBelow
+   $ (οἰωνοῖσί ∷ τε ∷ πᾶσι ∷ Διὸς ∷ δ᾽ἐτελείετο ∷ βουλή ∷ [])
+   ~∘~ auto
+
+
 {-
-ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν
-οἰωνοῖσί τε πᾶσι, Διὸς δ᾽ ἐτελείετο βουλή,
 ἐξ οὗ δὴ τὰ πρῶτα διαστήτην ἐρίσαντε
 Ἀτρεΐδης τε ἄναξ ἀνδρῶν καὶ δῖος Ἀχιλλεύς.
 τίς τ᾽ ἄρ σφωε θεῶν ἔριδι ξυνέηκε μάχεσθαι;
