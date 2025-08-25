@@ -9,6 +9,11 @@ open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody
 
+pattern 𝟘 = here refl
+pattern 𝟙 = there 𝟘
+pattern 𝟚 = there 𝟙
+pattern 𝟛 = there 𝟚
+
 -- ** synezesis
 instance
   Dec-syn : (sys -synizizes*- sys′) ⁇
@@ -72,7 +77,7 @@ instance
   ... | _ | yes ·sy | nothing
     = no λ where (ambiguous _ ¬·sy) → ¬·sy ·sy
 
-_ : _~_ {A = Vec Syllable n × Context} {B = Vec (Maybe Quantity) n} ⁇²
+_ : _~_ {A = Vec Syllable n × Context} {B = Quantities n} ⁇²
 _ = it
 
 --
@@ -243,8 +248,8 @@ allPMs :
       (∀ {m} {pm : Meter n m} → (m , pm) ∈ pms → qs ~ pm)
     × (∀ {m} {pm : Meter n m} → qs ~ pm → (m , pm) ∈ pms)
 allPMs [] = [ 0 , mkPM [] ]
-          , (λ where (here refl) → [])
-          , (λ where [] → here refl)
+          , (λ where 𝟘 → [])
+          , (λ where [] → 𝟘)
 allPMs (_ ∷ []) = [] , (λ ()) , (λ ())
 allPMs (· ∷ _ ∷ qs) = [] , (λ ()) , (λ ())
 allPMs (─ ∷ · ∷ []) = [] , (λ ()) , (λ ())
@@ -288,7 +293,7 @@ derivable? {n} {qs}
   with pms , sound-pms , complete-pms ← allPMs qs
   with pms
 ... | []           = no λ (m , pm , pm~) → case complete-pms pm~ of λ ()
-... | (m , pm) ∷ _ = yes (m , pm , sound-pms (here refl))
+... | (m , pm) ∷ _ = yes (m , pm , sound-pms 𝟘)
 
 -- nonDerivable? : ∀ {n} {qs : Vec Quantity n} → Dec $
 --   ∀ m (pm : Meter n m) → qs ≁ pm
@@ -330,13 +335,13 @@ record {A B : Type} (R : A → B → Type)
 -}
 
 allMasks :
-  (mqs : Vec (Maybe Quantity) n) →
+  (mqs : Quantities n) →
   ∃ λ (qss : List (Vec Quantity n)) →
       (∀ {qs} → qs ∈ qss → mqs -masks*- qs)
     × (∀ {qs} → mqs -masks*- qs → qs ∈ qss)
 allMasks [] = [ [] ]
-            , (λ where (here refl) → [])
-            , (λ where [] → here refl)
+            , (λ where 𝟘 → [])
+            , (λ where [] → 𝟘)
 allMasks (mq ∷ mqs)
   with qss , sound-qss , complete-qss ← allMasks mqs
   with mq
@@ -365,8 +370,8 @@ allMasks (mq ∷ mqs)
     with ∃qss′ ← L.Any.map⁻ ∃qss
     with qs′ , qs∈′ , ∈qss ← satisfied′ ∃qss′
     with ∈qss
-  ... | here refl         = mask ∷ sound-qss qs∈′
-  ... | there (here refl) = mask ∷ sound-qss qs∈′
+  ... | 𝟘 = mask ∷ sound-qss qs∈′
+  ... | 𝟙 = mask ∷ sound-qss qs∈′
 
   com : _
   com (mask {x = q} ∷ p)
@@ -376,14 +381,14 @@ allMasks (mq ∷ mqs)
     where
     P⇒Q : _
     P⇒Q with ⟫ q
-    ... | ⟫ ─ = here refl
-    ... | ⟫ · = there $′ here refl
+    ... | ⟫ ─ = 𝟘
+    ... | ⟫ · = 𝟙
 
   QED : _
   QED = qss′ , sou , com
 
 instance
-  Dec-Complies-MQs-PM : _~_ {A = Vec (Maybe Quantity) n} {B = Hexameter n} ⁇²
+  Dec-Complies-MQs-PM : _~_ {A = Quantities n} {B = Hexameter n} ⁇²
   Dec-Complies-MQs-PM {n} {x = mqs} {pm} .dec
     with qss , sound-qss , complete-qss ← allMasks mqs
     with ¿ Any (λ qs → mkLastLong {n} (Hex>0 pm) qs ~ pm) qss ¿
@@ -406,7 +411,7 @@ onlyHexameters = L.mapMaybe onlyHexameter
   ... | no  _    = nothing
 
 allHexameters :
-  (mqs : Vec (Maybe Quantity) n) →
+  (mqs : Quantities n) →
   ∃ λ (pms : List (Hexameter n)) →
       (∀ {pm} → pm ∈ pms → mqs ~ pm)
     × (∀ {pm} → mqs ~ pm → pm ∈ pms)
@@ -443,25 +448,406 @@ allHexameters {n@(suc _)} mqs
           (λ where refl → ∈-mapMaybe⁺ (onlyHexameter {n}) {xs = pms} (complete-pms pm~) refl)
           (complete-qss msk))
 
-derivableM? : ∀ {n} (mqs : Vec (Maybe Quantity) n) → Dec $
+derivableM? : ∀ {n} (mqs : Quantities n) → Dec $
   ∃ λ (pm : Hexameter n) → mqs ~ pm
 derivableM? {n} mqs
   with pms , sound-pms , complete-pms ← allHexameters mqs
   with pms
 ... | []     = no λ (pm , pm~) → case complete-pms pm~ of λ ()
-... | pm ∷ _ = yes (pm , sound-pms (here refl))
+... | pm ∷ _ = yes (pm , sound-pms 𝟘)
 
-nonDerivableM? : ∀ {n} (mqs : Vec (Maybe Quantity) n) → Dec $
+nonDerivableM? : ∀ {n} (mqs : Quantities n) → Dec $
   ¬ (∃ λ (pm : Hexameter n) → mqs ~ pm)
 nonDerivableM? {n} mqs = ¬? (derivableM? {n} mqs)
 
 instance
-  Dec-NonDerivable-MQs-PM : NonDerivable {A = Vec (Maybe Quantity) n} {B = Hexameter n} ⁇¹
+  Dec-NonDerivable-MQs-PM : NonDerivable {A = Quantities n} {B = Hexameter n} ⁇¹
   Dec-NonDerivable-MQs-PM {n} {x = mqs} .dec
     with nonDerivableM? mqs
   ... | yes ∄pm = yes λ pm pm~ → ∄pm (pm , pm~)
   ... | no  ∃pm = no λ pm≁ → ∃pm (uncurry pm≁)
 
+lookup-updateAt≡ : ∀ {A : Type} {xs : Vec A n} {x : A} (i : Fin n) →
+  V.lookup xs i ≡ x → xs ≡ xs V.[ i ]≔ x
+lookup-updateAt≡ {xs = _ ∷ _} Fi.zero refl = refl
+lookup-updateAt≡ {xs = _ ∷ _} (fsuc i) eq = cong (_ ∷_) (lookup-updateAt≡ i eq)
+
+[1160]˘ :
+  (mqs : Quantities n) (w : Word n) →
+  ∃ λ (mqss : List (Quantities n)) →
+      (∀ {mqs′} → mqs′ ∈ mqss → mqs ≡ [1160] {n = n} w mqs′)
+    × (∀ {mqs′} → mqs ≡ [1160] {n = n} w mqs′ → mqs′ ∈ mqss)
+[1160]˘ {n} mqs w
+  with n
+... | 0 = [ mqs ] , (λ where 𝟘 → refl) , (λ where refl → 𝟘)
+... | 1 = [ mqs ] , (λ where 𝟘 → refl) , (λ where refl → 𝟘)
+... | n@(suc n-1@(suc _))
+  with n>1 ← (n > 1) ∋ s≤s (s≤s z≤n)
+  with circumflexPenult? w
+... | no _ = [ mqs ] , (λ where 𝟘 → refl) , (λ where refl → 𝟘)
+... | yes cp
+  using i ← Fi.fromℕ n-1
+  with V.lookup mqs i in i≡
+... | nothing
+  = [] , (λ ()) , (λ {mqs′} mqs≡ → contradict $ let open ≡-Reasoning in
+    begin
+      nothing
+    ≡˘⟨ i≡ ⟩
+      V.lookup mqs i
+    ≡⟨ cong (flip V.lookup i) mqs≡ ⟩
+      V.lookup (mqs′ V.[ i ]≔ just ·) i
+    ≡⟨ V.lookup∘updateAt i mqs′ ⟩
+      just ·
+    ∎
+    )
+... | just ─
+  = [] , (λ ()) , (λ {mqs′} mqs≡ → contradict $ let open ≡-Reasoning in
+    begin
+      just ─
+    ≡˘⟨ i≡ ⟩
+      V.lookup mqs i
+    ≡⟨ cong (flip V.lookup i) mqs≡ ⟩
+      V.lookup (mqs′ V.[ i ]≔ just ·) i
+    ≡⟨ V.lookup∘updateAt i mqs′ ⟩
+      just ·
+    ∎
+    )
+... | just ·
+  = QED
+  where
+  set = mqs V.[ i ]≔_
+
+  mqss = [ set nothing ⨾ set (just ─) ⨾ set (just ·) ]
+
+  sou : _
+  sou =
+    let
+      sou′ = λ mq → let open ≡-Reasoning in
+        begin
+          mqs
+        ≡⟨ lookup-updateAt≡ i i≡ ⟩
+          mqs V.[ i ]≔ just ·
+        ≡˘⟨ V.[]≔-idempotent mqs i ⟩
+          (mqs V.[ i ]≔ mq) V.[ i ]≔ just ·
+        ≡⟨⟩
+          set mq V.[ i ]≔ just ·
+        ∎
+    in
+    λ where
+      𝟘 → sou′ nothing
+      𝟙 → sou′ (just ─)
+      𝟚 → sou′ (just ·)
+      (there (there (there ())))
+      -- cannot comment this out, deep Agda bug?
+
+  com : _
+  com {mqs′} eq
+    with V.lookup mqs′ i in i≡
+  ... | nothing
+    = here let open ≡-Reasoning in
+      begin
+        mqs′
+      ≡⟨ lookup-updateAt≡ {xs = mqs′} i i≡ ⟩
+        mqs′ V.[ i ]≔ nothing
+      ≡˘⟨ V.[]≔-idempotent mqs′ i ⟩
+        mqs′ V.[ i ]≔ (just ·) V.[ i ]≔ nothing
+      ≡˘⟨ cong (V._[ i ]≔ _) eq ⟩
+        mqs V.[ i ]≔ nothing
+      ≡⟨⟩
+        set nothing
+      ∎
+  ... | just ─
+    = there $ here let open ≡-Reasoning in
+      begin
+        mqs′
+      ≡⟨ lookup-updateAt≡ {xs = mqs′} i i≡ ⟩
+        mqs′ V.[ i ]≔ just ─
+      ≡˘⟨ V.[]≔-idempotent mqs′ i ⟩
+        mqs′ V.[ i ]≔ (just ·) V.[ i ]≔ just ─
+      ≡˘⟨ cong (V._[ i ]≔ _) eq ⟩
+        mqs V.[ i ]≔ just ─
+      ≡⟨⟩
+        set (just ─)
+      ∎
+  ... | just ·
+    = there $ there $ here let open ≡-Reasoning in
+      begin
+        mqs′
+      ≡⟨ lookup-updateAt≡ {xs = mqs′} i i≡ ⟩
+        mqs′ V.[ i ]≔ just ·
+      ≡˘⟨ V.[]≔-idempotent mqs′ i ⟩
+        mqs′ V.[ i ]≔ (just ·) V.[ i ]≔ just ·
+      ≡˘⟨ cong (V._[ i ]≔ _) eq ⟩
+        mqs V.[ i ]≔ just ·
+      ≡⟨⟩
+        set (just ·)
+      ∎
+
+  QED : _
+  QED = mqss , sou , com
+
+instance
+  Dec-Complies-W-MQs : _~_ {A = Word n × Context} {B = Quantities n} ⁇²
+  Dec-Complies-W-MQs {n} {x = w , ctx} {mqs} .dec
+    with mqss , sound-mqss , complete-mqss ← [1160]˘ mqs w
+    with ¿ Any (λ mqs′ → (unword w , ctx) ~ mqs′) mqss ¿
+  ... | yes ∃x
+    with mqs′ , mqs∈ , w~ ← satisfied′ ∃x
+    with refl ← sound-mqss mqs∈
+    = yes (base w~)
+  ... | no ∄x = no λ where
+    (base w~) → ∄x (L.Any.map (λ where refl → w~) $ complete-mqss refl)
+
+  Dec-Complies-Ws-MQs : _~_ {A = Words n} {B = Quantities n} ⁇²
+  Dec-Complies-Ws-MQs {n} {x = []} {[]} .dec = yes []
+  Dec-Complies-Ws-MQs {.(n + n′)} {x = _∷_ {n = n} {n′ = n′} w ws} {mqs₀} .dec
+    using mqs , mqs′ , mqs≡ ← V.splitAt n mqs₀
+    using nextSy ← L.head $ toList $ unwords ws
+    using wctx   ← maybe firstConsonants [] nextSy
+    with ¿ (w , wctx) ~ʷ mqs ¿ | ¿ ws ~ mqs′ ¿
+    -- AGDA BUG: interaction breaks in these subterms!!!
+  ... | yes h₁ | yes h₂ = yes (_∷_ ⦃ mqs≡ ⦄ h₁ h₂)
+  ... | no ¬h₁ | _      = no λ where
+    (_∷_ {mqs = `mqs} {mqs′ = `mqs′} ⦃ `mqs≡ ⦄ h₁ _) →
+      ¬h₁ $
+      subst (_ ~ʷ_) (V.++-injectiveˡ `mqs mqs (trans (sym `mqs≡) mqs≡))
+      h₁
+  ... | _      | no ¬h₂ = no λ where
+    (_∷_ {mqs = `mqs} {mqs′ = `mqs′} ⦃ `mqs≡ ⦄ _ h₂) →
+      ¬h₂ $
+      subst (_ ~ʷˢ_) (V.++-injectiveʳ `mqs mqs (trans (sym `mqs≡) mqs≡))
+      h₂
+
+theQuantity₀ :
+  (sy : Syllable) (ctx : Context) →
+  ∃ λ (mq : Maybe Quantity) →
+      (∀ {mq′} → mq′ ≡ mq → (sy , ctx) ~ mq′)
+    × (∀ {mq′} → (sy , ctx) ~ mq′ → mq′ ≡ mq)
+theQuantity₀ sy ctx
+  with ¿ ─Syllable ctx sy ¿ | ¿ ·Syllable ctx sy ¿
+... | yes ─sy | yes (¬─sy , _)
+  = ⊥-elim $ ¬─sy ─sy
+... | yes ─sy | no ¬·sy
+  = just ─
+  , (λ where refl → long ─sy)
+  , λ where (long _) → refl
+            (short ·sy) → ⊥-elim $ ¬·sy ·sy
+            (ambiguous ¬─sy _) → ⊥-elim $ ¬─sy ─sy
+... | no ¬─sy | yes ·sy
+  = just ·
+  , (λ where refl → short ·sy)
+  , λ where (short _) → refl
+            (long ─sy) → ⊥-elim $ ¬─sy ─sy
+            (ambiguous _ ¬·sy) → ⊥-elim $ ¬·sy ·sy
+... | no ¬─sy | no ¬·sy
+  = nothing
+  , (λ where refl → ambiguous ¬─sy ¬·sy)
+  , λ where (ambiguous _ _) → refl
+            (long ─sy) → ⊥-elim $ ¬─sy ─sy
+            (short ·sy) → ⊥-elim $ ¬·sy ·sy
+
+Dec-Complies-Sy-MQ′ : _~_ {A = Syllable × Context} {B = Maybe Quantity} ⁇²
+Dec-Complies-Sy-MQ′ {x = sy , ctx}{mq′} .dec
+  with mq , sound-mq , complete-mq ← theQuantity₀ sy ctx
+  with mq′ ≟ mq
+... | yes mq≡ = yes $ sound-mq mq≡
+... | no  mq≢ = no λ sy~mq → ⊥-elim (mq≢ $ complete-mq sy~mq)
+
+open import Relation.Binary.PropositionalEquality using (cong₂)
+
+theQuantities₀∗ :
+  (sys : Vec Syllable n) (ctx : Context) →
+  ∃ λ (mqs : Quantities n) →
+      (∀ {mqs′} → mqs′ ≡ mqs → (sys , ctx) ~ mqs′)
+    × (∀ {mqs′} → (sys , ctx) ~ mqs′ → mqs′ ≡ mqs)
+theQuantities₀∗ [] ctx
+  = [] , (λ where refl → []) , (λ where [] → refl)
+theQuantities₀∗ [ sy ] ctx
+  with mq , sound-mq , complete-mq ← theQuantity₀ sy ctx
+  = [ mq ]
+  , (λ where refl → sound-mq refl ∷ [])
+  , λ where (sy~mq ∷ []) → cong (_∷ []) (complete-mq sy~mq)
+theQuantities₀∗ (sy ∷ sys@(sy′ ∷ _)) ctx
+  with mqs , sound-mqs , complete-mqs ← theQuantities₀∗ sys ctx
+  with mq  , sound-mq  , complete-mq  ← theQuantity₀ sy (firstConsonants sy′)
+  = mq ∷ mqs
+  , (λ where refl → sound-mq refl ∷ sound-mqs refl)
+  , λ where (sy~mq ∷ sys~mqs) → cong₂ _∷_ (complete-mq sy~mq) (complete-mqs sys~mqs)
+
+theQuantities₁ :
+  (w : Word n) (wctx : Context) →
+  ∃ λ (mqs : Quantities n) →
+      (∀ {mqs′} → mqs′ ≡ mqs → (w , wctx) ~ mqs′)
+    × (∀ {mqs′} → (w , wctx) ~ mqs′ → mqs′ ≡ mqs)
+theQuantities₁ w wctx
+  with mqs , sound-mqs , complete-mqs ← theQuantities₀∗ (unword w) wctx
+  = [1160] w mqs
+  , (λ where refl → base (sound-mqs refl))
+  , λ where (base sys~mqs) → cong ([1160] w) (complete-mqs sys~mqs)
+
+theQuantities :
+  (ws : Words n) →
+  ∃ λ (mqs : Quantities n) →
+      (∀ {mqs′} → mqs′ ≡ mqs → ws ~ mqs′)
+    × (∀ {mqs′} → ws ~ mqs′ → mqs′ ≡ mqs)
+theQuantities [] = [] , (λ where refl → []) , λ where [] → refl
+theQuantities (w ∷ ws)
+  = let
+      nextSy : Maybe Syllable
+      nextSy = L.head $ toList $ unwords ws
+
+      wctx   = maybe firstConsonants [] nextSy
+
+      mqs  , sound-mqs  , complete-mqs  = theQuantities₁ w wctx
+      mqs′ , sound-mqs′ , complete-mqs′ = theQuantities ws
+    in
+      (mqs V.++ mqs′)
+      , (λ where refl → sound-mqs refl ∷ sound-mqs′ refl)
+      , λ where (_∷_ ⦃ refl ⦄ w~mqs ws~mqs′) →
+                     cong₂ V._++_ (complete-mqs  w~mqs) (complete-mqs′ ws~mqs′)
+
+allSynezeses : ∀ (sys : Vec Syllable n) n′ →
+  ∃ λ (syss : List (Vec Syllable n′)) →
+      (∀ {sys′} → sys′ ∈ syss → sys -synizizes*- sys′)
+    × (∀ {sys′} → sys -synizizes*- sys′ → sys′ ∈ syss)
+
+-- n′ = 0
+allSynezeses [] 0 = [ [] ] , (λ where 𝟘 → []) , λ where [] → 𝟘
+allSynezeses [] (suc _) = [] , (λ ()) , λ ()
+
+-- n′ = 1
+allSynezeses [ sy ] 0 = [] , (λ ()) , λ ()
+allSynezeses [ sy ] 1 = [ [ sy ] ] , (λ where 𝟘 → _ ∷ []) , λ where (_ ∷ []) → 𝟘
+allSynezeses [ sy ] (suc (suc _)) = [] , (λ ()) , λ where (_ ∷ ())
+
+-- n′ > 1
+allSynezeses (sy ∷ sys@(sy′ ∷ _)) 0
+  = [] , (λ ()) , λ ()
+allSynezeses (sy ∷ sys@(sy′ ∷ sys′)) n′@(suc n′-1)
+  with ¿ LastVowel sy × FirstVowel sy′ ¿
+... | yes vv
+
+  -- DON'T DO THE SYNIZESIS
+  using syss , sound-syss , complete-syss ← allSynezeses sys n′-1
+
+  -- DO DO THE SYNIZESIS
+  using syss′ , sound-syss′ , complete-syss′ ← allSynezeses sys′ n′-1
+
+  using sysˡ ← map (sy ∷_) syss
+  using sysʳ ← map ((sy ⁀ sy′) ∷_) syss′
+  = sysˡ ++ sysʳ
+  , (λ syn∈ → case ∈-++⁻ sysˡ syn∈ of λ where
+       (inj₁ syn∈ˡ) → let syn′ , syn′∈ , sys≡ = ∈-map⁻ (sy ∷_) syn∈ˡ
+                       in subst (_ -synizizes*-_) (sym sys≡) (sy ∷ sound-syss syn′∈)
+       (inj₂ syn∈ʳ) → let syn′ , syn′∈ , sys≡ = ∈-map⁻ ((sy ⁀ sy′) ∷_) syn∈ʳ
+                       in subst (_ -synizizes*-_) (sym sys≡) (vv ∺ sound-syss′ syn′∈)
+    )
+  , λ where (sy ∷ p) → ∈-++⁺ˡ (∈-map⁺ (sy ∷_) (complete-syss p))
+            ((vv ∺ p) ⦃ refl ⦄) → ∈-++⁺ʳ sysˡ (∈-map⁺ ((sy ⁀ sy′) ∷_) (complete-syss′ p))
+... | no ¬vv
+  using syss , sound-syss , complete-syss ← allSynezeses sys n′-1
+  = map (sy ∷_) syss
+  , (λ syn∈ → let syn′ , syn′∈ , sys≡ = ∈-map⁻ (sy ∷_) syn∈
+               in subst (_ -synizizes*-_) (sym sys≡) (sy ∷ sound-syss syn′∈))
+  , λ where (sy ∷ p) → ∈-map⁺ (sy ∷_) (complete-syss p)
+            (vv ∺ _) → ⊥-elim $ ¬vv vv
+
+uniqueSyn : (p q : sys -synizizes*- sys′) → p ≡ q
+uniqueSyn [] [] = refl
+uniqueSyn (sy ∷ p) (.sy ∷ q) = cong (sy ∷_) (uniqueSyn p q)
+uniqueSyn (sy ∷ _) ((_ ∺ _) ⦃ eq ⦄) = ⊥-elim $ ⁀-irrefl eq
+uniqueSyn ((_ ∺ _) ⦃ eq ⦄) (sy ∷ _) = ⊥-elim $ ⁀-irrefl eq
+uniqueSyn ((_ ∺ p) ⦃ refl ⦄) ((_ ∺ q) ⦃ refl ⦄) = cong (_ ∺_) $ uniqueSyn p q
+
+instance
+  Dec-Complies-Ws-HM : _~_ {A = Words n} {B = Hexameter n′} ⁇²
+  Dec-Complies-Ws-HM {n}{n′} {x = ws} {pm} .dec
+    with n ≟ n′
+  ... | no n≢
+    = QED
+    where
+    QED : Dec (ws ~ pm)
+    QED
+      with syss , sound-syss , complete-syss ← allSynezeses (unwords ws) n′
+      with mqs , sound-mqs , complete-mqs ← theQuantities ws
+      using ws~mqs ← sound-mqs refl
+      with ¿ NonDerivable mqs
+          × Any (λ (sys , sys∈) → synizize (sound-syss sys∈) mqs ~ pm)
+                (mapWith∈ syss (λ {sys} sys∈ → sys , sys∈))
+          ¿
+    ... | yes (mqs≁ , ∃x)
+      with (sys , sys∈) , ssys∈ , syn~pm ← satisfied′ ∃x
+      = yes $ [586] (sound-syss sys∈) ws~mqs mqs≁ syn~pm
+    ... | no ¬p
+      = no λ where
+      (fromBelow (ws~mqs ~∘~ mqs~pm)) →
+        n≢ refl
+      ([586] {sys′ = sys′} syn ws~mqs mqs≁ syn~pm) →
+        ⊥-elim
+          $ ¬p
+          $ subst NonDerivable (complete-mqs ws~mqs) mqs≁
+          , let
+              sys′∈ : sys′ ∈ syss
+              sys′∈ = complete-syss syn
+
+              sys′∈⁺ : (sys′ , sys′∈) ∈ mapWith∈ syss (λ {sys} sys∈ → sys , sys∈)
+              sys′∈⁺ = L.Any.mapWith∈⁺ _ (sys′ , sys′∈ , refl)
+
+              syn′ : unwords ws -synizizes*- sys′
+              syn′ = sound-syss sys′∈
+
+              syn≡ : syn ≡ syn′
+              syn≡ = uniqueSyn syn syn′
+
+              syn′~pm : synizize syn′ mqs ~ pm
+              syn′~pm = subst (λ ◆ → synizize ◆ _ ~ _) syn≡
+                      $ subst (λ ◆ → synizize _ ◆ ~ _) (complete-mqs ws~mqs)
+                      $ syn~pm
+            in
+              L.Any.map (λ where refl → syn′~pm) sys′∈⁺
+  ... | yes refl
+    with mqs , sound-mqs , complete-mqs ← theQuantities ws
+    using ws~mqs ← sound-mqs refl
+    with ¿ mqs ~ pm ¿
+  ... | yes mqs~pm =
+    yes (fromBelow $ ws~mqs ~∘~ mqs~pm)
+  ... | no mqs≁pm
+    -- TODO: extraneous branch hereforth
+    with syss , sound-syss , complete-syss ← allSynezeses (unwords ws) n′
+    with ¿ NonDerivable mqs
+         × Any (λ (sys , sys∈) → synizize (sound-syss sys∈) mqs ~ pm)
+               (mapWith∈ syss (λ {sys} sys∈ → sys , sys∈))
+         ¿
+  ... | yes (mqs≁ , ∃x)
+    with (sys , sys∈) , ssys∈ , syn~pm ← satisfied′ ∃x
+    = yes $ [586] (sound-syss sys∈) ws~mqs mqs≁ syn~pm
+  ... | no ¬p
+    = no λ where
+    (fromBelow (ws~mqs ~∘~ mqs~pm)) →
+      ⊥-elim $ mqs≁pm (subst (_~ pm) (complete-mqs ws~mqs) mqs~pm)
+    ([586] {sys′ = sys′} syn ws~mqs mqs≁ syn~pm) →
+      ⊥-elim
+        $ ¬p
+        $ subst NonDerivable (complete-mqs ws~mqs) mqs≁
+        , let
+            sys′∈ : sys′ ∈ syss
+            sys′∈ = complete-syss syn
+
+            sys′∈⁺ : (sys′ , sys′∈) ∈ mapWith∈ syss (λ {sys} sys∈ → sys , sys∈)
+            sys′∈⁺ = L.Any.mapWith∈⁺ _ (sys′ , sys′∈ , refl)
+
+            syn′ : unwords ws -synizizes*- sys′
+            syn′ = sound-syss sys′∈
+
+            syn≡ : syn ≡ syn′
+            syn≡ = uniqueSyn syn syn′
+
+            syn′~pm : synizize syn′ mqs ~ pm
+            syn′~pm = subst (λ ◆ → synizize ◆ _ ~ _) syn≡
+                    $ subst (λ ◆ → synizize _ ◆ ~ _) (complete-mqs ws~mqs)
+                    $ syn~pm
+          in
+            L.Any.map (λ where refl → syn′~pm) sys′∈⁺
 -- -}
 -- -}
 -- -}

@@ -6,48 +6,6 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 
--- (519)
-─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
--- INCOMPLETE: add as needed
-─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ἡ ⨾ ή ⨾ ω ⨾ ώ ]
--- INCOMPLETE: add as needed
-·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ὲ ⨾ ἑ ⨾ ἐ ⨾ ο ⨾ ὸ ]
-Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
--- INCOMPLETE: add as needed
-HasCircumflex = _∈ [ ῆ ⨾ ῖ ⨾ ῦ ⨾ ᾶ ]
-
--- (518)
-DoubleConsonant : Pred₀ Letter
-DoubleConsonant = _∈ [ Ζ ⨾ ζ ⨾ Ξ ⨾ ξ ⨾ Ψ ⨾ ψ ]
-
--- (504)
-Diphthong : Pred₀ (Letter × Letter)
-Diphthong = _∈
--- INCOMPLETE: add as needed
-  [ (α , ι)
-  ⨾ (α , υ)
-  ⨾ (α , ὐ)
-  ⨾ (ε , ι)
-  ⨾ (ε , ί)
-  ⨾ (ε , υ)
-  ⨾ (ε , ῦ)
-  ⨾ (η , υ)
-  ⨾ (ο , ι)
-  ⨾ (ο , ῖ)
-  ⨾ (ο , ἰ)
-  ⨾ (ο , υ)
-  ⨾ (ο , ὐ)
-  ⨾ (ο , ὺ)
-  ⨾ (υ , ι)
-  ⨾ (ω , υ)
-  ]
-
-VowelBeforeDoubleConsonant : Pred₀ (Letter × Letter)
-VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c
-
-VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
-VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
-
 -- (522)
 -- We have to look at the next syllable for "vowel before".
 -- (523)
@@ -161,7 +119,7 @@ instance
             ─────────────────────
             (sy , ctx) ~′ nothing
 
-  Complies-Sys-MQs : (Vec Syllable n × Context) -compliesWith- Vec (Maybe Quantity) n
+  Complies-Sys-MQs : (Vec Syllable n × Context) -compliesWith- Quantities n
   Complies-Sys-MQs ._~_ = VPointwise _~_ ∘ inContext
 
 data _ˢ~ᵐ_ : Vec Quantity n → Meter n m → Type where
@@ -188,7 +146,7 @@ instance
 
   -- (1180)
   -- There are six feet to the verse...
-  Complies-MQs-PM : Vec (Maybe Quantity) n -compliesWith- Hexameter n
+  Complies-MQs-PM : Quantities n -compliesWith- Hexameter n
   Complies-MQs-PM ._~_ = _~′_
     module ∣Complies-MQs-PM∣ where
 
@@ -216,61 +174,61 @@ circumflexPenult? (word w)
   with _ ∷ penult ∷ _ ← V.reverse w
   = dec
 
+-- (1160)
+-- The vowel of the ultima in every circumflex on the penult is short.
+mkShortUltima : n > 1 → Quantities n → Quantities n
+mkShortUltima {n = suc n@(suc _)} (s≤s (s≤s _)) = V._[ lastIndex ]≔ just ·
+  where lastIndex = Fi.fromℕ n
+
+[1160] : Word n → Quantities n → Quantities n
+[1160] {n} w
+  with ¿ n > 1 ¿
+... | no _ = id
+... | yes n>1@(s≤s (s≤s _)) =
+  if ⌊ circumflexPenult? w ⌋ then
+  -- NB: should we also require hat the ultima be a *doubtful vowel*?
+    mkShortUltima n>1
+  else
+    id
+
+data _~ʷ_ : (Word n × Context) → Quantities n → Type where
+
+  base : ∀ {mqs} →
+
+    (unword w , ctx) ~ mqs
+    ─────────────────────────
+    (w , ctx) ~ʷ [1160] w mqs
+
+data _~ʷˢ_ : Words n → Vec (Maybe Quantity) n → Type where
+
+  [] :
+    ────────
+    [] ~ʷˢ []
+
+  _∷_ : ∀ {w : Word n}
+          {mqs : Quantities n}
+          {ws : Words n′}
+          {mqs′ : Quantities n′}
+          {mqs₀ : Quantities (n + n′)}
+          ⦃ _ : mqs₀ ≡ mqs V.++ mqs′ ⦄ →
+
+    let
+      nextSy : Maybe Syllable
+      nextSy = L.head $ toList $ unwords ws
+
+      wctx = maybe firstConsonants [] nextSy
+    in
+    ∙ (w , wctx) ~ʷ mqs
+    ∙ ws ~ʷˢ mqs′
+      ────────────────
+      (w ∷ ws) ~ʷˢ mqs₀
+
 instance
-  Complies-W-MQs : (Word n × Context) -compliesWith- Vec (Maybe Quantity) n
-  Complies-W-MQs ._~_ = _~′_
-    module ∣Complies-W-MQs∣ where
-      -- (1160)
-      -- The vowel of the ultima in every circumflex on the penult is short.
-      mkShortUltima : n > 1 → Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
-      mkShortUltima {n = suc n@(suc _)} (s≤s (s≤s _)) = V._[ lastIndex ]≔ just ·
-        where lastIndex = Fi.fromℕ n
+  Complies-W-MQs : (Word n × Context) -compliesWith- Quantities n
+  Complies-W-MQs ._~_ = _~ʷ_
 
-      [1160] : Word n → Vec (Maybe Quantity) n → Vec (Maybe Quantity) n
-      [1160] {n} w
-        with ¿ n > 1 ¿
-      ... | no _ = id
-      ... | yes n>1@(s≤s (s≤s _)) =
-        if ⌊ circumflexPenult? w ⌋ then
-        -- NB: should we also require that the ultima be a *doubtful vowel*?
-          mkShortUltima n>1
-        else
-          id
-
-      data _~′_ : (Word n × Context) → Vec (Maybe Quantity) n → Type where
-
-        base : ∀ {mqs} →
-
-          (unword w , ctx) ~ mqs
-          ─────────────────────────
-          (w , ctx) ~′ [1160] w mqs
-
-  Complies-Ws-MQs : Words n -compliesWith- Vec (Maybe Quantity) n
-  Complies-Ws-MQs ._~_ = _~′_
-    module ∣Complies-Ws-MQs∣ where
-      data _~′_ : Words n → Vec (Maybe Quantity) n → Type where
-
-        [] :
-          ────────
-          [] ~′ []
-
-        _∷_ : ∀ {w : Word n}
-                {mqs : Vec (Maybe Quantity) n}
-                {ws : Words n′}
-                {mqs′ : Vec (Maybe Quantity) n′}
-                {mqs₀ : Vec (Maybe Quantity) (n + n′)}
-                ⦃ _ : mqs₀ ≡ mqs V.++ mqs′ ⦄ →
-
-          let
-            nextSy : Maybe Syllable
-            nextSy = L.head $ toList $ unwords ws
-
-            wctx = maybe firstConsonants [] nextSy
-          in
-          ∙ (w , wctx) ~  mqs
-          ∙ ws ~′ mqs′
-            ────────────────
-            (w ∷ ws) ~′ mqs₀
+  Complies-Ws-MQs : Words n -compliesWith- Quantities n
+  Complies-Ws-MQs ._~_ = _~ʷˢ_
 
   Complies-Ws-HM : Words n -compliesWith- Hexameter n′
   Complies-Ws-HM ._~_ = _~↑′_
@@ -307,11 +265,6 @@ instance
 open ∣Complies-Sy-MQ∣ public
   hiding (_~′_)
 open ∣Complies-MQs-PM∣ public
-  hiding (_~′_)
--- open ∣Complies-Sys-PM∣
-open ∣Complies-W-MQs∣ public
-  hiding (_~′_)
-open ∣Complies-Ws-MQs∣ public
   hiding (_~′_)
 open ∣Complies-Ws-HM∣ public
   hiding (_~′_)

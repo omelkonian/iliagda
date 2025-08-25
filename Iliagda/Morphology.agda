@@ -6,13 +6,13 @@ open import Iliagda.Init
 -- INCOMPLETE: add as needed
 data Letter : Type where
   -- vowels
-  Ἀ Ἄ α ἄ ὰ ά ᾶ
+  Ἀ Ἄ α ἀ ἄ ὰ ά ᾶ
    ε έ ἔ ὲ ἑ ἐ
-   η ῆ ἣ ἡ ή
-   ι ί ἰ ῖ ϊ ΐ
+   η ῆ ἣ ἡ ή ὴ
+   ι ί ὶ ἰ ῖ ϊ ΐ
    ο ὸ
-   υ ὐ ὺ ῦ ύ
-   ω ώ
+   υ ὐ ὺ ῦ ύ ὗ
+   ω ώ ῶ
   -- consonants
    Β β Γ γ Δ δ Ζ ζ Θ θ Κ κ Λ ƛ Μ μ Ν ν Ξ ξ
    Π π Ρ ρ Σ σ ς Τ τ Φ φ Χ χ Ψ ψ

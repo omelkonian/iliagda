@@ -8,6 +8,9 @@ data Quantity : Type where
   · {- short -} : Quantity
   ─ {- long  -} : Quantity
 
+Quantities : ℕ → Type
+Quantities = Vec (Maybe Quantity)
+
 data Foot : (n : ℕ) {- syllables -} → Vec Quantity n → Type where
   ─·· {- dactyl -} : Foot 3 (─ ∷ · ∷ · ∷ [])
   ──  {- sponde -} : Foot 2 (─ ∷ ─ ∷ [])
@@ -80,7 +83,7 @@ variable
   q q′ : Quantity
   qs qs′ : Vec Quantity n
   mq mq′ mq″ : Maybe Quantity
-  mqs mqs′ : Vec (Maybe Quantity) n
+  mqs mqs′ : Quantities n
   pm  : Meter n m
   pm′ : Meter n′ m′
   meter meter′ : Hexameter n
@@ -88,3 +91,74 @@ variable
 infixr 5 _∷ᵖᵐ_
 _∷ᵖᵐ_ : Foot n qs → Meter n′ m′ → Meter (n + n′) (1 + m′)
 f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
+
+-- ** basic rules
+
+-- (519)
+─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
+-- INCOMPLETE: add as needed
+─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ἡ ⨾ ή ⨾ ὴ ⨾ ω ⨾ ώ ⨾ ῶ ]
+-- INCOMPLETE: add as needed
+·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ὲ ⨾ ἑ ⨾ ἐ ⨾ ο ⨾ ὸ ]
+Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
+-- INCOMPLETE: add as needed
+HasCircumflex = _∈ [ ῆ ⨾ ῖ ⨾ ῦ ⨾ ὗ ⨾ ᾶ ⨾ ῶ ]
+
+-- (518)
+DoubleConsonant : Pred₀ Letter
+DoubleConsonant = _∈ [ Ζ ⨾ ζ ⨾ Ξ ⨾ ξ ⨾ Ψ ⨾ ψ ]
+
+-- (504)
+Diphthong : Pred₀ (Letter × Letter)
+Diphthong = _∈
+-- INCOMPLETE: add as needed
+  ( (α , ι)
+  ∷ (α , ὶ)
+  ∷ (α , υ)
+  ∷ (α , ὐ)
+  ∷ (ε , ι)
+  ∷ (ε , ί)
+  ∷ (ε , ὶ)
+  ∷ (ε , υ)
+  ∷ (ε , ῦ)
+  ∷ (η , υ)
+  ∷ (ο , ι)
+  ∷ (ο , ῖ)
+  ∷ (ο , ἰ)
+  ∷ (ο , ὶ)
+  ∷ (ο , υ)
+  ∷ (ο , ὐ)
+  ∷ (ο , ὺ)
+  ∷ (ο , ὗ)
+  ∷ (υ , ι)
+  ∷ (υ , ὶ)
+  ∷ (ω , υ)
+  ∷ []
+  )
+
+VowelBeforeDoubleConsonant : Pred₀ (Letter × Letter)
+VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c
+
+VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
+VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
+
+{-
+-- ** example words
+
+w7 : Words _
+w7 =
+  ( word [ [ Ἀ ] ⨾ [ τ ⨾ ρ ⨾ ε ] ⨾ [ ΐ ] ⨾ [ δ ⨾ η ⨾ ς ] ]
+  ∷ word [ [ τ ⨾ ε ] ]
+  ∷ word [ [ ἄ ] ⨾ [ ν ⨾ α ⨾ ξ ] ]
+  ∷ word [ [ ἀ ⨾ ν ] ⨾ [ δ ⨾ ρ ⨾ ῶ ⨾ ν ] ]
+  ∷ word [ [ κ ⨾ α ⨾ ὶ ] ]
+  ∷ word [ [ δ ⨾ ῖ ] ⨾ [ ο ⨾ ς ] ]
+  ∷ word [ [ Ἀ ] ⨾ [ χ ⨾ ι ⨾ ƛ ] ⨾ [ ƛ ⨾ ε ⨾ ύ ⨾ ς ] ]
+  ∷ []
+  )
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
