@@ -15,4 +15,5 @@ jobs:
              omelkonian/agda-stdlib-classes#v2.3
              omelkonian/agda-stdlib-meta#v2.3
           main: Iliagda
+          deploy: true
           token: ${{ secrets.GITHUB_TOKEN }}
