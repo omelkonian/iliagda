@@ -27,6 +27,13 @@ Hexameter n = Meter n 6
 unmkPM : Meter n m → Feet
 unmkPM (mkPM fs) = fs
 
+feet-qs : (fs : Feet) → Vec Quantity (∑₁ fs)
+feet-qs [] = []
+feet-qs ((_ , qs , _) ∷ fs) = qs V.++ feet-qs fs
+
+meter-qs : Meter n m → Vec Quantity n
+meter-qs (mkPM fs) = feet-qs fs
+
 ∑₁≡0 : ∀ {P : Pred₀ ℕ} {ps : List (∃ P)} →
   ∑₁ ps ≡ 0 →
   All ((_≡ 0) ∘ proj₁) ps
@@ -84,9 +91,8 @@ variable
   qs qs′ : Vec Quantity n
   mq mq′ mq″ : Maybe Quantity
   mqs mqs′ : Quantities n
-  pm  : Meter n m
-  pm′ : Meter n′ m′
-  meter meter′ : Hexameter n
+  pm  pm′ : Meter n m
+  hm  hm′ : Hexameter n
 
 infixr 5 _∷ᵖᵐ_
 _∷ᵖᵐ_ : Foot n qs → Meter n′ m′ → Meter (n + n′) (1 + m′)
@@ -97,9 +103,9 @@ f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 -- (519)
 ─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
 -- INCOMPLETE: add as needed
-─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ἡ ⨾ ή ⨾ ὴ ⨾ ω ⨾ ώ ⨾ ῶ ]
+─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ἡ ⨾ ή ⨾ ὴ ⨾ ἠ ⨾ ἦ ⨾ ω ⨾ ώ ⨾ ῶ ⨾ ῳ ]
 -- INCOMPLETE: add as needed
-·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ὲ ⨾ ἑ ⨾ ἐ ⨾ ο ⨾ ὸ ]
+·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ὲ ⨾ ἑ ⨾ ἐ ⨾ ο ⨾ ὸ ⨾ ό ⨾ ὃ ⨾ ὄ ⨾ ὀ ]
 Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
 -- INCOMPLETE: add as needed
 HasCircumflex = _∈ [ ῆ ⨾ ῖ ⨾ ῦ ⨾ ὗ ⨾ ᾶ ⨾ ῶ ]
@@ -121,17 +127,23 @@ Diphthong = _∈
   ∷ (ε , ὶ)
   ∷ (ε , υ)
   ∷ (ε , ῦ)
+  ∷ (ε , ύ)
   ∷ (η , υ)
   ∷ (ο , ι)
   ∷ (ο , ῖ)
   ∷ (ο , ἰ)
   ∷ (ο , ὶ)
+  ∷ (ο , ί)
   ∷ (ο , υ)
   ∷ (ο , ὐ)
   ∷ (ο , ὺ)
   ∷ (ο , ὗ)
+  ∷ (ο , ὕ)
+  ∷ (ο , ῦ)
+  ∷ (ο , ύ)
   ∷ (υ , ι)
   ∷ (υ , ὶ)
+  ∷ (υ , ἱ)
   ∷ (ω , υ)
   ∷ []
   )

@@ -26,10 +26,22 @@ Is there a connection between our "Maybe Quantity" (ambiguous roles) with 3-valu
 
 # TODO
 
-- Decidability: higher in the relation tower
+- Definitions: simplify Foot/Meter with less indices
+
+✓ Decidability: higher in the relation tower
+✓ Decidability: all hexameters
+- Decidability: optimize allHexameters / option2 from allHexameters
+
+- Tooling: rendering proofs
+
+- Tooling: Haskell compilation
+  + compile Agda ~> Haskell
+  + wrapper/glue code (parsing JSON or whatever)
+  + driving the system/decision procedures with a CLI etc...
+
 - Syllabification
+  + Work on chars/strings instead of enum Letters
 - Consider punctuation? (e.g. comma, apostrophe)
-- Work on chars/strings instead of enum Letters
 
 # DUMP
 

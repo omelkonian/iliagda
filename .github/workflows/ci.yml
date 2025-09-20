@@ -1,18 +1,18 @@
 name: CI
 on:
   # schedule: [{cron: '0 0 * * *'}]
-  push: {branches: master}
+  push: {branches: main}
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: omelkonian/setup-agda@master
+      - uses: omelkonian/setup-agda@main
         with:
           agda-version: 2.8.0
           stdlib-version: 2.3
-          libraries:
-	    - agda/agda-stdlib-classes#v2.3
-	    - agda/agda-stdlib-meta#v2.3
+          libraries: | 
+             omelkonian/agda-stdlib-classes#v2.3
+             omelkonian/agda-stdlib-meta#v2.3
           main: Iliagda
           token: ${{ secrets.GITHUB_TOKEN }}

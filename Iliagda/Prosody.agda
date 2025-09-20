@@ -146,9 +146,9 @@ instance
 
   -- (1180)
   -- There are six feet to the verse...
-  Complies-MQs-PM : Quantities n -compliesWith- Hexameter n
-  Complies-MQs-PM ._~_ = _~′_
-    module ∣Complies-MQs-PM∣ where
+  Complies-MQs-HM : Quantities n -compliesWith- Hexameter n
+  Complies-MQs-HM ._~_ = _~′_
+    module ∣Complies-MQs-HM∣ where
 
       -- (1184)
       -- The last syllable of a verse is considered long (due to pause).
@@ -160,9 +160,9 @@ instance
 
         reify :
           ∙ mqs -masks*- qs
-          ∙ mkLastLong (Hex>0 pm) qs ~ pm
+          ∙ mkLastLong (Hex>0 hm) qs ~ hm
             ─────────────────────────────
-            mqs ~′ pm
+            mqs ~′ hm
 
 CircumflexPenult : Pred₀ (Word (2 + n))
 CircumflexPenult (word w)
@@ -239,32 +239,39 @@ instance
 
         _~∘~_ : ∀ {ws : Words n} {mqs : Vec (Maybe Quantity) n} →
           ∙ ws  ~ mqs
-          ∙ mqs ~ pm
+          ∙ mqs ~ hm
             ────────
-            ws ~′ pm
+            ws ~′ hm
 
       open import Iliagda.Prosody.Synizesis
 
       data _~↑′_ : Words n → Hexameter n′ → Type where
 
         fromBelow :
-          ws ~′ pm
+          ws ~′ hm
           ─────────
-          ws ~↑′ pm
+          ws ~↑′ hm
 
-        -- synizesis
+        -- synezesis
         [586] : ∀ {ws : Words n} {mqs : Vec (Maybe Quantity) n}
-                  {sys′ : Vec Syllable n′} {pm : Hexameter n′} →
-          ∀ (syn : unwords ws -synizizes*- sys′) →
+                  {sys′ : Vec Syllable n′} {hm : Hexameter n′} →
+          ∀ (syn : unwords ws -synezizes*- sys′) →
           ∙ ws ~ mqs
           ∙ NonDerivable mqs
-          ∙ synizize syn mqs ~ pm -- TODO: accept only minimal synizeses
+          ∙ synezize syn mqs ~ hm
+          -- it is a minimal synezesis
+          -- ∙ (∀ {n″}
+          --      {sys″ : Vec Syllable n″}
+          --      {hm′ : Hexameter n″}
+          --      {syn′ : unwords ws -synezizes*- sys″}
+          --      → synezize syn′ mqs ~ hm′
+          --      → syn ≼ syn′)
             ─────────────────────
-            ws ~↑′ pm
+            ws ~↑′ hm
 
 open ∣Complies-Sy-MQ∣ public
   hiding (_~′_)
-open ∣Complies-MQs-PM∣ public
+open ∣Complies-MQs-HM∣ public
   hiding (_~′_)
 open ∣Complies-Ws-HM∣ public
   hiding (_~′_)

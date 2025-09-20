@@ -95,6 +95,19 @@ open V.PW public
   using ([]; _∷_)
   renaming (Pointwise to VPointwise)
 
+module Str where
+  open import Data.String public
+  open import Data.String.Properties public
+open Str public
+  using (String)
+
+open V public
+  using (Vec; []; _∷_)
+open V.PW public
+  using ([]; _∷_)
+  renaming (Pointwise to VPointwise)
+
+
 open import Relation.Nullary public
   using (¬_)
 open import Relation.Nullary.Decidable.Core public
@@ -104,7 +117,7 @@ open import Relation.Unary public
 open import Relation.Binary public
   using (Rel)
 open import Relation.Binary.PropositionalEquality public
-  using (_≡_; refl; _≢_; sym; trans; cong; subst; module ≡-Reasoning)
+  using (_≡_; refl; _≢_; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
 
 Pred₀ : Type → Type₁
 Pred₀ A = A → Type
@@ -128,6 +141,7 @@ open import Class.ToList public
 open import Class.FromList public
 open import Class.ToN public
 open import Class.FromN public
+open import Class.Show public
 
 open import Tactic.Defaults public
 -- open import Tactic.Derive.DecEq public
