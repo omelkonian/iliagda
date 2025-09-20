@@ -5,7 +5,7 @@ open import Iliagda.Init
 
 -- INCOMPLETE: add as needed
 data Letter : Type where
-  -- vowels
+  -- ** vowels
   Ἀ Ἄ α ἀ ἄ ὰ ά ᾶ
    ε έ ἔ ὲ ἑ ἐ
    η ῆ ἣ ἡ ή ὴ ἠ ἦ
@@ -13,18 +13,29 @@ data Letter : Type where
    ο ὸ ό ὃ ὄ ὀ
    υ ὐ ὺ ῦ ύ ὗ ὕ
    ω ώ ῶ ῳ
-  -- consonants
+  -- ** consonants
    Β β Γ γ Δ δ Ζ ζ Θ θ Κ κ Λ ƛ Μ μ Ν ν Ξ ξ
    Π π Ρ ρ Σ σ ς Τ τ Φ φ Χ χ Ψ ψ
+  -- ** special symbols
+   ᾽ -- apostrophe
    : Letter
 
-Consonant Vowel : Pred₀ Letter
+Consonant Vowel Apostrophe : Pred₀ Letter
 Consonant = _∈
   ( Β ∷ β ∷ Γ ∷ γ ∷ Δ ∷ δ ∷ Ζ ∷ ζ
   ∷ Θ ∷ θ ∷ Κ ∷ κ ∷ Λ ∷ ƛ ∷ Μ ∷ μ ∷ Ν ∷ ν
   ∷ Ξ ∷ ξ ∷ Π ∷ π ∷ Ρ ∷ ρ ∷ Σ ∷ σ ∷ ς
   ∷ Τ ∷ τ ∷ Φ ∷ φ ∷ Χ ∷ χ ∷ Ψ ∷ ψ ∷ [])
-Vowel = ¬_ ∘ Consonant
+Vowel = _∈
+  -- INCOMPLETE: add as needed
+  ( Ἀ ∷ Ἄ ∷ α ∷ ἀ ∷ ἄ ∷ ὰ ∷ ά ∷ ᾶ
+  ∷ ε ∷ έ ∷ ἔ ∷ ὲ ∷ ἑ ∷ ἐ
+  ∷ η ∷ ῆ ∷ ἣ ∷ ἡ ∷ ή ∷ ὴ ∷ ἠ ∷ ἦ
+  ∷ ι ∷ ί ∷ ὶ ∷ ἰ ∷ ῖ ∷ ϊ ∷ ΐ ∷ ἱ
+  ∷ ο ∷ ὸ ∷ ό ∷ ὃ ∷ ὄ ∷ ὀ
+  ∷ υ ∷ ὐ ∷ ὺ ∷ ῦ ∷ ύ ∷ ὗ ∷ ὕ
+  ∷ ω ∷ ώ ∷ ῶ ∷ ῳ ∷ [])
+Apostrophe = _≡ ᾽
 
 -- TODO: syllabification
 Syllable = List⁺ Letter

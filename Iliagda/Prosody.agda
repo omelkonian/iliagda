@@ -6,56 +6,129 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 
+{-
+-- data LastAny {xs : List A} {P : A → Type} : Any P xs → Type where
+--   isLastAny : (p : P x) → LastAny (here {xs = []} p)
+LastAny : ∀ {xs : List A} {P : A → Type} → Any P xs → Type
+LastAny = λ where
+  (here {xs = xs} _) → xs ≡ []
+  (there p)          → LastAny p
+
 -- (522)
 -- We have to look at the next syllable for "vowel before".
 -- (523)
 -- We might also need to look at the next word
 -- (in the case of the final syllable of a word).
 
-Context = List Letter -- the following consonants
+Context = List Letter -- the following letters
 
-module _ (next : Context) where
-  ─Syllable : Pred₀ Syllable
-  ─Syllable sy =
-    (  Any ─Vowel     -- \ by nature
-    ∪₁ Any× Diphthong -- /
-    ∪₁ Any×₃ VowelBeforeTwoConsonants  -- \ by position
-    ∪₁ Any× VowelBeforeDoubleConsonant -- /
-    ) (sy L.NE.⁺++ next)
+variable ctx ctx′ : Context
 
-  ·Syllable : Pred₀ Syllable
-  ·Syllable = (¬_ ∘ ─Syllable)
-            ∩¹ (Any ·Vowel) -- beware of dipthongs (now covered by ─Syllable)
+data StartsWithDoubleConsonant : Context → Type where
+  doubleConsonant :
+    DoubleConsonant l
+    ───────────────────────────────────
+    StartsWithDoubleConsonant (l ∷ ctx)
 
-private
-  _ : ¬ ─Syllable [] [ ν ⨾ ι ⨾ ν ]
-  _ = auto
+data StartsWithTwoConsonants : Context → Type where
+  twoConsonants :
+    ∙ Consonant l
+    ∙ Consonant l′
+      ──────────────────────────────────────
+      StartsWithTwoConsonants (l ∷ l′ ∷ ctx)
 
-  _ : ¬ ·Syllable [] [ ν ⨾ ι ⨾ ν ]
-  _ = auto
+data StartsWithVowel : Context → Type where
+  vowel :
+    Vowel l
+    ─────────────────────────
+    StartsWithVowel (l ∷ ctx)
 
-  _ : ─Syllable [] [ μ ⨾ ῆ ]
-  _ = auto
+!_ : Quantity → Quantity
+!_ = λ{ ─ → ·; · → ─ }
 
-  _ : ─Syllable [ κ ⨾ α ⨾ ι ] [ ν ⨾ ι ⨾ ν ]
-  _ = auto
+-- TODO: consider commas, full stops, etc.
 
-private variable x : X; mx : Maybe X
+module QuantityRules (next : Context) where
 
-data _-masks-_ : Maybe X → X → Type where
-  mask : nothing -masks- x
-  refl : just x  -masks- x
+  FollowedBy : (Q : Context → Type) {P : Letter → Type} {ls : List Letter} →
+    Any P ls → Type
+  FollowedBy Q = λ where
+    (here {xs = xs} _) → Q (xs ++ next)
+    (there p) → FollowedBy Q p
 
-_-masks*-_ : Vec (Maybe X) n → Vec X n → Type
-_-masks*-_ = VPointwise _-masks-_
+  -- [522]
+  data _↝_ : Syllable → Quantity → Type where
 
-_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
-    (q       ∷ q′      ∷ q       ∷ [])
-_ = mask     ∷ refl    ∷ mask    ∷ []
+    longByNature :
+      ( Any× Diphthong sy
+      ⊎ Any ─Vowel sy
+      ⊎ Any HasCircumflex sy )
+      ────────────────────────
+      sy ↝ ─
 
-_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
-    (q       ∷ q′      ∷ q       ∷ [])
-_ = mask     ∷ refl    ∷ mask    ∷ []
+    longByPosition :
+      (v∈ : Any Vowel sy) →
+      ∙ FollowedBy
+          (λ ctx → StartsWithDoubleConsonant ctx
+                 ⊎ StartsWithTwoConsonants ctx)
+          v∈
+        ───────────────
+        sy ↝ ─
+
+    shortByNature :
+      ∀ (v∈ : Any ·Vowel sy) →
+      ∙ ¬ Any× Diphthong sy
+      -- ∙ ¬ longByPosition sy
+      ∙ ¬ FollowedBy
+            (λ ctx → StartsWithDoubleConsonant ctx
+                   ⊎ StartsWithTwoConsonants ctx)
+                   v∈
+        ───────────────────
+        sy ↝ ·
+
+  data _~∗_ : Syllable → Quantity → Type where
+
+    [522] :
+      sy ↝ q
+      -- ∙ ¬ [1173] sy -- "regularly"
+      ───────
+      sy ~∗ q
+
+    [1173] :
+      (v∈ : Any Vowel sy) →
+      ∙ LastAny v∈
+      ∙ FollowedBy StartsWithVowel v∈
+        ─────────────────────────────
+        sy ~∗ ·
+
+  _≁∗_ = λ x y →  ¬ (x ~∗ y)
+
+  data _~?_ : Syllable → Maybe Quantity → Type where
+
+    ambiguous :
+      (∀ q → sy ≁∗ q)
+      ───────────────
+      sy ~? nothing
+
+    ambivalent :
+      ∙ sy ~∗ ─
+      ∙ sy ~∗ ·
+        ─────────────
+        sy ~? nothing
+
+    certain :
+      ∙ sy ~∗ q
+      ∙ sy ≁∗ (! q)
+        ────────────
+        sy ~? just q
+
+  ─Syllable = _~? just ─
+  ·Syllable = _~? just ·
+
+open QuantityRules
+  renaming ( _↝_ to _⊢_↝_
+           ; _~∗_ to _⊢_~∗_; _≁∗_ to _⊢_≁∗_
+           ; _~?_ to _⊢_~?_)
 
 -- A complies with B
 record _-compliesWith-_ (A B : Type) : Type₁ where
@@ -80,10 +153,28 @@ record _-compliesWith-_ (A B : Type) : Type₁ where
 
 open _-compliesWith-_ ⦃ ... ⦄ public
 
-private variable ctx : Context
+instance
+  Complies-Sy-MQ : (Syllable × Context) -compliesWith- Maybe Quantity
+  Complies-Sy-MQ ._~_ = _~′_
+    module ∣Complies-Sy-MQ∣ where
+      data _~′_ : Syllable × Context → Maybe Quantity → Type where
 
-firstConsonants : ⦃ _ : ToList A Letter ⦄ → A → List Letter
-firstConsonants = L.takeWhile (λ l → ¿ Consonant l ¿) ∘ toList
+        ambiguous :
+          (∀ q → ctx ⊢ sy ≁∗ q)
+          ─────────────────────
+          (sy , ctx) ~′ nothing
+
+        ambivalent :
+          ∙ (ctx ⊢ sy ~∗ ─)
+          ∙ (ctx ⊢ sy ~∗ ·)
+            ─────────────────────
+            (sy , ctx) ~′ nothing
+
+        certain :
+          ∙ ctx ⊢ sy ~∗ q
+          ∙ ctx ⊢ sy ≁∗ (! q)
+            ────────────────────
+            (sy , ctx) ~′ just q
 
 inContext : Vec Syllable n × Context → Vec (Syllable × Context) n
 inContext (sys , ctx) = go sys
@@ -92,33 +183,9 @@ inContext (sys , ctx) = go sys
   go = λ where
     [] → []
     [ sy ] → [ sy , ctx ]
-    (sy ∷ sys@(sy′ ∷ _)) → (sy , firstConsonants sy′) ∷ go sys
+    (sy ∷ sys@(sy′ ∷ _)) → (sy , toList sy′) ∷ go sys
 
 instance
-  Complies-Sy-MQ : (Syllable × Context) -compliesWith- Maybe Quantity
-  Complies-Sy-MQ ._~_ = _~′_
-    module ∣Complies-Sy-MQ∣ where
-      data _~′_ : Syllable × Context → Maybe Quantity → Type where
-
-        long  :
-
-          ─Syllable ctx sy
-          ────────────────────
-          (sy , ctx) ~′ just ─
-
-        short :
-
-          ·Syllable ctx sy
-          ────────────────────
-          (sy , ctx) ~′ just ·
-
-        ambiguous :
-
-          ∙ ¬ ─Syllable ctx sy
-          ∙ ¬ ·Syllable ctx sy
-            ─────────────────────
-            (sy , ctx) ~′ nothing
-
   Complies-Sys-MQs : (Vec Syllable n × Context) -compliesWith- Quantities n
   Complies-Sys-MQs ._~_ = VPointwise _~_ ∘ inContext
 
@@ -144,6 +211,24 @@ instance
   Complies-Qs-PM : Vec Quantity n -compliesWith- Meter n m
   Complies-Qs-PM ._~_ = _ˢ~ᵐ_
 
+private variable x : X; mx : Maybe X
+
+data _-masks-_ : Maybe X → X → Type where
+  mask : nothing -masks- x
+  refl : just x  -masks- x
+
+_-masks*-_ : Vec (Maybe X) n → Vec X n → Type
+_-masks*-_ = VPointwise _-masks-_
+
+_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
+    (q       ∷ q′      ∷ q       ∷ [])
+_ = mask     ∷ refl    ∷ mask    ∷ []
+
+_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
+    (q       ∷ q′      ∷ q       ∷ [])
+_ = mask     ∷ refl    ∷ mask    ∷ []
+
+instance
   -- (1180)
   -- There are six feet to the verse...
   Complies-MQs-HM : Quantities n -compliesWith- Hexameter n
@@ -174,31 +259,140 @@ circumflexPenult? (word w)
   with _ ∷ penult ∷ _ ← V.reverse w
   = dec
 
--- (1160)
--- The vowel of the ultima in every circumflex on the penult is short.
-mkShortUltima : n > 1 → Quantities n → Quantities n
-mkShortUltima {n = suc n@(suc _)} (s≤s (s≤s _)) = V._[ lastIndex ]≔ just ·
+data _~↓↓ʷ_ : (Word n × Context) → Quantities n → Type where
+
+  base :
+    (unword w , ctx) ~ mqs
+    ──────────────────────
+    (w , ctx) ~↓↓ʷ mqs
+
+data VLast (P : A → Type) : Vec A (suc n) → Type where
+  here :
+    P x
+    ─────────────
+    VLast P [ x ]
+
+  there : ∀ {xs : Vec A (suc n)} →
+    VLast P xs
+    ────────────────
+    VLast P (x ∷ xs)
+
+_∶⋯_ : Vec A (suc n) → A → Type
+xs ∶⋯ x = VLast (_≡ x) xs
+
+V-init : Vec A (suc n) → Vec A n
+V-init = λ where
+  (x ∷ []) → []
+  (x ∷ xs@(_ ∷ _)) → x ∷ V-init xs
+
+_∶⋯_∣_ : Vec A (2 + n) → A → A → Type
+xs ∶⋯ penult ∣ ult
+  = (xs ∶⋯ ult)
+  × (V-init xs ∶⋯ penult)
+
+_∶⋯_∣_∣_ : Vec A (3 + n) → A → A → A → Type
+xs ∶⋯ antepenult ∣ penult ∣ ult
+  = (xs ∶⋯ ult)
+  × (V-init xs ∶⋯ penult)
+  × (V-init (V-init xs) ∶⋯ antepenult)
+
+variable antepenult : Syllable
+
+_≔ₙ_ : Quantities (1 + n) → Quantity → Quantities (1 + n)
+_≔ₙ_ {n = n} mqs q = mqs V.[ lastIndex ]≔ just q
   where lastIndex = Fi.fromℕ n
 
-[1160] : Word n → Quantities n → Quantities n
-[1160] {n} w
-  with ¿ n > 1 ¿
-... | no _ = id
-... | yes n>1@(s≤s (s≤s _)) =
-  if ⌊ circumflexPenult? w ⌋ then
-  -- NB: should we also require hat the ultima be a *doubtful vowel*?
-    mkShortUltima n>1
-  else
-    id
+_≔ₙ₋₁_ : Quantities (2 + n) → Quantity → Quantities (2 + n)
+_≔ₙ₋₁_ {n = n} mqs q = mqs V.[ penultIndex ]≔ just q
+  where penultIndex = Fi.inject₁ $ Fi.fromℕ n
+
+infix 10 _≔ₙ_ _≔ₙ₋₁_
+
+data _~↓ʷ_ : (Word n × Context) → Quantities n → Type where
+
+  -- The vowel of the ultima in every word
+  -- having the circumflex on the penult is short.
+  [1160] :
+    ∙ unword w ∶⋯ penult ∣ ult
+    ∙ Any HasCircumflex penult
+    ∙ (w , ctx) ~↓↓ʷ mqs
+      ────────────────────────
+      (w , ctx) ~↓ʷ (mqs ≔ₙ ·)
+
+  -- If a long, penult has the acute accent,
+  -- then the ultima must be long also.
+  [1161] :
+    ∙ unword w ∶⋯ penult ∣ ult
+    ∙ toList ult ⊢ penult ↝ ─
+    ∙ Any HasAcute penult
+    ∙ (w , ctx) ~↓↓ʷ mqs
+      ────────────────────────
+      (w , ctx) ~↓ʷ (mqs ≔ₙ ─)
+
+  -- If the ultima is short and the penult has the acute accent,
+  -- then the penult must be short also.
+  [1162] :
+    ∙ unword w ∶⋯ penult ∣ ult
+    ∙ ctx ⊢ ult ↝ ·
+    ∙ Any HasAcute penult
+    ∙ (w , ctx) ~↓↓ʷ mqs
+      ──────────────────────────
+      (w , ctx) ~↓ʷ (mqs ≔ₙ₋₁ ·)
+
+  -- If the antepenult has the accent,
+  -- the vowel of the ultima must be short.
+  [1163] :
+    ∙ unword w ∶⋯ antepenult ∣ penult ∣ ult
+    ∙ Any HasAccent antepenult
+      ─────────────────────────────────────
+      (w , ctx) ~↓ʷ (mqs ≔ₙ ·)
+
+FinalDiphthong : Pred₀ (Letter × Letter)
+FinalDiphthong = _∈
+  ( (α , ι)
+  ∷ (α , ὶ)
+  ∷ (ο , ι)
+  ∷ (ο , ῖ)
+  ∷ (ο , ἰ)
+  ∷ (ο , ὶ)
+  ∷ (ο , ί)
+  ∷ []
+  )
+
+-- (1164) exception rules
+data EndsInDiphthong : Word n → Type where
+  finalDipthong :
+    ∙ unword w ∶⋯ ult
+    ∙ Any× FinalDiphthong ult
+      ───────────────────────
+      EndsInDiphthong w
 
 data _~ʷ_ : (Word n × Context) → Quantities n → Type where
 
-  base : ∀ {mqs} →
+  [1164] :
+    ∙ EndsInDiphthong w
+    ∙ (w , ctx) ~↓↓ʷ mqs
+      ──────────────────
+      (w , ctx) ~ʷ mqs
 
-    (unword w , ctx) ~ mqs
-    ─────────────────────────
-    (w , ctx) ~ʷ [1160] w mqs
+  [1165] :
+    ∙ ApparentException w
+    ∙ (w , ctx) ~↓↓ʷ mqs
+      ──────────────────
+      (w , ctx) ~ʷ mqs
 
+  fromBelow :
+    ∙ ¬ EndsInDiphthong w
+    ∙ ¬ ApparentException w
+    ∙ (w , ctx) ~↓ʷ mqs
+      ───────────────────
+      (w , ctx) ~ʷ mqs
+
+instance
+  Complies-W-MQs : (Word n × Context) -compliesWith- Quantities n
+  Complies-W-MQs ._~_ = _~ʷ_
+
+{-
 data _~ʷˢ_ : Words n → Vec (Maybe Quantity) n → Type where
 
   [] :
@@ -216,20 +410,19 @@ data _~ʷˢ_ : Words n → Vec (Maybe Quantity) n → Type where
       nextSy : Maybe Syllable
       nextSy = L.head $ toList $ unwords ws
 
-      wctx = maybe firstConsonants [] nextSy
+      wctx : Context
+      wctx = maybe toList [] nextSy
     in
-    ∙ (w , wctx) ~ʷ mqs
+    ∙ (w , wctx) ~ mqs
     ∙ ws ~ʷˢ mqs′
       ────────────────
       (w ∷ ws) ~ʷˢ mqs₀
 
 instance
-  Complies-W-MQs : (Word n × Context) -compliesWith- Quantities n
-  Complies-W-MQs ._~_ = _~ʷ_
-
   Complies-Ws-MQs : Words n -compliesWith- Quantities n
   Complies-Ws-MQs ._~_ = _~ʷˢ_
 
+{-
   Complies-Ws-HM : Words n -compliesWith- Hexameter n′
   Complies-Ws-HM ._~_ = _~↑′_
     -- NB: note duality with [1160]

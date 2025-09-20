@@ -26,9 +26,10 @@ Derivable ws =
 
 instance
   Show-Derivations : Show (Derivations ws)
-  -- Show-Derivations .show [] = "∅∅∅∅∅∅"
-  -- Show-Derivations .show ds = lined ds
-  Show-Derivations .show = lined
+  -- Show-Derivations .show = lined
+  Show-Derivations {ws = ws} .show = λ where
+    [] → "\n" ◇ show (unwords ws) ◇ "\n∅"
+    ds → lined ds
 
   Show-ManyDerivations : Show (List ∃Derivations)
   -- Show-ManyDerivations .show = lined
@@ -41,7 +42,7 @@ dss = map (λ (_ , v) → -, -, allDerivations v) verses
 
 {- ** Interactively showing all derivations of given verses **
 
--- [C-u C-u C-c C-n] allDerivations v1
+-- [C-u C-u C-c C-n] dss
 
 μῆ νιν ἄ ει δε θε ὰ Πη ƛη ϊ ά δε⁀ω Ἀ χι ƛῆ ος
 ─  ·   · ─  ·  ·  ─ ─  ─  · · ─    · ·  ─  ─
@@ -70,12 +71,12 @@ dss = map (λ (_ , v) → -, -, allDerivations v) verses
 μῆ νιν ἄ ει δε θε ὰ Πη ƛη⁀ϊ ά δε⁀ω Ἀ χι ƛῆ⁀ος
 ─  ·   · ─  ·  ·  ─ ─  ─    ─ ─    ─ ─  ─
 
--- [C-u C-u C-c C-n] allDerivations v2
+***************
 
 οὐ ƛο μέ νην ἣ μυ ρί Ἀ χαι οῖς ἄƛ γε ἔ θη κε
 ─  ·  ·  ─   ─ ─  ·  · ─   ─   ─  ·  · ─  ─
 
--- [C-u C-u C-c C-n] allDerivations v3
+***************
 
 ποƛ ƛὰς δἰφ θί μους ψυ χὰς Ἄ ϊ δι προ ΐ α ψεν
 ─   ─   ─   ─  ─    ·  ·   ─ ─ ─  ·   · ─ ─
@@ -83,7 +84,7 @@ dss = map (λ (_ , v) → -, -, allDerivations v) verses
 ποƛ ƛὰς δἰφ θί μους ψυ χὰς Ἄ ϊ δι προ ΐ α ψεν
 ─   ─   ─   ─  ─    ─  ─   · · ─  ·   · ─ ─
 
--- [C-u C-u C-c C-n] allDerivations v4
+***************
 
 ἡρ ώ ων αὐ τοὺς δὲ ἑ ƛώ ρι α τεῦ χε κύ νεσ σιν
 ─  ─ ─  ─  ─    ·  · ─  ·  · ─   ·  ·  ─   ─
@@ -91,85 +92,63 @@ dss = map (λ (_ , v) → -, -, allDerivations v) verses
 ἡρ ώ ων αὐ τοὺς δὲ ἑ ƛώ ρι α τεῦ χε κύ νεσ σιν
 ─  ─ ─  ─  ─    ·  · ─  ·  · ─   ·  ·  ─   ─
 
--- [C-u C-u C-c C-n] allDerivations v5
+***************
 
 οἰ ω νοῖ σί τε πᾶ σι Δι ὸς δἐ τε ƛεί ε το βου ƛή
 ─  ─ ─   ·  ·  ─  ·  ·  ─  ·  ·  ─   · ·  ─   ─
 
--- [C-u C-u C-c C-n] allDerivations v6
+***************
 
 ἐξ οὗ δὴ τὰ πρῶ τα δι α στή την ἐ ρί σα ντε
 ─  ─  ─  ─  ─   ·  ·  ─ ─   ─   · ·  ─  ─
 
--- [C-u C-u C-c C-n] allDerivations v7
+***************
 
 Ἀ τρε ΐ δης τε ἄ ναξ ἀν δρῶν καὶ δῖ ος Ἀ χιƛ ƛεύς
 ─ ·   · ─   ·  · ─   ─  ─    ─   ─  ·  · ─   ─
 
--- [C-u C-u C-c C-n] allDerivations v8
+***************
 
 τίς τἄρ σφω ε θε ῶν ἔ ρι δι ξυ νέ η κε μά χε σθαι
 ─   ─   ─   · ·  ─  · ·  ─  ·  ·  ─ ·  ·  ─  ─
 
--- [C-u C-u C-c C-n] allDerivations v9
+***************
 
--- [C-u C-u C-c C-n] allDerivations v10
+Λη τοῦς καὶ Δι ὸς υἱ ός ὃ γὰρ βα σι ƛῆ ϊ χο ƛω θεὶς
+─  ─    ─   ·  ·  ─  ·  · ─   ·  ·  ─  · ·  ─  ─
 
--- [C-u C-u C-c C-n] allDerivations v11
+***************
+
+νοῦ σον ἀ νὰ στρα τὸν ὄρ σε κα κήν ὀ ƛέ κο ντο δὲ ƛα οί
+─   ·   · ─  ·    ·   ─  ·  ·  ─   · ·  ─  ·   ·  ─  ─
+
+***************
+
+οὕ νε κα τὸν Χρύ σην ἠ τί μα σεν ἀ ρη τῆ ρα
+─  ·  ·  ─   ─   ─   ─ ─  ·  ·   ─ ─  ─  ─
+
+***************
+
+Ἀ τρε ΐ δης ὃ γὰρ ἦƛ θε θο ὰς ἐ πὶ νῆ ας Ἀ χαι ῶν
+─ ·   · ─   · ·   ─  ·  ·  ─  · ·  ─  ·  · ─   ─
+
+***************
+
+ƛυ σό με νός τε θύ γα τρα φέ ρων τἀ πε ρεί σι ἄ ποι να
+─  ·  ·  ─   ·  ·  ─  ·   ·  ─   ·  ·  ─   ·  · ─   ─
+
+ƛυ σό με νός τε θύ γα τρα φέ ρων τἀ πε ρεί σι ἄ ποι να
+─  ·  ·  ─   ·  ·  ─  ·   ·  ─   ·  ·  ─   ·  · ─   ─
+
+***************
+
+
+
+***************
 
 -}
 
--- v1~ : v1 ~ mkPM
---   ( (-, -, ─··)
---   ∷ (-, -, ─··)
---   ∷ (-, -, ──)
---   ∷ (-, -, ─··)
---   ∷ (-, -, ─··)
---   ∷ (-, -, ──)
---   ∷ [])
--- v1~ = auto
-
--- nn : ℕ
--- nn = length $ allDerivations v1
-
--- _ : Derivable v1
--- _ = tt -- auto
-
--- v1~ : v1 ~ mkPM
---   ( (-, -, ─··)
---   ∷ (-, -, ─··)
---   ∷ (-, -, ──)
---   ∷ (-, -, ─··)
---   ∷ (-, -, ─··)
---   ∷ (-, -, ──)
---   ∷ [])
--- v1~ = auto
-
 {-
-_ : Derivable v2
-_ = auto
-
--- [Ctrl+n] allDerivations v3
-
-_ : Derivable v3
-_ = auto
-
-_ : Derivable v4
-_ = auto
-
-_ : Derivable v5
-_ = auto
-
-_ : Derivable v6
-_ = auto
-
-_ : Derivable v7
-_ = auto
-
-_ : Derivable v8
-_ = auto
-
-
 -- -}
 -- -}
 -- -}

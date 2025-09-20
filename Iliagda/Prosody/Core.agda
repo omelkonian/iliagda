@@ -101,14 +101,22 @@ f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 -- ** basic rules
 
 -- (519)
-─Vowel ·Vowel Doubtful HasCircumflex : Pred₀ Letter
+─Vowel ·Vowel Doubtful : Pred₀ Letter
 -- INCOMPLETE: add as needed
 ─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ἡ ⨾ ή ⨾ ὴ ⨾ ἠ ⨾ ἦ ⨾ ω ⨾ ώ ⨾ ῶ ⨾ ῳ ]
 -- INCOMPLETE: add as needed
 ·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ὲ ⨾ ἑ ⨾ ἐ ⨾ ο ⨾ ὸ ⨾ ό ⨾ ὃ ⨾ ὄ ⨾ ὀ ]
 Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
+
+-- (534)
+HasAccent HasAcute HasGrave HasCircumflex : Pred₀ Letter
+HasAccent = HasAcute ∪₁ HasGrave ∪₁ HasCircumflex
 -- INCOMPLETE: add as needed
 HasCircumflex = _∈ [ ῆ ⨾ ῖ ⨾ ῦ ⨾ ὗ ⨾ ᾶ ⨾ ῶ ]
+-- INCOMPLETE: add as needed
+HasAcute = _∈ [ Ἄ ⨾ ἄ ⨾ ά ⨾ έ ⨾ ἔ ⨾ ή ⨾ ί ⨾ ΐ ⨾ ό ⨾ ὄ ⨾ ὺ ⨾ ὕ ⨾ ώ ]
+-- INCOMPLETE: add as needed
+HasGrave = _∈ [ ὰ ⨾ ὲ ⨾ ἣ ⨾ ὴ ⨾ ὶ ⨾ ὸ ⨾ ὃ ⨾ ὺ ]
 
 -- (518)
 DoubleConsonant : Pred₀ Letter

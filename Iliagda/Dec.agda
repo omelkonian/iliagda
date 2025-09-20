@@ -16,6 +16,44 @@ pattern 𝟙 = there 𝟘
 pattern 𝟚 = there 𝟙
 pattern 𝟛 = there 𝟚
 
+dec-~ : (sy : Syllable) (ctx : Context) → Maybe Quantity
+dec-~ sy ctx =
+
+  with ¿ Any× Dipthong sy ¿
+... | yes p = let i = index× p in
+    case (sy + ctx ‼ i + 1) of λ where
+      nothing  → just ─
+      (just l) → if isConsonant l then just ─ else nothing
+... | no _
+
+  with ¿ Any ─Vowel sy ¿
+... | yes p = let i = index p in
+    case (sy + ctx ‼ i + 1) of λ where
+      nothing  → just ─
+      (just l) → if isConsonant l then just ─ else nothing
+... | no _
+
+  with ¿ Any Vowel sy ¿
+... | yes p = let i = index p in
+  case (sy + ctx ‼ i + 1 , sy ++ ctx ‼ i + 2) of λ where
+    (just l  , nothing) → just ─ iff isDoubleConsonant l
+    (just l  , just l′) → just ─ iff all isConsonant (l,l′)
+    (nothing , _)       → just · iff isShortVowel (sy ‼ i)
+
+-- private
+--   _ : ¬ ─Syllable [] [ ν ⨾ ι ⨾ ν ]
+--   _ = auto
+
+--   _ : ¬ ·Syllable [] [ ν ⨾ ι ⨾ ν ]
+--   _ = auto
+
+--   _ : ─Syllable [] [ μ ⨾ ῆ ]
+--   _ = auto
+
+--   _ : ─Syllable [ κ ⨾ α ⨾ ι ] [ ν ⨾ ι ⨾ ν ]
+--   _ = auto
+
+{-
 -- ** synezesis
 instance
   Dec-syn : (sys -synezizes*- sys′) ⁇

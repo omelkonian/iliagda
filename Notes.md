@@ -41,7 +41,11 @@ Is there a connection between our "Maybe Quantity" (ambiguous roles) with 3-valu
 
 - Syllabification
   + Work on chars/strings instead of enum Letters
+  + handle apostrophe placement (right for monosyllable, left otherwise)
+
 - Consider punctuation? (e.g. comma, apostrophe)
+
+- "Apparent" exceptions?
 
 # DUMP
 

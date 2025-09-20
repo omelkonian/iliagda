@@ -33,8 +33,8 @@ padded xs ys =
     `xs = map show xs
     ns  = map Str.length `xs
   in
-    Str.intersperse " " `xs ◇ "\n"
-  ◇ Str.intersperse " " (map (uncurry pad) $ L.zip (map show ys) ns )
+    spaces `xs ◇ "\n"
+  ◇ spaces (map (uncurry pad) $ L.zip (map show ys) ns )
 
 instance
   Show-Quantity = Show Quantity ∋ λ where .show → λ where
@@ -162,6 +162,11 @@ instance
   Show-mqs : Show (Quantities n)
   Show-mqs .show = spaced ∘ toList
 
+-- ** explanations
+
+-- OPTION: set to `true` to show rule explanations below derivations
+SHOW_RULES = false
+
 showRules-ws : ∀ {ws : Words n} {mqs : Quantities n} → (ws ~ mqs) → String
 showRules-ws {mqs = mqs} _ = "~ʷˢ {mqs= " ◇ show mqs ◇ "}"
 
@@ -174,6 +179,11 @@ showRules = λ where
     "fromBelow\n  → " ◇ showRules-ws ws~mqs ◇ "\n  → " ◇ showRules-mqs mqs~hm
   ([586] _ ws~mqs _ syn~hm) →
     "[586]\n  → " ◇ showRules-ws ws~mqs ◇ "\n  → " ◇ showRules-mqs syn~hm
+
+showIf : ⦃ Show A ⦄ → Bool → A → String
+showIf b a = if b then show a else ""
+
+-- ** derivations
 
 instance
   Show-Ws-HM : Show (ws ~ hm)
@@ -188,8 +198,8 @@ instance
         `qs  = map show (toList qs)
       in
         `syn ◇ "\n"
-      ◇ Str.intersperse " " (map (uncurry pad) $ L.zip `qs ns))
-    -- ◇ "\n  ⊣ " ◇ showRules ws~hm
+      ◇ spaces (map (uncurry pad) $ L.zip `qs ns))
+    ◇ showIf SHOW_RULES ("\n  ⊣ " ◇ showRules ws~hm)
 
   Show-∃ : ∀ {P : A → Type} → ⦃ Show¹ P ⦄ → Show (∃ λ a → P a)
   Show-∃ .show (_ , p) = show p
