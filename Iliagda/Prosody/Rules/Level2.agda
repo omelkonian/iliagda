@@ -137,6 +137,17 @@ data EndsInFinalDiphthong : Word n → Type where
       ───────────────────────
       EndsInFinalDiphthong w
 
+Last⁺ : (A → Type) → List⁺ A → Type
+Last⁺ P = VLast P ∘ L.NE.toVec
+
+-- (575) exception rules
+data EndsInApostrophe : Word n → Type where
+  elision :
+    ∙ unword w ∶⋯ ult
+    ∙ Last⁺ (_≡ ᾽) ult
+      ──────────────────
+      EndsInApostrophe w
+
 data _~ʷ_ : Word n → Quantities n → Type where
 
   [1164] :
@@ -153,9 +164,9 @@ data _~ʷ_ : Word n → Quantities n → Type where
       w ~ʷ mqs
 -}
 
-  -- (575/583)
+  -- (575/583) Elision has taken place.
   [575] :
-    -- ∙ ElisionHasTakenPlace w
+    ∙ EndsInApostrophe w
     ∙ w ~↓↓ʷ mqs -- NB: or reindex?
       ──────────────────────
       w ~ʷ mqs
@@ -163,6 +174,7 @@ data _~ʷ_ : Word n → Quantities n → Type where
   fromBelow :
     ∙ ¬ EndsInFinalDiphthong w
     -- ∙ ¬ ApparentException w
+    ∙ ¬ EndsInApostrophe w
     ∙ w ~↓ʷ mqs
       ────────────────────────
       w ~ʷ mqs
