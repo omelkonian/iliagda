@@ -1,12 +1,14 @@
 module Iliagda.Prosody.Rules.Level3 where
 
-open import Iliagda.Init
+open import Iliagda.Init hiding (∅)
 open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
+open import Iliagda.Prosody.Rules.Level1
 
 -- ** LEVEL 3: syllable context
+-- TODO: find counter-example that demonstrates Level2~>3 dependency.
 
 -- data LastAny {xs : List A} {P : A → Type} : Any P xs → Type where
 --   isLastAny : (p : P x) → LastAny (here {xs = []} p)
@@ -22,59 +24,70 @@ LastAny = λ where
 -- (in the case of the final syllable of a word).
 
 data Context : Type where
-
+  ∅     : Context
   inner : Syllable → Context
-
   outer : Syllable → Context
-
-  -- = List Letter -- the following letters
 
 variable ctx ctx′ : Context
 
-data StartsWithDoubleConsonant : Context → Type where
+Letters = List Letter
+
+variable ls ls′ : Letters
+
+data StartsWithDoubleConsonant : Letters → Type where
   doubleConsonant :
     DoubleConsonant l
-    ───────────────────────────────────
-    StartsWithDoubleConsonant (l ∷ ctx)
+    ──────────────────────────────────
+    StartsWithDoubleConsonant (l ∷ ls)
 
-data StartsWithTwoConsonants : Context → Type where
+data StartsWithTwoConsonants : Letters → Type where
   twoConsonants :
     ∙ Consonant l
     ∙ Consonant l′
-      ──────────────────────────────────────
-      StartsWithTwoConsonants (l ∷ l′ ∷ ctx)
+      ─────────────────────────────────────
+      StartsWithTwoConsonants (l ∷ l′ ∷ ls)
 
 Mute Liquid Nasal : Letter → Type
 Mute   = _∈ [ π ⨾ β ⨾ φ ⨾ κ ⨾ γ ⨾ χ ⨾ τ ⨾ δ ⨾ θ ]
 Liquid = _∈ [ ƛ ⨾ ρ ]
 Nasal  = _∈ [ μ ⨾ ν ]
 
--- TODO: inner ctx
-data MuteThenLiquid : Context → Type where
-  twoConsonants :
+data MuteThenLiquid : Letters → Type where
+  muteLiquid :
     ∙ Mute l
     ∙ Liquid l′ ⊎ Nasal l′
-      ──────────────────────────────────────
-      StartsWithTwoConsonants (l ∷ l′ ∷ ctx)
+      ────────────────────────────
+      MuteThenLiquid (l ∷ l′ ∷ ls)
 
-data StartsWithVowel : Context → Type where
+data StartsWithVowel : Letters → Type where
   vowel :
     Vowel l
-    ─────────────────────────
-    StartsWithVowel (l ∷ ctx)
+    ────────────────────────
+    StartsWithVowel (l ∷ ls)
 
 !_ : Quantity → Quantity
 !_ = λ{ ─ → ·; · → ─ }
 
 -- TODO: consider commas, full stops, etc.
 
+toLetters : Context → Letters
+toLetters = λ where
+  ∅          → []
+  (inner sy) → toList sy
+  (outer sy) → toList sy
+
+FollowedByInner : (Q : Letters → Type) {P : Letter → Type} {ls : Letters} →
+  Any P ls → Type
+FollowedByInner Q = λ where
+  (here {xs = sys} _) → Q sys
+  (there p) → FollowedByInner Q p
+
 module QuantityRules (next : Context) where
 
-  -- TODO: fix!! inner/outer
-  FollowedBy : (Q : Context → Type) {P : Letter → Type} {ls : List Letter} →
+  FollowedBy : (Q : Letters → Type) {P : Letter → Type} {ls : Letters} →
     Any P ls → Type
   FollowedBy Q = λ where
-    (here {xs = xs} _) → Q (xs ++ next)
+    (here {xs = sys} _) → Q (sys ++ toLetters next)
     (there p) → FollowedBy Q p
 
   -- [522]
@@ -83,17 +96,11 @@ module QuantityRules (next : Context) where
     longByPosition :
       (v∈ : Any Vowel sy) →
       -- ∙ ¬ [526/1167.2] ... (lexicon-based)
-      ∙ FollowedBy
-          (λ ctx → StartsWithDoubleConsonant ctx
-                 ⊎ StartsWithTwoConsonants ctx)
-          v∈
-        ───────────────
+      ∙ FollowedBy (StartsWithDoubleConsonant ∪₁ StartsWithTwoConsonants) v∈
+        ────────────────────────────────────────────────────────────────────
         sy ↝ ─
 
-
   data _~∗_ : Syllable → Quantity → Type where
-
-    {- TODO: apparent exception 526/1167.2, lexicon-based -}
 
     [522] :
       sy ↝ q
@@ -105,6 +112,7 @@ module QuantityRules (next : Context) where
     [1173] :
       (v∈ : Any Vowel sy) →
       ∙ LastAny v∈
+      ∙ sy ~ ─
       ∙ FollowedBy StartsWithVowel v∈
         ─────────────────────────────
         sy ~∗ ·
@@ -115,9 +123,12 @@ module QuantityRules (next : Context) where
     [524] :
       (v∈ : Any Vowel sy) →
       ∙ sy ~ ·
-      ∙ FollowedBy MuteThenLiquid v∈
-        ────────────────────────────
+      ∙ FollowedByInner MuteThenLiquid v∈
+        ─────────────────────────────────
         sy ~∗ q
+
+    {- TODO: apparent exception 526/1167.2, lexicon-based -}
+    {- TODO: 1175, lexicon-based -}
 
   _≁∗_ = λ x y →  ¬ (x ~∗ y)
 
@@ -146,48 +157,30 @@ module QuantityRules (next : Context) where
 open QuantityRules
   renaming ( _↝_ to _⊢_↝_
            ; _~∗_ to _⊢_~∗_; _≁∗_ to _⊢_≁∗_
-           ; _~?_ to _⊢_~?_)
+           ; _~?_ to _⊢_~?_
+           )
 
 instance
   Complies-Sy-MQ : (Syllable × Context) -compliesWith- Maybe Quantity
-  Complies-Sy-MQ ._~_ = _~′_
-    module ∣Complies-Sy-MQ∣ where
-      data _~′_ : Syllable × Context → Maybe Quantity → Type where
+  Complies-Sy-MQ ._~_ (sy , ctx) mq = ctx ⊢ sy ~? mq
 
-        ambiguous :
-          (∀ q → ctx ⊢ sy ≁∗ q)
-          ─────────────────────
-          (sy , ctx) ~′ nothing
-
-        ambivalent :
-          ∙ (ctx ⊢ sy ~∗ ─)
-          ∙ (ctx ⊢ sy ~∗ ·)
-            ─────────────────────
-            (sy , ctx) ~′ nothing
-
-        certain :
-          ∙ ctx ⊢ sy ~∗ q
-          ∙ ctx ⊢ sy ≁∗ (! q)
-            ────────────────────
-            (sy , ctx) ~′ just q
-
-inContext : Vec Syllable n × Context → Vec (Syllable × Context) n
-inContext (sys , ctx) = go sys
-  where
-  go : Vec Syllable n → Vec (Syllable × Context) n
-  go = λ where
-    [] → []
-    [ sy ] → [ sy , ctx ]
-    (sy ∷ sys@(sy′ ∷ _)) → (sy , toList sy′) ∷ go sys
+firstSyllable : Word n → Syllable
+firstSyllable (word (sy ∷ _)) = sy
 
 instance
-  Complies-Sys-MQs : (Vec Syllable n × Context) -compliesWith- Quantities n
-  Complies-Sys-MQs ._~_ = VPointwise _~_ ∘ inContext
-
   Complies-Ws-MQs : Words n -compliesWith- Quantities n
-  Complies-Ws-MQs ._~_ ws qs = (unwords ws , []) ~ qs
+  Complies-Ws-MQs ._~_ = VPointwise _~_ ∘ inContext
+    module _ where
+    inContext : Words n → Vec (Syllable × Context) n
+    inContext [] = []
+    inContext (w ∷ ws) = go (unword w) (next ws) V.++ inContext ws
+      where
+      next : Words n → Context
+      next []      = ∅
+      next (w ∷ _) = outer $ firstSyllable w
 
--- -}
--- -}
--- -}
--- -}
+      go : Vec Syllable n → Context → Vec (Syllable × Context) n
+      go = λ where
+        [] _ → []
+        [ sy ] nxt → [ sy , nxt ]
+        (sy ∷ sys@(sy′ ∷ _)) nxt → (sy , inner sy′) ∷ go sys nxt

@@ -131,7 +131,7 @@ FinalDiphthong = _∈
 
 -- (1164) exception rules
 data EndsInFinalDiphthong : Word n → Type where
-  finalDipthong :
+  finalDiphthong :
     ∙ unword w ∶⋯ ult
     ∙ Any× FinalDiphthong ult
       ───────────────────────

@@ -5,6 +5,12 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
+open import Iliagda.Prosody.Rules.Level1
+open import Iliagda.Prosody.Rules.Level2
+open import Iliagda.Prosody.Rules.Level3
+
+_∪_ : Quantities n → Quantities n → Quantities n
+_∪_ = ?
 
 -- ** LEVEL 4: meter structure
 
