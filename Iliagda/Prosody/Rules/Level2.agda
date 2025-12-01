@@ -182,3 +182,21 @@ data _~ʷ_ : Word n → Quantities n → Type where
 instance
   Complies-W-MQs : Word n -compliesWith- Quantities n
   Complies-W-MQs ._~_ = _~ʷ_
+
+data _~ʷˢ_ : Words n → Quantities n → Type where
+
+  [] :
+    ────────
+    [] ~ʷˢ []
+
+  _∷_ : ∀ {w : Word n}
+          {mqs : Quantities n}
+          {ws : Words n′}
+          {mqs′ : Quantities n′}
+          {mqs₀ : Quantities (n + n′)}
+          ⦃ _ : mqs₀ ≡ mqs V.++ mqs′ ⦄ →
+
+    ∙ w ~ʷ mqs
+    ∙ ws ~ʷˢ mqs′
+      ─────────────────
+      (w ∷ ws) ~ʷˢ mqs₀

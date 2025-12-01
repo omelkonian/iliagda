@@ -83,8 +83,8 @@ open import Iliagda.Prosody.Core
 
 synezize : ∀ {sys : Vec Syllable n} {sys′ : Vec Syllable n′}
   (syn : sys -synezizes*- sys′) →
-  Vec (Maybe Quantity) n →
-  Vec (Maybe Quantity) n′
+  Quantities n →
+  Quantities n′
 synezize = λ where
   []        mqs           → mqs
   (_ ∷ syn) (mq ∷ mqs)    → mq ∷ synezize syn mqs

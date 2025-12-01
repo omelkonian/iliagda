@@ -167,20 +167,19 @@ instance
 firstSyllable : Word n → Syllable
 firstSyllable (word (sy ∷ _)) = sy
 
-instance
-  Complies-Ws-MQs : Words n -compliesWith- Quantities n
-  Complies-Ws-MQs ._~_ = VPointwise _~_ ∘ inContext
-    module _ where
-    inContext : Words n → Vec (Syllable × Context) n
-    inContext [] = []
-    inContext (w ∷ ws) = go (unword w) (next ws) V.++ inContext ws
-      where
-      next : Words n → Context
-      next []      = ∅
-      next (w ∷ _) = outer $ firstSyllable w
+_~ʷˢ_ : Words n → Quantities n → Type
+_~ʷˢ_ = VPointwise _~_ ∘ inContext
+  module _ where
+  inContext : Words n → Vec (Syllable × Context) n
+  inContext [] = []
+  inContext (w ∷ ws) = go (unword w) (next ws) V.++ inContext ws
+    where
+    next : Words n → Context
+    next []      = ∅
+    next (w ∷ _) = outer $ firstSyllable w
 
-      go : Vec Syllable n → Context → Vec (Syllable × Context) n
-      go = λ where
-        [] _ → []
-        [ sy ] nxt → [ sy , nxt ]
-        (sy ∷ sys@(sy′ ∷ _)) nxt → (sy , inner sy′) ∷ go sys nxt
+    go : Vec Syllable n → Context → Vec (Syllable × Context) n
+    go = λ where
+      [] _ → []
+      [ sy ] nxt → [ sy , nxt ]
+      (sy ∷ sys@(sy′ ∷ _)) nxt → (sy , inner sy′) ∷ go sys nxt
