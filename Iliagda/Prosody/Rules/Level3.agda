@@ -5,7 +5,23 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
-open import Iliagda.Prosody.Rules.Level1
+-- open import Iliagda.Prosody.Rules.Level1
+
+postulate filter⁺ : ∀ {B : A → Type} → (∀ (a : A) → Dec (B a)) → List⁺ A → List⁺ A
+
+vowels : Syllable → ℕ
+vowels = L.NE.length ∘ filter⁺ (λ sy → ¿ Vowel sy ¿)
+
+SynezizedOrDipthong : Syllable → Type
+SynezizedOrDipthong sy = vowels sy ≥ 2
+
+_~ˢʸⁿ_ : Syllable → Quantity → Type
+sy ~ˢʸⁿ q =
+  if ¿ SynezizedOrDipthong sy ¿ᵇ then
+    (q ≡ ─)
+  else
+    (sy ~ q)
+  where open import Iliagda.Prosody.Rules.Level1
 
 -- ** LEVEL 3: syllable context
 -- TODO: find counter-example that demonstrates Level2~>3 dependency.
@@ -112,7 +128,7 @@ module QuantityRules (next : Context) where
     [1173] :
       (v∈ : Any Vowel sy) →
       ∙ LastAny v∈
-      ∙ sy ~ ─
+      ∙ sy ~ˢʸⁿ ─
       ∙ FollowedBy StartsWithVowel v∈
         ─────────────────────────────
         sy ~∗ ·
@@ -122,7 +138,7 @@ module QuantityRules (next : Context) where
     -- (a.k.a. *common* syllable)
     [524] :
       (v∈ : Any Vowel sy) →
-      ∙ sy ~ ·
+      ∙ sy ~ˢʸⁿ ·
       ∙ FollowedByInner MuteThenLiquid v∈
         ─────────────────────────────────
         sy ~∗ q

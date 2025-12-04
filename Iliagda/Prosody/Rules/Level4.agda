@@ -67,31 +67,36 @@ instance
             ─────────────────────────────
             mqs ~′ hm
 
+import Iliagda.Prosody.Rules.Level2 as 𝟚
+import Iliagda.Prosody.Rules.Level3 as 𝟛
+open import Iliagda.Prosody.Rules.Level23 using (_⊗_)
+
+instance
   Complies-Ws-HM : Words n -compliesWith- Hexameter n′
   Complies-Ws-HM ._~_ = _~′_
     module ∣Complies-Ws-HM∣ where
       open import Iliagda.Prosody.Synizesis
 
+      -- NB: (outlined version) impose strict synezesis bounds
+
+      -- data _⊢_~_ : ∀ m → Words n → Hexameter (n ∸ m) → Type where
+      --   stop :
+      --   continue :
+      --     ∙ NonDerivable (suc m ⊢ ws ~_)
+      --     ∙ m ⊢ ws ~ hm
+      --       ────────────────────────────
+      --       ws ~ hm
+
       data _~′_ : Words n → Hexameter n′ → Type where
 
         _~∘~⟨_⟩_ : ∀ {ws : Words n} {mqs : Quantities n} →
                      {sys′ : Vec Syllable n′} {hm : Hexameter n′} →
-          ∙ ws ~ mqs
+          ∙ ws 𝟚.~ʷˢ mqs
           -- [586] synezesis
           → (syn : unwords ws -synezizes*- sys′) →
-          ∙ synezize syn mqs ~ hm
-            ────────────────────────────────────
+          ∙ synezizeWords ws syn 𝟛.~ʷˢ mqs′
+          ∙ synezize syn mqs ⊗ mqs′ ~ hm
+          -- NB: (inlined version) impose strict synizesis bounds
+          -- ∙ (∀ n″ → n″ > n′ → NonDerivable {B = Hexameter n″} ws)
+            ─────────────────────────────────────────────────────
             ws ~′ hm
-
-      --   _~∘~⟨_⟩_ : ∀ {ws : Words n} {mqs : Quantities n} →
-      --                {sys′ : Vec Syllable n′} {hm : Hexameter n′} →
-      --     -- ∙ ws ~ mqs
-      --     ∙ ws 𝟚.~ʷˢ mqs
-      --     -- [586] synezesis
-      --     → (syn : unwords ws -synezizes*- sys′) →
-      --     let mqs = synezize syn mqs⊗ in
-      --     ∙ ws 𝟛.~ʷˢ mqs′
-      --     let mqs⊗ = mqs ⊗ mqs′ in
-      --     ∙ mqs⊗ ~ hm
-      --       ────────────────────────────────────
-      --       ws ~′ hm

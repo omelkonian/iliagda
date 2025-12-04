@@ -90,6 +90,44 @@ synezize = λ where
   (_ ∷ syn) (mq ∷ mqs)    → mq ∷ synezize syn mqs
   (_ ∺ syn) (_ ∷ _ ∷ mqs) → just ─ ∷ synezize syn mqs
 
+_∷ʷˢ_ : Syllable → Words n → Words (suc n)
+sy ∷ʷˢ [] = word [ sy ] ∷ []
+sy ∷ʷˢ (word sys ∷ ws) = word (sy ∷ sys) ∷ ws
+
+unwords-∷ʷˢ : unwords (sy ∷ʷˢ ws) ≡ sy ∷ unwords ws
+unwords-∷ʷˢ {ws = []} = refl
+unwords-∷ʷˢ {ws = word _ ∷ _} = refl
+
+_++ʷˢ_ : Vec Syllable m → Words n → Words (m + n)
+[] ++ʷˢ ws = ws
+(sy ∷ sys) ++ʷˢ ws = sy ∷ʷˢ (sys ++ʷˢ ws)
+
+unwords-++ʷˢ : unwords (sys ++ʷˢ ws) ≡ sys V.++ unwords ws
+unwords-++ʷˢ {sys = []} = refl
+unwords-++ʷˢ {sys = sy ∷ sys} {ws = ws} =
+  trans (unwords-∷ʷˢ {ws = sys ++ʷˢ ws})
+        (cong (sy ∷_) $ unwords-++ʷˢ {ws = ws})
+
+synezizeWords : ∀ (ws : Words n) {sys′ : Vec Syllable n′}
+  (syn : unwords ws -synezizes*- sys′) →
+  Words n′
+
+synezizeWords [] [] = []
+
+synezizeWords (word [ sy ] ∷ []) (.sy ∷ []) = word (sy ∷ []) ∷ []
+
+synezizeWords (word [ sy ] ∷ (word (sy′ ∷ sys) ∷ ws)) (.sy ∷ syn) =
+  sy ∷ʷˢ synezizeWords (word (sy′ ∷ sys) ∷ ws) syn
+synezizeWords (word [ sy ] ∷ (word (sy′ ∷ sys) ∷ ws)) {_ ∷ sys′} (_ ∺ syn) =
+  let syn′ = subst (_~ sys′) (sym $ unwords-++ʷˢ {ws = ws}) syn in
+  (sy ⁀ sy′) ∷ʷˢ synezizeWords (sys ++ʷˢ ws) syn′
+
+synezizeWords (word (sy ∷ sy′ ∷ sys) ∷ ws) (.sy ∷ syn) =
+  sy ∷ʷˢ synezizeWords (word (sy′ ∷ sys) ∷ ws) syn
+synezizeWords (word (sy ∷ sy′ ∷ sys) ∷ ws) {_ ∷ sys′} (_ ∺ syn) =
+  let syn′ = subst (_~ sys′) (sym $ unwords-++ʷˢ {ws = ws}) syn in
+  (sy ⁀ sy′) ∷ʷˢ synezizeWords (sys ++ʷˢ ws) syn′
+
 -- ** minimal synezesis
 -- NB: if we allow minimal 0 synezeses, subsumes general rule.
 
@@ -108,8 +146,3 @@ record _-synezizes+-_ (sys : Vec Syllable n) (sys′ : Vec Syllable n′) : Type
 _≼_ _≺_ : ∀ {sys‴ : Vec Syllable n} → (sys ~ sys′) → (sys″ ~ sys‴) → Type
 p ≼ q = penalty p ≤ penalty q
 p ≺ q = penalty p < penalty q
-
--- -}
--- -}
--- -}
--- -}
