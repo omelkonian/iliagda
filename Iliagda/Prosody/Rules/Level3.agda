@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level3 where
 
 open import Iliagda.Init hiding (∅)
@@ -5,23 +6,18 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
--- open import Iliagda.Prosody.Rules.Level1
-
-postulate filter⁺ : ∀ {B : A → Type} → (∀ (a : A) → Dec (B a)) → List⁺ A → List⁺ A
-
-vowels : Syllable → ℕ
-vowels = L.NE.length ∘ filter⁺ (λ sy → ¿ Vowel sy ¿)
+open import Iliagda.Prosody.Rules.Level1
 
 SynezizedOrDipthong : Syllable → Type
 SynezizedOrDipthong sy = vowels sy ≥ 2
 
+-- NB: separation of concerns between Level1~Synezesis
 _~ˢʸⁿ_ : Syllable → Quantity → Type
 sy ~ˢʸⁿ q =
   if ¿ SynezizedOrDipthong sy ¿ᵇ then
     (q ≡ ─)
   else
     (sy ~ q)
-  where open import Iliagda.Prosody.Rules.Level1
 
 -- ** LEVEL 3: syllable context
 -- TODO: find counter-example that demonstrates Level2~>3 dependency.
@@ -183,8 +179,8 @@ instance
 firstSyllable : Word n → Syllable
 firstSyllable (word (sy ∷ _)) = sy
 
-_~ʷˢ_ : Words n → Quantities n → Type
-_~ʷˢ_ = VPointwise _~_ ∘ inContext
+_~³_ : Words n → Quantities n → Type
+_~³_ = VPointwise _~_ ∘ inContext
   module _ where
   inContext : Words n → Vec (Syllable × Context) n
   inContext [] = []
@@ -194,7 +190,7 @@ _~ʷˢ_ = VPointwise _~_ ∘ inContext
     next []      = ∅
     next (w ∷ _) = outer $ firstSyllable w
 
-    go : Vec Syllable n → Context → Vec (Syllable × Context) n
+    go : Syllables n → Context → Vec (Syllable × Context) n
     go = λ where
       [] _ → []
       [ sy ] nxt → [ sy , nxt ]

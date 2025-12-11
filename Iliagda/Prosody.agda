@@ -6,9 +6,9 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 
-open ∣Complies-Sy-MQ∣ public
-  hiding (_~′_)
-open ∣Complies-MQs-HM∣ public
-  hiding (_~′_)
-open ∣Complies-Ws-HM∣ public
-  hiding (_~′_)
+-- open ∣Complies-Sy-MQ∣ public
+--   hiding (_~′_)
+-- open ∣Complies-MQs-HM∣ public
+--   hiding (_~′_)
+-- open ∣Complies-Ws-HM∣ public
+--   hiding (_~′_)

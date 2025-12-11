@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level23 where
 
 open import Iliagda.Init
@@ -6,9 +7,8 @@ open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
-
-import Iliagda.Prosody.Rules.Level2 as 𝟚
-import Iliagda.Prosody.Rules.Level3 as 𝟛
+open import Iliagda.Prosody.Rules.Level2
+open import Iliagda.Prosody.Rules.Level3
 
 open import Algebra using (Op₂)
 
@@ -26,8 +26,8 @@ _⊗_ = V.zipWith _⊗₁_
 data _~ʷˢ_ : Words n → Quantities n → Type where
 
   _∪_ :
-     ∙ ws 𝟚.~ʷˢ mqs
-     ∙ ws 𝟛.~ʷˢ mqs′
+     ∙ ws ~² mqs
+     ∙ ws ~³ mqs′
        ───────────────────
        ws ~ʷˢ (mqs ⊗ mqs′)
 

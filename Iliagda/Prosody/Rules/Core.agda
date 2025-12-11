@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Core where
 
 open import Iliagda.Init

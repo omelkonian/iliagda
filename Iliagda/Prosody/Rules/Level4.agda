@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level4 where
 
 open import Iliagda.Init
@@ -67,8 +68,8 @@ instance
             ─────────────────────────────
             mqs ~′ hm
 
-import Iliagda.Prosody.Rules.Level2 as 𝟚
-import Iliagda.Prosody.Rules.Level3 as 𝟛
+open import Iliagda.Prosody.Rules.Level2
+open import Iliagda.Prosody.Rules.Level3
 open import Iliagda.Prosody.Rules.Level23 using (_⊗_)
 
 instance
@@ -89,12 +90,13 @@ instance
 
       data _~′_ : Words n → Hexameter n′ → Type where
 
-        _~∘~⟨_⟩_ : ∀ {ws : Words n} {mqs : Quantities n} →
-                     {sys′ : Vec Syllable n′} {hm : Hexameter n′} →
-          ∙ ws 𝟚.~ʷˢ mqs
+        _≫⟨_⟩≫_≫_ : ∀ {ws : Words n} {mqs : Quantities n} →
+                      {sys′ : Syllables n′} {mqs′ : Quantities n′}
+                      {hm : Hexameter n′} →
+          ∙ ws ~² mqs
           -- [586] synezesis
           → (syn : unwords ws -synezizes*- sys′) →
-          ∙ synezizeWords ws syn 𝟛.~ʷˢ mqs′
+          ∙ synezizeWords ws syn ~³ mqs′
           ∙ synezize syn mqs ⊗ mqs′ ~ hm
           -- NB: (inlined version) impose strict synizesis bounds
           -- ∙ (∀ n″ → n″ > n′ → NonDerivable {B = Hexameter n″} ws)

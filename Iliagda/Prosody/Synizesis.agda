@@ -3,6 +3,7 @@ module Iliagda.Prosody.Synizesis where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
+open import Iliagda.Dec.Core
 
 FirstVowel LastVowel : Pred₀ Syllable
 FirstVowel = Vowel ∘ head
@@ -11,7 +12,7 @@ LastVowel  = Vowel ∘ last
 _⁀_ : Syllable → Syllable → Syllable
 _⁀_ = L.NE._⁺++⁺_
 
-data _-synezizes*-_ : Vec Syllable n → Vec Syllable n′ → Type
+data _-synezizes*-_ : Syllables n → Syllables n′ → Type
 
 private _~_ = _-synezizes*-_
 
@@ -81,7 +82,7 @@ syn-++ˡ {sys″ = _ ∷ sys″} = (_ ∷_) ∘ syn-++ˡ {sys″ = sys″}
 
 open import Iliagda.Prosody.Core
 
-synezize : ∀ {sys : Vec Syllable n} {sys′ : Vec Syllable n′}
+synezize : ∀ {sys : Syllables n} {sys′ : Syllables n′}
   (syn : sys -synezizes*- sys′) →
   Quantities n →
   Quantities n′
@@ -98,7 +99,7 @@ unwords-∷ʷˢ : unwords (sy ∷ʷˢ ws) ≡ sy ∷ unwords ws
 unwords-∷ʷˢ {ws = []} = refl
 unwords-∷ʷˢ {ws = word _ ∷ _} = refl
 
-_++ʷˢ_ : Vec Syllable m → Words n → Words (m + n)
+_++ʷˢ_ : Syllables m → Words n → Words (m + n)
 [] ++ʷˢ ws = ws
 (sy ∷ sys) ++ʷˢ ws = sy ∷ʷˢ (sys ++ʷˢ ws)
 
@@ -108,7 +109,7 @@ unwords-++ʷˢ {sys = sy ∷ sys} {ws = ws} =
   trans (unwords-∷ʷˢ {ws = sys ++ʷˢ ws})
         (cong (sy ∷_) $ unwords-++ʷˢ {ws = ws})
 
-synezizeWords : ∀ (ws : Words n) {sys′ : Vec Syllable n′}
+synezizeWords : ∀ (ws : Words n) {sys′ : Syllables n′}
   (syn : unwords ws -synezizes*- sys′) →
   Words n′
 
@@ -137,12 +138,27 @@ penalty = λ where
   (_ ∷ syn) → penalty syn
   (_ ∺ syn) → 1 + penalty syn
 
-record _-synezizes+-_ (sys : Vec Syllable n) (sys′ : Vec Syllable n′) : Type where
+record _-synezizes+-_ (sys : Syllables n) (sys′ : Syllables n′) : Type where
   constructor _⊣_
   field syn  : sys -synezizes*- sys′
         syn+ : penalty syn > 0
 
 -- a "minimal" synezesis has the least amount of ∺ operations.
-_≼_ _≺_ : ∀ {sys‴ : Vec Syllable n} → (sys ~ sys′) → (sys″ ~ sys‴) → Type
+_≼_ _≺_ : ∀ {sys‴ : Syllables n} → (sys ~ sys′) → (sys″ ~ sys‴) → Type
 p ≼ q = penalty p ≤ penalty q
 p ≺ q = penalty p < penalty q
+
+-- ** unique synezesis
+
+Vowel-irr : (p q : Vowel l) → p ≡ q
+Vowel-irr = unique⇒irrelevant auto
+  where open import Data.List.Membership.Propositional.Properties.WithK
+
+uniqueSyn : (p q : sys -synezizes*- sys′) → p ≡ q
+uniqueSyn [] [] = refl
+uniqueSyn (sy ∷ p) (.sy ∷ q) = cong (sy ∷_) (uniqueSyn p q)
+uniqueSyn (sy ∷ _) ((_ ∺ _) ⦃ eq ⦄) = ⊥-elim $ ⁀-irrefl eq
+uniqueSyn ((_ ∺ _) ⦃ eq ⦄) (sy ∷ _) = ⊥-elim $ ⁀-irrefl eq
+uniqueSyn (((lv , fv) ∺ p) ⦃ refl ⦄) (((lv′ , fv′) ∺ q) ⦃ refl ⦄)
+  rewrite Vowel-irr lv lv′ | Vowel-irr fv fv′
+  = cong (_ ∺_) $ uniqueSyn p q

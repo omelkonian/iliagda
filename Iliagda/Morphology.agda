@@ -40,21 +40,23 @@ Apostrophe = _≡ ᾽
 -- TODO: syllabification
 Syllable = List⁺ Letter
 
+Syllables = Vec Syllable
+
 data Word : ℕ {- syllables -} → Type where
-  word : {_ : auto∶ n ≢ 0} → Vec Syllable n → Word n
+  word : {_ : auto∶ n ≢ 0} → Syllables n → Word n
 ∃Word = ∃ Word
 
 _ : Word 3
 _ = word ([ μ ⨾ ῆ ]  ∷ ([ ν ⨾ ι ⨾ ν ] ∷ ([ δ ⨾ ε ] ∷ [])))
 
-unword : Word n → Vec Syllable n
+unword : Word n → Syllables n
 unword (word sys) = sys
 
 data Words : ℕ → Type where
   []  : Words 0
   _∷_ : Word n → Words n′ → Words (n + n′)
 
-unwords : Words n → Vec Syllable n
+unwords : Words n → Syllables n
 unwords = λ where
   [] → []
   (w ∷ ws) → unword w V.++ unwords ws
@@ -73,7 +75,7 @@ _ = word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
 variable
   l l′ : Letter
   sy sy′ sy″ penult penult′ ult ult′ : Syllable
-  sys sys′ sys″ : Vec Syllable n
+  sys sys′ sys″ : Syllables n
   w  w′ : Word n
   ws ws′ : Words n
   v v′ : Verse

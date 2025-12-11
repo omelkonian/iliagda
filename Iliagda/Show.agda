@@ -129,19 +129,19 @@ instance
   Show-Sy = Show Syllable ∋ λ where
     .show → merged ∘ toList
 
-  Show-Sys : Show (Vec Syllable n)
+  Show-Sys : Show (Syllables n)
   Show-Sys .show = spaced ∘ toList
 
-  Show-SQs : Show (Vec Syllable n × Vec Quantity n)
+  Show-SQs : Show (Syllables n × Vec Quantity n)
   Show-SQs .show (sys , qs) = padded (toList sys) (toList qs)
 
 $sy : Syllable
 $sy = [ ν ⨾ ι ⨾ ν ]
 
-$sys : Vec Syllable _
+$sys : Syllables _
 $sys = [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ⨾ [ δ ⨾ ε ] ⨾ [ ω ] ]
 
-ex : Vec Syllable _
+ex : Syllables _
    × Vec Quantity _
 ex = [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ⨾ [ δ ⨾ ε ] ⨾ [ ω ] ]
    , [ ─         ⨾ ─         ⨾ ─     ⨾ ·     ⨾ ·         ⨾ ─ ]

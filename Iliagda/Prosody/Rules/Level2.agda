@@ -1,3 +1,4 @@
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level2 where
 
 open import Iliagda.Init
@@ -183,11 +184,11 @@ instance
   Complies-W-MQs : Word n -compliesWith- Quantities n
   Complies-W-MQs ._~_ = _~ʷ_
 
-data _~ʷˢ_ : Words n → Quantities n → Type where
+data _~²_ : Words n → Quantities n → Type where
 
   [] :
     ────────
-    [] ~ʷˢ []
+    [] ~² []
 
   _∷_ : ∀ {w : Word n}
           {mqs : Quantities n}
@@ -197,6 +198,6 @@ data _~ʷˢ_ : Words n → Quantities n → Type where
           ⦃ _ : mqs₀ ≡ mqs V.++ mqs′ ⦄ →
 
     ∙ w ~ʷ mqs
-    ∙ ws ~ʷˢ mqs′
-      ─────────────────
-      (w ∷ ws) ~ʷˢ mqs₀
+    ∙ ws ~² mqs′
+      ────────────────
+      (w ∷ ws) ~² mqs₀
