@@ -23,13 +23,6 @@ circumflexPenult? (word w)
   with _ ∷ penult ∷ _ ← V.reverse w
   = dec
 
-data _~↓↓ʷ_ : Word n → Quantities n → Type where
-
-  base :
-    unword w ~ mqs
-    ──────────────────────
-    w ~↓↓ʷ mqs
-
 private variable x : A
 
 data VLast (P : A → Type) : Vec A (suc n) → Type where
@@ -74,49 +67,6 @@ _≔ₙ₋₁_ {n = n} mqs q = mqs V.[ penultIndex ]≔ just q
 
 infix 10 _≔ₙ_ _≔ₙ₋₁_
 
-data _~↓ʷ_ : Word n → Quantities n → Type where
-
-  -- The vowel of the ultima in every word
-  -- having the circumflex on the penult is short (545).
-  [1160] :
-    ∙ unword w ∶⋯ penult ∣ ult
-    ∙ Any HasCircumflex penult
-    ∙ w ~↓↓ʷ mqs
-      ────────────────────────
-      w ~↓ʷ (mqs ≔ₙ ·)
-
-  -- If a long penult has the acute accent,
-  -- then the ultima must be long also.
-  [1161] :
-    ∙ unword w ∶⋯ penult ∣ ult
-    -- ** add context if you want LEVEL 3
-    -- ∙ toList ult ⊢ penult ↝ ─
-    ∙ penult ~ ─
-    ∙ Any HasAcute penult
-    ∙ w ~↓↓ʷ mqs
-      ────────────────────────
-      w ~↓ʷ (mqs ≔ₙ ─)
-
-  -- If the ultima is short and the penult has the acute accent,
-  -- then the penult must be short also.
-  [1162] :
-    ∙ unword w ∶⋯ penult ∣ ult
-    -- ** add context if you want LEVEL 3
-    -- ∙ ctx ⊢ ult ↝ ·
-    ∙ ult ~ ·
-    ∙ Any HasAcute penult
-    ∙ w ~↓↓ʷ mqs
-      ────────────────────────
-      w ~↓ʷ (mqs ≔ₙ₋₁ ·)
-
-  -- If the antepenult has the accent,
-  -- the vowel of the ultima must be short (544).
-  [1163] :
-    ∙ unword w ∶⋯ antepenult ∣ penult ∣ ult
-    ∙ Any HasAccent antepenult -- NB: it will always be acute
-      ─────────────────────────────────────
-      w ~↓ʷ (mqs ≔ₙ ·)
-
 -- (547) final αι/oι are counted short *only* for accent
 FinalDiphthong : Pred₀ (Letter × Letter)
 FinalDiphthong = _∈
@@ -131,54 +81,127 @@ FinalDiphthong = _∈
   )
 
 -- (1164) exception rules
-data EndsInFinalDiphthong : Word n → Type where
+data EndsInFinalDiphthong : Syllables n → Type where
   finalDiphthong :
-    ∙ unword w ∶⋯ ult
+    ∙ sys ∶⋯ ult
     ∙ Any× FinalDiphthong ult
-      ───────────────────────
-      EndsInFinalDiphthong w
+      ────────────────────────
+      EndsInFinalDiphthong sys
 
 Last⁺ : (A → Type) → List⁺ A → Type
 Last⁺ P = VLast P ∘ L.NE.toVec
 
 -- (575) exception rules
-data EndsInApostrophe : Word n → Type where
+data EndsInApostrophe : Syllables n → Type where
   elision :
-    ∙ unword w ∶⋯ ult
+    ∙ sys ∶⋯ ult
     ∙ Last⁺ (_≡ ᾽) ult
-      ──────────────────
-      EndsInApostrophe w
+      ────────────────────
+      EndsInApostrophe sys
 
-data _~ʷ_ : Word n → Quantities n → Type where
+module _ (P : A → Type) where
+  Single : List A → Type
+  Single xs = ∀ (p q : Any P xs) → L.Any.index p ≡ L.Any.index q
+
+  Single⁺ : List⁺ A → Type
+  Single⁺ = Single ∘ toList
+
+Letters = List Letter
+
+lastThree : Vec A n → List A
+lastThree = L.reverse ∘ L.take 3 ∘ V.toList ∘ V.reverse
+
+lastThreeSys : Syllables n → Letters
+lastThreeSys = concatMap toList ∘ lastThree
+
+SingleAccents : Syllables n → Type
+SingleAccents = Single HasAccent ∘ lastThreeSys
+
+open import Algebra using (Op₁)
+
+data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
+
+  -- The vowel of the ultima in every word
+  -- having the circumflex on the penult is short (545).
+  [1160] :
+    ∙ sys ∶⋯ penult ∣ ult
+    ∙ Any HasCircumflex penult
+      ────────────────────────
+      sys ~%′ (_≔ₙ ·)
+
+  -- If a long penult has the acute accent,
+  -- then the ultima must be long also.
+  [1161] :
+    ∙ sys ∶⋯ penult ∣ ult
+    -- ** add context if you want LEVEL 3
+    -- ∙ toList ult ⊢ penult ↝ ─
+    ∙ penult ~ ─
+    ∙ Any HasAcute penult
+      ───────────────────
+      sys ~%′ (_≔ₙ ─)
+
+  -- If the ultima is short and the penult has the acute accent,
+  -- then the penult must be short also.
+  [1162] :
+    ∙ sys ∶⋯ penult ∣ ult
+    -- ** add context if you want LEVEL 3
+    -- ∙ ctx ⊢ ult ↝ ·
+    ∙ penult ≁ ─ -- NB: to avoid clash with [1161]
+    ∙ ult ~ ·
+    ∙ Any HasAcute penult
+      ───────────────────
+      sys ~%′ (_≔ₙ₋₁ ·)
+
+  -- If the antepenult has the accent,
+  -- the vowel of the ultima must be short (544).
+  [1163] :
+    ∙ sys ∶⋯ antepenult ∣ penult ∣ ult
+    ∙ Any HasAccent antepenult -- NB: it will always be acute
+      ────────────────────────────────
+      sys ~%′ (_≔ₙ ─)
+
+data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
 
   [1164] :
-    ∙ EndsInFinalDiphthong w
-    ∙ w ~↓↓ʷ mqs
-      ──────────────────────
-      w ~ʷ mqs
+    EndsInFinalDiphthong sys
+    ────────────────────────
+    sys ~% id
 
 {- ** TODO: lexicon-based
   [1165/574] :
-    ∙ ApparentException w
-    ∙ w ~↓↓ʷ mqs
-      ──────────────────
-      w ~ʷ mqs
+    ApparentException sys
+    ──────────────────
+    sys ~% id
 -}
 
   -- (575/583) Elision has taken place.
   [575] :
-    ∙ EndsInApostrophe w
-    ∙ w ~↓↓ʷ mqs -- NB: or reindex?
-      ──────────────────────
-      w ~ʷ mqs
+    EndsInApostrophe sys
+    ────────────────────
+    sys ~% id
 
-  fromBelow :
-    ∙ ¬ EndsInFinalDiphthong w
-    -- ∙ ¬ ApparentException w
-    ∙ ¬ EndsInApostrophe w
-    ∙ w ~↓ʷ mqs
-      ────────────────────────
-      w ~ʷ mqs
+  fromBelow : ∀ {f} →
+    ∙ ¬ EndsInFinalDiphthong sys
+    -- ∙ ¬ ApparentException sys
+    ∙ ¬ EndsInApostrophe sys
+    ∙ SingleAccents sys
+    ∙ sys ~%′ f
+      ───────────────────────────
+      sys ~% f
+
+  noop :
+    ∙ (¬ SingleAccents sys)
+    ⊎ (∀ {f} → ¬ sys ~%′ f)
+      ─────────────────────────────────
+      sys ~% id
+
+data _~ʷ_ : Word n → Quantities n → Type where
+
+  𝟙-then-𝟚 : ∀ {f} → let sys = unword w in
+    ∙ sys ~ mqs
+    ∙ sys ~% f
+      ───────────────
+      w ~ʷ f mqs
 
 instance
   Complies-W-MQs : Word n -compliesWith- Quantities n
@@ -201,3 +224,9 @@ data _~²_ : Words n → Quantities n → Type where
     ∙ ws ~² mqs′
       ────────────────
       (w ∷ ws) ~² mqs₀
+
+
+-- -}
+-- -}
+-- -}
+-- -}

@@ -1,4 +1,4 @@
--- {-# OPTIONS --safe #-}
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level1.Dec where
 
 open import Iliagda.Init
@@ -93,13 +93,13 @@ postulate
                   $ find-∩ dec¹ ·Vowel⇒Vowel Circ⇒Vowel (toList sy) v1 ·v∈ cv∈
   in ¬·cVowel (·v , cv)
 
-theQuantity₁? :
+𝟙-theQuantity? :
   (sy : Syllable) →
     (∃ λ (q : Quantity) →
         (sy ~ q)
       × (∀ {q′} → sy ~ q′ → q′ ≡ q))
   ⊎ NonDerivable {B = Quantity} sy
-theQuantity₁? sy
+𝟙-theQuantity? sy
   with ¿ Any× Diphthong sy
        ⊎ Any ─Vowel sy
        ⊎ Any HasCircumflex sy ¿
@@ -122,13 +122,13 @@ theQuantity₁? sy
        , λ where ~─@(longByNature _) → ⊥-elim $ ¬bothByNature (~─ , ~·)
                  (shortByNature _ _) → refl
 
-theQuantity₁ :
+𝟙-theQuantity :
   (sy : Syllable) →
   ∃ λ (mq : Maybe Quantity) →
       (sy ~ mq)
     × (∀ {mq′} → sy ~ mq′ → mq′ ≡ mq)
-theQuantity₁ sy
-  with theQuantity₁? sy
+𝟙-theQuantity sy
+  with 𝟙-theQuantity? sy
 ... | inj₁ (q , sy~q , complete-q)
   = just q , byNature sy~q , λ where
     (byNature sy~q) → cong just (complete-q sy~q)
@@ -139,16 +139,16 @@ theQuantity₁ sy
   , λ where (byNature sy~q) → ⊥-elim $ sy≁ _ sy~q
             (doubtful sy≁) → refl
 
-theQuantities₁ :
+𝟙-theQuantities :
   (sys : Syllables n) →
   ∃ λ (mqs : Quantities n) →
       (sys ~ mqs)
     × (∀ {mqs′} → sys ~ mqs′ → mqs′ ≡ mqs)
-theQuantities₁ [] = [] , [] , (λ where [] → refl)
-theQuantities₁ {n = suc n} (sy ∷ sys) =
+𝟙-theQuantities [] = [] , [] , (λ where [] → refl)
+𝟙-theQuantities {n = suc n} (sy ∷ sys) =
   let
-    mq , sy~mq , complete-mq = theQuantity₁ sy
-    mqs , sys~mqs , complete-mqs = theQuantities₁ {n = n} sys
+    mq , sy~mq , complete-mq = 𝟙-theQuantity sy
+    mqs , sys~mqs , complete-mqs = 𝟙-theQuantities {n = n} sys
   in
     mq ∷ mqs
   , sy~mq ∷ sys~mqs

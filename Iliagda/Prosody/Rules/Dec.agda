@@ -16,34 +16,16 @@ open import Iliagda.Prosody.Rules.Level3
 open import Iliagda.Prosody.Rules.Level23 using (_⊗_)
 
 open import Iliagda.Prosody.Rules.Level1.Dec
--- open import Iliagda.Prosody.Rules.Level2.Dec
+open import Iliagda.Prosody.Rules.Level2.Dec
 -- open import Iliagda.Prosody.Rules.Level3.Dec
 -- open import Iliagda.Prosody.Synezesis.Dec
 
-theQuantities₁ :
-  (w : Word n) →
-  ∃ λ (mqs : Quantities n) →
-      (w ~ mqs)
-    × (∀ {mqs′} → w ~ mqs′ → mqs′ ≡ mqs)
-theQuantities₁ w
-  = {!!}
+open import Iliagda.Prosody.Synizesis.Dec
 
-theQuantities :
-  (ws : Words n) →
-  ∃ λ (mqs : Quantities n) →
-      (ws ~² mqs)
-    × (∀ {mqs′} → ws ~² mqs′ → mqs′ ≡ mqs)
-theQuantities [] = [] , [] , λ where [] → refl
-theQuantities (w ∷ ws)
-  = let
-      mqs  , w~mqs  , complete-mqs  = theQuantities₁ w
-      mqs′ , ws~mqs′ , complete-mqs′ = theQuantities ws
-    in
-      (mqs V.++ mqs′)
-      , (w~mqs ∷ ws~mqs′)
-      , λ where (_∷_ ⦃ refl ⦄ w~mqs ws~mqs′) →
-                     cong₂ V._++_ (complete-mqs  w~mqs) (complete-mqs′ ws~mqs′)
+deus-ex-machina : ∀ {Whatever : Type} → Whatever
+deus-ex-machina = deus-ex-machina
 
+{-
 𝟛-theQuantities :
   (ws : Words n) →
   ∃ λ (mqs : Quantities n) →
@@ -51,20 +33,160 @@ theQuantities (w ∷ ws)
     × (∀ {mqs′} → ws ~³ mqs′ → mqs′ ≡ mqs)
 𝟛-theQuantities = {!!}
 
-allSynezeses′ : ∀ (sys : Syllables n) →
-  ∃ λ (n×syss : List (∃ λ n′ → Syllables n′)) →
-      (∀ {n′ sys′} → (n′ , sys′) ∈ n×syss → sys -synezizes*- sys′)
-    × (∀ {n′ sys′} → sys -synezizes*- sys′ → (n′ , sys′) ∈ n×syss)
-allSynezeses′ {n} sys
-  = {!!}
+--
+
+private
+  pattern 𝟘 = here refl
+  pattern 𝟙 = there 𝟘
+
+allPMs :
+  (qs : Vec Quantity n) →
+  ∃ λ (pms : List (∃ λ m → Meter n m)) →
+      (∀ {m} {pm : Meter n m} → (m , pm) ∈ pms → qs ~ pm)
+    × (∀ {m} {pm : Meter n m} → qs ~ pm → (m , pm) ∈ pms)
+allPMs [] = [ 0 , mkPM [] ]
+          , (λ where 𝟘 → [])
+          , (λ where [] → 𝟘)
+allPMs (_ ∷ []) = [] , (λ ()) , (λ ())
+allPMs (· ∷ _ ∷ qs) = [] , (λ ()) , (λ ())
+allPMs (─ ∷ · ∷ []) = [] , (λ ()) , (λ ())
+allPMs (─ ∷ · ∷ ─ ∷ _) = [] , (λ ()) , (λ ())
+allPMs (─ ∷ ─ ∷ qs)
+  with pms , sound-pms , complete-pms ← allPMs qs
+  = QED
+  where
+  f = λ (m , pm) → 1 + m , (── ∷ᵖᵐ pm)
+
+  sou : _
+  sou pm∈
+    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
+    = sponde (sound-pms pm∈)
+
+  com : _
+  com (sponde p) = ∈-map⁺ f (complete-pms p)
+
+  QED : _
+  QED = map f pms , sou , com
+allPMs (─ ∷ · ∷ · ∷ qs)
+  with pms , sound-pms , complete-pms ← allPMs qs
+  = QED
+  where
+  f = λ (m , pm) → 1 + m , (─·· ∷ᵖᵐ pm)
+
+  sou : _
+  sou pm∈
+    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
+    = dactyl (sound-pms pm∈)
+
+  com : _
+  com (dactyl p) = ∈-map⁺ f (complete-pms p)
+
+  QED : _
+  QED = map f pms , sou , com
+
+allMasks :
+  (mqs : Quantities n) →
+  ∃ λ (qss : List (Vec Quantity n)) →
+      (∀ {qs} → qs ∈ qss → mqs -masks*- qs)
+    × (∀ {qs} → mqs -masks*- qs → qs ∈ qss)
+allMasks [] = [ [] ]
+            , (λ where 𝟘 → [])
+            , (λ where [] → 𝟘)
+allMasks (mq ∷ mqs)
+  with qss , sound-qss , complete-qss ← allMasks mqs
+  with mq
+... | just q
+  = QED
+  where
+  sou : _
+  sou qs∈
+    with qs , qs∈ , refl ← ∈-map⁻ (q ∷_) qs∈
+    = refl ∷ sound-qss qs∈
+
+  com : _
+  com (refl ∷ p) = ∈-map⁺ (q ∷_) (complete-qss p)
+
+  QED : _
+  QED = map (q ∷_) qss , sou , com
+... | nothing
+  = QED
+  where
+  qssF = map (λ qs → [ (─ ∷ qs) ⨾ (· ∷ qs) ]) qss
+  qss′ = concat qssF
+
+  sou : _
+  sou qs∈
+    with ∃qss ← ∈-concat⁻ qssF qs∈
+    with ∃qss′ ← L.Any.map⁻ ∃qss
+    with qs′ , qs∈′ , ∈qss ← satisfied′ ∃qss′
+    with ∈qss
+  ... | 𝟘 = mask ∷ sound-qss qs∈′
+  ... | 𝟙 = mask ∷ sound-qss qs∈′
+
+  com : _
+  com (mask {x = q} ∷ p)
+    = ∈-concat⁺ {xss = qssF}
+    $ L.Any.map⁺
+    $ L.Any.map (λ where refl → P⇒Q) (complete-qss p)
+    where
+    P⇒Q : _
+    P⇒Q with ⟫ q
+    ... | ⟫ ─ = 𝟘
+    ... | ⟫ · = 𝟙
+
+  QED : _
+  QED = qss′ , sou , com
+
+onlyHexameters :
+  List (∃ $ Meter n) → List (Hexameter n)
+onlyHexameters = L.mapMaybe onlyHexameter
+  module _ where
+  onlyHexameter : ∃ (Meter n) → Maybe (Meter n 6)
+  onlyHexameter (m , pm) with m ≟ 6
+  ... | yes refl = just pm
+  ... | no  _    = nothing
+
+open ∣Complies-MQs-HM∣
 
 allHexameters :
   (mqs : Quantities n) →
   ∃ λ (hms : List (Hexameter n)) →
       (∀ {hm} → hm ∈ hms → mqs ~ hm)
     × (∀ {hm} → mqs ~ hm → hm ∈ hms)
-allHexameters = {!!}
+allHexameters {0} mqs = [] , (λ ()) , λ where
+  (reify {hm = hm} msk p) → ⊥-elim $ Hex≢0 hm
+allHexameters {n@(suc _)} mqs
+  with n>0 ← n > 0
+           ∋ s≤s z≤n
+  with qss , sound-qss , complete-qss ← allMasks mqs
+  = concatMap sols qss
+  , sou
+  , com
+  where
+  sols : Vec Quantity n → List (Hexameter n)
+  sols qs =
+    let qs─ = mkLastLong {n = n} (s≤s z≤n) qs
+        pms , _ = allPMs qs─
+    in onlyHexameters pms
 
+  sou : ∀ {hm} → hm ∈ concatMap sols qss → mqs ~ hm
+  sou {hm} hm∈
+    with qs , qs∈ , hm∈ ← satisfied′ $ ∈-concatMap⁻ sols {xs = qss} hm∈
+    with pms , sound-pms , complete-pms ← allPMs (mkLastLong {n = n} (s≤s z≤n) qs)
+    with (m , hm) , hm∈ , hm≡ ← ∈-mapMaybe⁻ (onlyHexameter {n}) {xs = pms} hm∈
+    with 6 ← m
+    with refl ← hm≡
+    = reify (sound-qss qs∈) (sound-pms hm∈)
+
+  com : ∀ {hm} → mqs ~ hm → hm ∈ concatMap sols qss
+  com {hm} (reify {qs = qs} msk hm~) =
+    let pms , sound-pms , complete-pms = allPMs (mkLastLong {n = n} (s≤s z≤n) qs) in
+    ∈-concatMap⁺ sols {xs = qss}
+        (L.Any.map
+          (λ where refl → ∈-mapMaybe⁺ (onlyHexameter {n}) {xs = pms} (complete-pms hm~) refl)
+          (complete-qss msk))
+
+{-
 open ∣Complies-Ws-HM∣
 
 allMeterDerivations :
