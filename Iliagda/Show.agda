@@ -7,6 +7,7 @@ open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Core
 open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody
+open import Iliagda.Prosody.Rules
 
 open Nat
 
@@ -125,6 +126,7 @@ instance
     χ → "χ"
     Ψ → "Ψ"
     ψ → "ψ"
+    ᾽ → "᾽"
 
   Show-Sy = Show Syllable ∋ λ where
     .show → merged ∘ toList
@@ -164,6 +166,7 @@ instance
 
 -- ** explanations
 
+{-
 -- OPTION: set to `true` to show rule explanations below derivations
 SHOW_RULES = false
 
@@ -182,27 +185,53 @@ showRules = λ where
 
 showIf : ⦃ Show A ⦄ → Bool → A → String
 showIf b a = if b then show a else ""
+-}
 
 -- ** derivations
 
+open ∣Complies-Ws-HM∣
+
+open import Iliagda.Prosody.Rules.Level1.Dec
+
 instance
   Show-Ws-HM : Show (ws ~ hm)
-  Show-Ws-HM {ws = ws} {hm = hm} .show ws~hm = (case ws~hm of λ where
-    (fromBelow (_ ~∘~ _)) →
-      show (unwords ws , meter-qs hm)
-    ([586] {sys′ = sys′} syn _ _ _) →
-      let
-        `syn = show syn
-        ns   = map Str.length (Str.words `syn)
-        qs   = meter-qs hm
-        `qs  = map show (toList qs)
-      in
-        `syn ◇ "\n"
-      ◇ spaces (map (uncurry pad) $ L.zip `qs ns))
-    ◇ showIf SHOW_RULES ("\n  ⊣ " ◇ showRules ws~hm)
+  Show-Ws-HM {ws = ws} {hm = hm} .show
+    (_≫⟨_⟩≫_≫_ {mqs = mqs2} {mqs′ = mqs3} _ syn _ _)
+    =
+    -- let ws′ = synezizeWords ws syn in
+    -- show (unwords ws′ , meter-qs hm)
+    let
+      `syn = show syn
+      ns   = map Str.length (Str.words `syn)
+      qs   = meter-qs hm
+      `qs  = map show (toList qs)
+      mqs1  = 𝟙-theQuantities (unwords ws) .proj₁
+      `mqs1 = map show (toList $ synezize syn mqs1)
+      `mqs2 = map show (toList $ synezize syn mqs2)
+      `mqs3 = map show (toList mqs3)
+      `mqs23 = map show (toList $ synezize syn mqs2 ⊗ mqs3)
+    in
+      `syn ◇ "\n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs1 ns) ◇ " --𝟙 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs2 ns) ◇ " --𝟚 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs3 ns) ◇ " --𝟛 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗3\n"
+    ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
+    -- ◇ showIf SHOW_RULES ("\n  ⊣ " ◇ showRules ws~hm)
 
   Show-∃ : ∀ {P : A → Type} → ⦃ Show¹ P ⦄ → Show (∃ λ a → P a)
   Show-∃ .show (_ , p) = show p
+
+  Show-Derivations : Show (Derivations ws)
+  -- Show-Derivations .show = lined
+  Show-Derivations {ws = ws} .show = λ where
+    [] → "\n" ◇ show (unwords ws) ◇ "\n∅"
+    ds → lined ds
+
+  Show-ManyDerivations : Show (List ∃Derivations)
+  -- Show-ManyDerivations .show = lined
+  Show-ManyDerivations .show dss =
+    "\n" ◇ Str.intersperse "\n\n***************\n" (map show dss)
 
 -- -}
 -- -}

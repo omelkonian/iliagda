@@ -10,8 +10,6 @@ open import Iliagda.Prosody.Rules.Level1
 open import Iliagda.Prosody.Rules.Level2
 open import Iliagda.Prosody.Rules.Level3
 
-open import Algebra using (Op₂)
-
 -- ** LEVEL 2&3: merging information
 
 _⊗₁_ : Op₂ $ Maybe Quantity

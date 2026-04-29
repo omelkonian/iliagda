@@ -12,12 +12,17 @@ SynezizedOrDipthong : Syllable → Type
 SynezizedOrDipthong sy = vowels sy ≥ 2
 
 -- NB: separation of concerns between Level1~Synezesis
-_~ˢʸⁿ_ : Syllable → Quantity → Type
-sy ~ˢʸⁿ q =
-  if ¿ SynezizedOrDipthong sy ¿ᵇ then
-    (q ≡ ─)
-  else
-    (sy ~ q)
+data _~ˢʸⁿ_ : Syllable → Quantity → Type where
+  synLong :
+    SynezizedOrDipthong sy
+    ──────────────────────
+    sy ~ˢʸⁿ ─
+
+  ¬synLong :
+    ∙ ¬ SynezizedOrDipthong sy
+    ∙ sy ~ q
+      ────────────────────────
+      sy ~ˢʸⁿ q
 
 -- ** LEVEL 3: syllable context
 -- TODO: find counter-example that demonstrates Level2~>3 dependency.
@@ -41,10 +46,6 @@ data Context : Type where
   outer : Syllable → Context
 
 variable ctx ctx′ : Context
-
-Letters = List Letter
-
-variable ls ls′ : Letters
 
 data StartsWithDoubleConsonant : Letters → Type where
   doubleConsonant :

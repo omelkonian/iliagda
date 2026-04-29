@@ -28,3 +28,12 @@ record _-compliesWith-_ (A B : Type) : Type₁ where
   NonDerivable∃′⇒ ∄a a a~b = ∄a (a , a~b)
 
 open _-compliesWith-_ ⦃ ... ⦄ public
+
+-- ** enumerations
+
+record Enumeration (_~_ : A → B → Type) : Type where
+  field
+    allBs    : A → List B
+    sound    : ∀ {a b} → b ∈ allBs a → a ~ b
+    complete : ∀ {a b} → a ~ b → b ∈ allBs a
+open Enumeration public

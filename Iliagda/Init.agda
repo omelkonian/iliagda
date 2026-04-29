@@ -15,7 +15,7 @@ open import Data.Unit public
 open import Data.Sum public
   using (_⊎_; inj₁; inj₂; isInj₁; isInj₂)
 open import Data.Product public
-  using (_×_; _,_; proj₁; proj₂; ∃; ∃-syntax; -,_; curry; uncurry)
+  using (_×_; _,_; proj₁; proj₂; ∃; ∃-syntax; -,_; _,′_; curry; uncurry)
 
 module 𝔹 where
   open import Data.Bool public
@@ -29,7 +29,7 @@ module Nat where
   open import Data.Nat.Properties public
   open import Data.Nat.ListAction public
 open Nat public
-  using ( ℕ; zero; suc; _+_
+  using ( ℕ; zero; suc; _+_; _∸_
         ; _≤_; _≥_; _<_; _>_; z≤n; s≤s
         )
 
@@ -107,15 +107,19 @@ open V.PW public
   using ([]; _∷_)
   renaming (Pointwise to VPointwise)
 
+open import Algebra public
+  using (Op₁; Op₂)
 
 open import Relation.Nullary public
   using (¬_)
 open import Relation.Nullary.Decidable.Core public
   using (Dec; yes; no; ⌊_⌋; ¬?) renaming (map′ to mapDec)
 open import Relation.Unary public
-  using (Pred) renaming (_∪_ to _∪₁_; _∩_ to _∩¹_; _⊆_ to _⊆¹_)
+  using (Pred)
+  renaming (_∪_ to _∪₁_; _∩_ to _∩¹_; _⊆_ to _⊆¹_; Decidable to Decidable¹)
 open import Relation.Binary public
   using (Rel)
+  renaming (Decidable to Decidable²)
 open import Relation.Binary.PropositionalEquality public
   using (_≡_; refl; _≢_; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
 

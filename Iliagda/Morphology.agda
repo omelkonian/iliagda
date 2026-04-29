@@ -20,6 +20,8 @@ data Letter : Type where
    ᾽ -- apostrophe
    : Letter
 
+Letters = List Letter
+
 Consonant Vowel Apostrophe : Pred₀ Letter
 Consonant = _∈
   ( Β ∷ β ∷ Γ ∷ γ ∷ Δ ∷ δ ∷ Ζ ∷ ζ
@@ -74,6 +76,7 @@ _ = word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
 
 variable
   l l′ : Letter
+  ls ls′ : Letters
   sy sy′ sy″ penult penult′ ult ult′ : Syllable
   sys sys′ sys″ : Syllables n
   w  w′ : Word n

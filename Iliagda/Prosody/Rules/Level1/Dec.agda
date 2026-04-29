@@ -1,4 +1,4 @@
--- {-# OPTIONS --safe #-}
+{-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level1.Dec where
 
 open import Iliagda.Init
@@ -70,13 +70,190 @@ module _
     ... | ⟫ here  qx = ⊥-elim $ ¬rx (Q⇒R qx)
     ... | ⟫ there q∈ = q∈
 
-postulate
-  ·Vowel⇒Vowel : ·Vowel ⊆¹ Vowel
-  ─Vowel⇒Vowel : ─Vowel ⊆¹ Vowel
-  Circ⇒Vowel : HasCircumflex ⊆¹ Vowel
-  ¬·cVowel : ¬ (·Vowel l × HasCircumflex l)
-  ¬·─Vowel : ¬ (·Vowel l × ─Vowel l)
-  ∣Dipthong∣>1 : Any× Diphthong sy → vowels sy > 1
+private
+  pattern 𝟘 = here refl
+  pattern ↠_ x = there x
+
+¬circ×acu : HasCircumflex l → HasAcute l → ⊥
+¬circ×acu = λ where
+  𝟘 → auto
+  (↠ 𝟘) → auto
+  (↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+
+·Vowel⇒Vowel : ·Vowel ⊆¹ Vowel
+·Vowel⇒Vowel = λ where
+  𝟘 → auto
+  (↠ 𝟘) → auto
+  (↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+
+─Vowel⇒Vowel : ─Vowel ⊆¹ Vowel
+─Vowel⇒Vowel = λ where
+  𝟘 → auto
+  (↠ 𝟘) → auto
+  (↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+
+Di⇒Vowel : Diphthong (l , l′) → Vowel l × Vowel l′
+Di⇒Vowel = λ where
+  𝟘 → auto
+  (↠ 𝟘) → auto
+  (↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+
+Circ⇒Vowel : HasCircumflex ⊆¹ Vowel
+Circ⇒Vowel = λ where
+  𝟘 → auto
+  (↠ 𝟘) → auto
+  (↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+
+Circ⇒¬·Vowel : HasCircumflex ⊆¹ ¬_ ∘ ·Vowel
+Circ⇒¬·Vowel = λ where
+  𝟘 → auto
+  (↠ 𝟘) → auto
+  (↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ 𝟘) → auto
+  (↠ ↠ ↠ ↠ ↠ 𝟘) → auto
+
+¬·cVowel : ¬ (·Vowel l × HasCircumflex l)
+¬·cVowel (s , c) = Circ⇒¬·Vowel c s
+
+¬·─Vowel : ¬ (·Vowel l × ─Vowel l)
+¬·─Vowel = λ where
+  (𝟘 , p) → contradict p
+  (↠ 𝟘 , p) → contradict p
+  (↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+  (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
+
+Vowel? = Decidable¹ Vowel ∋ λ l → ¿ Vowel l ¿
+
+onlyVowels : List Letter → List Letter
+onlyVowels = L.filter Vowel?
+
+vowels′ : List Letter → ℕ
+vowels′ = length ∘ onlyVowels
+
+module _ {l ls} where
+
+  onlyVowels∷ : onlyVowels (l ∷ ls) ≡ onlyVowels [ l ] ++ onlyVowels ls
+  onlyVowels∷ = L.filter-++ Vowel? [ l ] ls
+
+  vowels∷ : vowels (l ∷ ls) ≡ vowels [ l ] + vowels′ ls
+  vowels∷ =
+    let open ≡-Reasoning in
+    begin
+      vowels (l ∷ ls)
+    ≡⟨⟩
+      length (onlyVowels (l ∷ ls))
+    ≡⟨ cong length onlyVowels∷ ⟩
+      length (onlyVowels [ l ] ++ onlyVowels ls)
+    ≡⟨ L.length-++ (onlyVowels [ l ]) ⟩
+      length (onlyVowels [ l ]) + length (onlyVowels ls)
+    ≡⟨⟩
+      vowels [ l ] + vowels′ ls
+    ∎
+
+vowelsDi : (l , l′) ∈ pairs (toList sy) → vowels sy ≥ vowels [ l ⨾ l′ ]
+vowelsDi {sy = [ _ ]} ()
+vowelsDi {sy = l ∷ l′ ∷ ls} 𝟘 =
+  let open Nat.≤-Reasoning in
+  begin
+    vowels [ l ⨾ l′ ]
+  ≡⟨ vowels∷ {l} ⟩
+    vowels [ l ] + vowels [ l′ ]
+  ≤⟨ Nat.m≤m+n _ _ ⟩
+    vowels [ l ] + vowels [ l′ ] + vowels′ ls
+  ≡⟨ Nat.+-assoc (vowels [ l ]) _ _ ⟩
+    vowels [ l ] + (vowels [ l′ ] + vowels′ ls)
+  ≡˘⟨ cong (_ +_) $ vowels∷ {l′} ⟩
+    vowels [ l ] + vowels (l′ ∷ ls)
+  ≡˘⟨ vowels∷ {l} ⟩
+    vowels (l ∷ l′ ∷ ls)
+  ∎
+vowelsDi {l}{l′}{sy = l↓ ∷ ls@(_ ∷ _)} (↠ p) =
+  let open Nat.≤-Reasoning in
+  begin
+    vowels [ l ⨾ l′ ]
+  ≤⟨ vowelsDi p ⟩
+    vowels′ ls
+  ≤⟨ Nat.m≤n+m _ _ ⟩
+    vowels [ l↓ ] + vowels′ ls
+  ≡˘⟨ vowels∷ {l↓} ⟩
+    vowels (l↓ ∷ ls)
+  ∎
+
+Di-vowels≡2 : Diphthong (l , l′) → vowels [ l ⨾ l′ ] ≡ 2
+Di-vowels≡2 {l}{l′} di =
+  let
+    vl , vl′ = Di⇒Vowel di
+    open ≡-Reasoning
+  in
+  begin
+    vowels [ l ⨾ l′ ]
+  ≡⟨ cong length $ L.filter-accept Vowel? vl ⟩
+    1 + vowels [ l′ ]
+  ≡⟨ cong (suc ∘ length) $ L.filter-accept Vowel? vl′ ⟩
+    2
+  ∎
+
+∣Dipthong∣>1 : Any× Diphthong sy → vowels sy > 1
+∣Dipthong∣>1 {sy} di∈ =
+  let (l , l′) , di∈ , di = satisfied′ di∈
+  in subst (_ ≥_) (Di-vowels≡2 di) (vowelsDi di∈)
 
 ¬bothByNature : ¬ ((sy ~ ─) × (sy ~ ·))
 ¬bothByNature {sy = sy} (longByNature long , shortByNature ·v∈ v1)
@@ -93,13 +270,13 @@ postulate
                   $ find-∩ dec¹ ·Vowel⇒Vowel Circ⇒Vowel (toList sy) v1 ·v∈ cv∈
   in ¬·cVowel (·v , cv)
 
-theQuantity₁? :
+𝟙-theQuantity? :
   (sy : Syllable) →
     (∃ λ (q : Quantity) →
         (sy ~ q)
       × (∀ {q′} → sy ~ q′ → q′ ≡ q))
   ⊎ NonDerivable {B = Quantity} sy
-theQuantity₁? sy
+𝟙-theQuantity? sy
   with ¿ Any× Diphthong sy
        ⊎ Any ─Vowel sy
        ⊎ Any HasCircumflex sy ¿
@@ -122,13 +299,22 @@ theQuantity₁? sy
        , λ where ~─@(longByNature _) → ⊥-elim $ ¬bothByNature (~─ , ~·)
                  (shortByNature _ _) → refl
 
-theQuantity₁ :
+_~₁?_ : ∀ (sy : Syllable) (q : Quantity) → Dec (sy ~ q)
+sy ~₁? q
+  with 𝟙-theQuantity? sy
+... | inj₂ sy≁   = no λ sy~q → sy≁ _ sy~q
+... | inj₁ (q′ , sy~q′ , unique-q′)
+  with q ≟ q′
+... | yes refl = yes sy~q′
+... | no  q≢   = no λ sy~q → q≢ (unique-q′ sy~q)
+
+𝟙-theQuantity :
   (sy : Syllable) →
   ∃ λ (mq : Maybe Quantity) →
       (sy ~ mq)
     × (∀ {mq′} → sy ~ mq′ → mq′ ≡ mq)
-theQuantity₁ sy
-  with theQuantity₁? sy
+𝟙-theQuantity sy
+  with 𝟙-theQuantity? sy
 ... | inj₁ (q , sy~q , complete-q)
   = just q , byNature sy~q , λ where
     (byNature sy~q) → cong just (complete-q sy~q)
@@ -139,17 +325,22 @@ theQuantity₁ sy
   , λ where (byNature sy~q) → ⊥-elim $ sy≁ _ sy~q
             (doubtful sy≁) → refl
 
-theQuantities₁ :
+𝟙-theQuantities :
   (sys : Syllables n) →
   ∃ λ (mqs : Quantities n) →
       (sys ~ mqs)
     × (∀ {mqs′} → sys ~ mqs′ → mqs′ ≡ mqs)
-theQuantities₁ [] = [] , [] , (λ where [] → refl)
-theQuantities₁ {n = suc n} (sy ∷ sys) =
+𝟙-theQuantities [] = [] , [] , (λ where [] → refl)
+𝟙-theQuantities {n = suc n} (sy ∷ sys) =
   let
-    mq , sy~mq , complete-mq = theQuantity₁ sy
-    mqs , sys~mqs , complete-mqs = theQuantities₁ {n = n} sys
+    mq , sy~mq , complete-mq = 𝟙-theQuantity sy
+    mqs , sys~mqs , complete-mqs = 𝟙-theQuantities {n = n} sys
   in
     mq ∷ mqs
   , sy~mq ∷ sys~mqs
   , λ where (sy~ ∷ sys~) → cong₂ _∷_ (complete-mq sy~) (complete-mqs sys~)
+
+-- -}
+-- -}
+-- -}
+-- -}

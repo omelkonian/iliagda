@@ -102,3 +102,11 @@ instance
           -- ∙ (∀ n″ → n″ > n′ → NonDerivable {B = Hexameter n″} ws)
             ─────────────────────────────────────────────────────
             ws ~′ hm
+
+Derivation : Words n → Type
+Derivation ws = ∃ λ n′ → ∃ λ (hm : Hexameter n′) → ws ~ hm
+
+Derivations : Words n → Type
+Derivations ws = List (Derivation ws)
+
+∃Derivations = ∃ λ n → ∃ λ (ws : Words n) → Derivations ws
