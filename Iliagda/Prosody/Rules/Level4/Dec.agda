@@ -79,20 +79,20 @@ allMasks [] = [ [] ]
 allMasks (mq ∷ mqs)
   with qss , sound-qss , complete-qss ← allMasks mqs
   with mq
-... | just q
+... | single q
   = QED
   where
   sou : _
   sou qs∈
     with qs , qs∈ , refl ← ∈-map⁻ (q ∷_) qs∈
-    = refl ∷ sound-qss qs∈
+    = single ∷ sound-qss qs∈
 
   com : _
-  com (refl ∷ p) = ∈-map⁺ (q ∷_) (complete-qss p)
+  com (single ∷ p) = ∈-map⁺ (q ∷_) (complete-qss p)
 
   QED : _
   QED = map (q ∷_) qss , sou , com
-... | nothing
+... | none
   = QED
   where
   qssF = map (λ qs → [ (─ ∷ qs) ⨾ (· ∷ qs) ]) qss
@@ -104,11 +104,39 @@ allMasks (mq ∷ mqs)
     with ∃qss′ ← L.Any.map⁻ ∃qss
     with qs′ , qs∈′ , ∈qss ← satisfied′ ∃qss′
     with ∈qss
-  ... | 𝟘 = mask ∷ sound-qss qs∈′
-  ... | 𝟙 = mask ∷ sound-qss qs∈′
+  ... | 𝟘 = none ∷ sound-qss qs∈′
+  ... | 𝟙 = none ∷ sound-qss qs∈′
 
   com : _
-  com (mask {x = q} ∷ p)
+  com (none {x = q} ∷ p)
+    = ∈-concat⁺ {xss = qssF}
+    $ L.Any.map⁺
+    $ L.Any.map (λ where refl → P⇒Q) (complete-qss p)
+    where
+    P⇒Q : _
+    P⇒Q with ⟫ q
+    ... | ⟫ ─ = 𝟘
+    ... | ⟫ · = 𝟙
+
+  QED : _
+  QED = qss′ , sou , com
+... | all
+  = QED
+  where
+  qssF = map (λ qs → [ (─ ∷ qs) ⨾ (· ∷ qs) ]) qss
+  qss′ = concat qssF
+
+  sou : _
+  sou qs∈
+    with ∃qss ← ∈-concat⁻ qssF qs∈
+    with ∃qss′ ← L.Any.map⁻ ∃qss
+    with qs′ , qs∈′ , ∈qss ← satisfied′ ∃qss′
+    with ∈qss
+  ... | 𝟘 = all ∷ sound-qss qs∈′
+  ... | 𝟙 = all ∷ sound-qss qs∈′
+
+  com : _
+  com (all {x = q} ∷ p)
     = ∈-concat⁺ {xss = qssF}
     $ L.Any.map⁺
     $ L.Any.map (λ where refl → P⇒Q) (complete-qss p)
@@ -256,11 +284,3 @@ instance
 
 Derivable : Words n → Type
 Derivable = NonEmpty ∘ allDerivations
-
--- checkVerse : Verse {n} → String
--- checkVerse v@ws =
---   let
---     mqs , ws~mqs , unique-mqs = 𝟚-theQuantities ws
---     mqs3 , ws~mqs3 , unique-mqs3 = 𝟛-theQuantities ws
---   in
---     show (mqs ⊗ mqs3)

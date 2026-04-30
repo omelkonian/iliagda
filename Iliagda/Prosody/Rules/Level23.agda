@@ -12,11 +12,17 @@ open import Iliagda.Prosody.Rules.Level3
 
 -- ** LEVEL 2&3: merging information
 
-_⊗₁_ : Op₂ $ Maybe Quantity
+_⊗₁_ : Op₂ $ Flat Quantity
 _⊗₁_ = λ where
-  nothing mq → mq
-  mq nothing → mq
-  (just _) (just q′) → just q′
+  (single _) (single q) → single q  -- RIGHT BIASED
+  -- (single q) (single q′) → if q == q′ then single q else *
+  (single q) none → single q
+  (single _) all → all              -- RIGHT BIASED
+  none mq → mq
+  all mq → mq                       -- IMPOSSIBLE
+  -- all (single x) → ?
+  -- all none → all
+  -- all all → all
 
 _⊗_ : Op₂ $ Quantities n
 _⊗_ = V.zipWith _⊗₁_
@@ -62,3 +68,9 @@ _∪_ = {!!}
   -- else if right then
   --   inj₂ ans
 -}
+
+
+-- -}
+-- -}
+-- -}
+-- -}

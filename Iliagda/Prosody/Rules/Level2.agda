@@ -28,11 +28,11 @@ circumflexPenult? (word w)
 variable antepenult : Syllable
 
 _≔ₙ_ : Quantities (1 + n) → Quantity → Quantities (1 + n)
-_≔ₙ_ {n = n} mqs q = mqs V.[ lastIndex ]≔ just q
+_≔ₙ_ {n = n} mqs q = mqs V.[ lastIndex ]≔ single q
   where lastIndex = Fi.fromℕ n
 
 _≔ₙ₋₁_ : Quantities (2 + n) → Quantity → Quantities (2 + n)
-_≔ₙ₋₁_ {n = n} mqs q = mqs V.[ penultIndex ]≔ just q
+_≔ₙ₋₁_ {n = n} mqs q = mqs V.[ penultIndex ]≔ single q
   where penultIndex = Fi.inject₁ $ Fi.fromℕ n
 
 infix 10 _≔ₙ_ _≔ₙ₋₁_
@@ -104,7 +104,7 @@ data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
   [1163] :
     InAntepenult (Any HasAccent) sys
     ────────────────────────────────
-    sys ~%′ (_≔ₙ ─)
+    sys ~%′ (_≔ₙ ·)
 
 data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
 

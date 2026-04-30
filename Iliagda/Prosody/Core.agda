@@ -8,9 +8,6 @@ data Quantity : Type where
   · {- short -} : Quantity
   ─ {- long  -} : Quantity
 
-Quantities : ℕ → Type
-Quantities = Vec (Maybe Quantity)
-
 data Foot : (n : ℕ) {- syllables -} → Vec Quantity n → Type where
   ─·· {- dactyl -} : Foot 3 (─ ∷ · ∷ · ∷ [])
   ──  {- sponde -} : Foot 2 (─ ∷ ─ ∷ [])
@@ -89,8 +86,6 @@ Hex>0 {suc n} hm = s≤s z≤n
 variable
   q q′ : Quantity
   qs qs′ : Vec Quantity n
-  mq mq′ mq″ : Maybe Quantity
-  mqs mqs′ : Quantities n
   pm  pm′ : Meter n m
   hm  hm′ : Hexameter n
 

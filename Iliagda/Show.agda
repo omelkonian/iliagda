@@ -156,10 +156,11 @@ instance
     (_∺_ {sy = sy} {sy′ = sy′} _ syn) → show sy ◇ "⁀" ◇ show sy′ ◇ " " ◇ show syn
 
 instance
-  Show-mq : Show (Maybe Quantity)
+  Show-mq : Show (Flat Quantity)
   Show-mq .show = λ where
-    nothing  → "*"
-    (just q) → show q
+    none → "?"
+    all → "*"
+    (single q) → show q
 
   Show-mqs : Show (Quantities n)
   Show-mqs .show = spaced ∘ toList

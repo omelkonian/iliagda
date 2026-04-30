@@ -33,6 +33,7 @@ data _-synezizes*-_ where
       (sy ∷ sys) ~ (sy ∷ sys′)
 
   _∺_ :
+      -- TODO: διαλυτικα??
       LastVowel sy × FirstVowel sy′
     → sys ~ sys′
     → ⦃ _ : sy″ ≡ sy ⁀ sy′ ⦄
@@ -79,17 +80,6 @@ syn-refl {sys = _ ∷ sys} = _ ∷ syn-refl {sys = sys}
 syn-++ˡ : sys ~ sys′ → (sys″ V.++ sys) -synezizes*- (sys″ V.++ sys′)
 syn-++ˡ {sys″ = []} = id
 syn-++ˡ {sys″ = _ ∷ sys″} = (_ ∷_) ∘ syn-++ˡ {sys″ = sys″}
-
-open import Iliagda.Prosody.Core
-
-synezize : ∀ {sys : Syllables n} {sys′ : Syllables n′}
-  (syn : sys -synezizes*- sys′) →
-  Quantities n →
-  Quantities n′
-synezize = λ where
-  []        mqs           → mqs
-  (_ ∷ syn) (mq ∷ mqs)    → mq ∷ synezize syn mqs
-  (_ ∺ syn) (_ ∷ _ ∷ mqs) → just ─ ∷ synezize syn mqs
 
 _∷ʷˢ_ : Syllable → Words n → Words (suc n)
 sy ∷ʷˢ [] = word [ sy ] ∷ []

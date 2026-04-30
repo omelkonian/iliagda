@@ -3,8 +3,8 @@ module Iliagda.Prosody where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
-open import Iliagda.Prosody.Core
-open import Iliagda.Dec.Core
+open import Iliagda.Prosody.Core public
+open import Iliagda.Dec.Core public
 
 -- open ∣Complies-Sy-MQ∣ public
 --   hiding (_~′_)

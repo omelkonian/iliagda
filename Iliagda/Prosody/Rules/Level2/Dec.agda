@@ -87,7 +87,7 @@ theF′? sys@([ _ ⨾ _ ]) sacc
   with sacc , ∀sacc ← LastThree-∩⁻ sacc
   with ¿ InPenult (Any HasCircumflex) sys ¿
 ... | yes circPu
-  = inj₁ $ (_≔ₙ ·) , [1160] circPu , λ where
+  = inj₁ $ -, [1160] circPu , λ where
   ([1160] _) → refl
   ([1161] lacuPu) → ⊥-elim $ 1160#1161/2 sacc (circPu , lacuPu)
   ([1162] _ lacuPu) → ⊥-elim $ 1160#1161/2 sacc (circPu , lacuPu)
@@ -95,7 +95,7 @@ theF′? sys@([ _ ⨾ _ ]) sacc
 ... | no ¬circPu
   with ¿ InPenult ((_~ ─) ∩¹ Any HasAcute) sys ¿
 ... | yes lacuPu
-  = inj₁ $ (_≔ₙ ─) , [1161] lacuPu , λ where
+  = inj₁ $ -, [1161] lacuPu , λ where
   ([1160] circPu) → ⊥-elim $ ¬circPu circPu
   ([1161] _) → refl
   ([1162] _ ≁lacuPu) → ⊥-elim $ 1161#1162 sacc (lacuPu , ≁lacuPu)
@@ -103,7 +103,7 @@ theF′? sys@([ _ ⨾ _ ]) sacc
 ... | no ¬lacuPu
   with ¿ InUlt (_~ ·) sys × InPenult ((_≁ ─) ∩¹ Any HasAcute) sys ¿
 ... | yes (sult , ≁lacuPu)
-  = inj₁ $ (_≔ₙ₋₁ ·) , [1162] sult ≁lacuPu , λ where
+  = inj₁ $ -, [1162] sult ≁lacuPu , λ where
   ([1160] circPu) → ⊥-elim $ ¬circPu circPu
   ([1161] lacuPu) → ⊥-elim $ ¬lacuPu lacuPu
   ([1162] _ _) → refl
@@ -118,7 +118,7 @@ theF′? {n = n} sys@(_ ∷ (_ ∷ (_ ∷ _))) sacc
   with sacc , ∀sacc ← LastThree-∩⁻ sacc
   with ¿ InPenult (Any HasCircumflex) sys ¿
 ... | yes circPu
-  = inj₁ $ (_≔ₙ ·) , [1160] circPu , λ where
+  = inj₁ $ -, [1160] circPu , λ where
   ([1160] _) → refl
   ([1161] lacuPu) → ⊥-elim $ 1160#1161/2 sacc (circPu , lacuPu)
   ([1162] _ lacuPu) → ⊥-elim $ 1160#1161/2 sacc (circPu , lacuPu)
@@ -126,7 +126,7 @@ theF′? {n = n} sys@(_ ∷ (_ ∷ (_ ∷ _))) sacc
 ... | no ¬circPu
   with ¿ InPenult ((_~ ─) ∩¹ Any HasAcute) sys ¿
 ... | yes lacuPu
-  = inj₁ $ (_≔ₙ ─) , [1161] lacuPu , λ where
+  = inj₁ $ -, [1161] lacuPu , λ where
   ([1160] circPu) → ⊥-elim $ ¬circPu circPu
   ([1161] _) → refl
   ([1162] _ ≁lacuPu) → ⊥-elim $ 1161#1162 sacc (lacuPu , ≁lacuPu)
@@ -134,7 +134,7 @@ theF′? {n = n} sys@(_ ∷ (_ ∷ (_ ∷ _))) sacc
 ... | no ¬lacuPu
   with ¿ InUlt (_~ ·) sys × InPenult ((_≁ ─) ∩¹ Any HasAcute) sys ¿
 ... | yes (sult , ≁lacuPu)
-  = inj₁ $ (_≔ₙ₋₁ ·) , [1162] sult ≁lacuPu , λ where
+  = inj₁ $ -, [1162] sult ≁lacuPu , λ where
   ([1160] circPu) → ⊥-elim $ ¬circPu circPu
   ([1161] lacuPu) → ⊥-elim $ ¬lacuPu lacuPu
   ([1162] _ _) → refl
@@ -142,7 +142,7 @@ theF′? {n = n} sys@(_ ∷ (_ ∷ (_ ∷ _))) sacc
 ... | no ¬≁lacuPu
   with ¿ InAntepenult (Any HasAccent) sys ¿
 ... | yes accApu
-  = inj₁ $ (_≔ₙ ─) , [1163] accApu , λ where
+  = inj₁ $ -, [1163] accApu , λ where
   ([1160] circPu) → ⊥-elim $ ¬circPu circPu
   ([1161] lacuPu) → ⊥-elim $ ¬lacuPu lacuPu
   ([1162] sult ≁lacuPu) → ⊥-elim $ ¬≁lacuPu (sult , ≁lacuPu)

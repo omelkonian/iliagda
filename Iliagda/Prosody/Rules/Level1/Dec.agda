@@ -310,17 +310,17 @@ sy ~₁? q
 
 𝟙-theQuantity :
   (sy : Syllable) →
-  ∃ λ (mq : Maybe Quantity) →
+  ∃ λ (mq : Flat Quantity) →
       (sy ~ mq)
     × (∀ {mq′} → sy ~ mq′ → mq′ ≡ mq)
 𝟙-theQuantity sy
   with 𝟙-theQuantity? sy
 ... | inj₁ (q , sy~q , complete-q)
-  = just q , byNature sy~q , λ where
-    (byNature sy~q) → cong just (complete-q sy~q)
+  = single q , byNature sy~q , λ where
+    (byNature sy~q) → cong single (complete-q sy~q)
     (doubtful sy≁) → ⊥-elim $ sy≁ q sy~q
 ... | inj₂ sy≁
-  = nothing
+  = none
   , doubtful sy≁
   , λ where (byNature sy~q) → ⊥-elim $ sy≁ _ sy~q
             (doubtful sy≁) → refl

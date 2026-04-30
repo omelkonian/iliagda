@@ -6,26 +6,18 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
--- open import Iliagda.Prosody.Rules.Level23
 
 -- ** LEVEL 4: meter structure
 
-private variable x : X; mx : Maybe X
+private variable x : X; mx : Flat X
 
-data _-masks-_ {X : Type} : Maybe X → X → Type where
-  mask : nothing -masks- x
-  refl : just x  -masks- x
+data _-masks-_ {X : Type} : Flat X → X → Type where
+  none   : none      -masks- x
+  all    : all       -masks- x
+  single : single x  -masks- x
 
-_-masks*-_ : Vec (Maybe X) n → Vec X n → Type
+_-masks*-_ : Vec (Flat X) n → Vec X n → Type
 _-masks*-_ = VPointwise _-masks-_
-
-_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
-    (q       ∷ q′      ∷ q       ∷ [])
-_ = mask     ∷ refl    ∷ mask    ∷ []
-
-_ : (nothing ∷ just q′ ∷ nothing ∷ []) -masks*-
-    (q       ∷ q′      ∷ q       ∷ [])
-_ = mask     ∷ refl    ∷ mask    ∷ []
 
 data _ˢ~ᵐ_ : Vec Quantity n → Meter n m → Type where
 
@@ -63,6 +55,7 @@ instance
 
       data _~′_ : Quantities n → Hexameter n → Type where
         reify :
+          -- TODO: FIRST mkLastLong mqs THEN mask*-
           ∙ mqs -masks*- qs
           ∙ mkLastLong (Hex>0 hm) qs ~ hm
             ─────────────────────────────

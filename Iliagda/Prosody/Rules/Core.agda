@@ -3,8 +3,9 @@ module Iliagda.Prosody.Rules.Core where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
-open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
+open import Iliagda.Prosody.Core
+open import Iliagda.Prosody.Synizesis
 
 -- A complies with B
 record _-compliesWith-_ (A B : Type) : Type₁ where
@@ -28,6 +29,38 @@ record _-compliesWith-_ (A B : Type) : Type₁ where
   NonDerivable∃′⇒ ∄a a a~b = ∄a (a , a~b)
 
 open _-compliesWith-_ ⦃ ... ⦄ public
+
+-- ** quantity knowledge
+
+data Flat (A : Type) : Type where
+  single : A → Flat A
+  none   : Flat A
+  all    : Flat A
+
+Quantities : ℕ → Type
+Quantities = Vec (Flat Quantity)
+
+variable
+  mq mq′ mq″ : Flat Quantity
+  mqs mqs′ : Quantities n
+
+synezize : ∀ {sys : Syllables n} {sys′ : Syllables n′}
+  (syn : sys -synezizes*- sys′) →
+  Quantities n →
+  Quantities n′
+synezize = λ where
+  []        mqs           → mqs
+  (_ ∷ syn) (mq ∷ mqs)    → mq ∷ synezize syn mqs
+  (_ ∺ syn) (_ ∷ _ ∷ mqs) → single ─ ∷ synezize syn mqs
+
+
+-- _⊔_ _⊓_ : DecEq A  Op₂ (Flat A)
+-- _⊔_ = λ where
+--   (single x) (single y) → single ?
+-- _⊓_ = λ where
+
+-- isFlatLattice : IsLattice _⊔_ _⊓_
+-- isFlatLattice = ...
 
 -- ** enumerations
 

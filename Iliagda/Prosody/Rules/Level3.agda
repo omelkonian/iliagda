@@ -12,6 +12,7 @@ SynezizedOrDipthong : Syllable → Type
 SynezizedOrDipthong sy = vowels sy ≥ 2
 
 -- NB: separation of concerns between Level1~Synezesis
+--     a.k.a. "by nature after synezesis"
 data _~ˢʸⁿ_ : Syllable → Quantity → Type where
   synLong :
     SynezizedOrDipthong sy
@@ -103,23 +104,18 @@ module QuantityRules (next : Context) where
     (here {xs = sys} _) → Q (sys ++ toLetters next)
     (there p) → FollowedBy Q p
 
-  -- [522]
-  data _↝_ : Syllable → Quantity → Type where
+{- -- ** Liberal restricting
+-}
 
-    longByPosition :
+  data _~∗_ : Syllable → Quantity → Type where
+
+    -- long by position
+    [522] :
       (v∈ : Any Vowel sy) →
       -- ∙ ¬ [526/1167.2] ... (lexicon-based)
       ∙ FollowedBy (StartsWithDoubleConsonant ∪₁ StartsWithTwoConsonants) v∈
         ────────────────────────────────────────────────────────────────────
-        sy ↝ ─
-
-  data _~∗_ : Syllable → Quantity → Type where
-
-    [522] :
-      sy ↝ q
-      -- ∙ ¬ [1173] sy -- "regularly"
-      ───────
-      sy ~∗ q
+        sy ~∗ ─
 
     -- (572)
     [1173] :
@@ -128,7 +124,7 @@ module QuantityRules (next : Context) where
       ∙ sy ~ˢʸⁿ ─
       ∙ FollowedBy StartsWithVowel v∈
         ─────────────────────────────
-        sy ~∗ ·
+        sy ~∗ q
 
     -- mutes followed by liquids within the same word make a short syllable
     -- either long or short according to the needs of the verse
@@ -140,41 +136,162 @@ module QuantityRules (next : Context) where
         ─────────────────────────────────
         sy ~∗ q
 
-    {- TODO: apparent exception 526/1167.2, lexicon-based -}
-    {- TODO: 1175, lexicon-based -}
+  _≁∗_ = λ x y → ¬ (x ~∗ y)
 
-  _≁∗_ = λ x y →  ¬ (x ~∗ y)
-
-  data _~?_ : Syllable → Maybe Quantity → Type where
+  data _~?_ : Syllable → Flat Quantity → Type where
 
     ambiguous :
       (∀ q → sy ≁∗ q)
       ───────────────
-      sy ~? nothing
+      sy ~? none
 
     ambivalent :
       ∙ sy ~∗ ─
       ∙ sy ~∗ ·
-        ─────────────
-        sy ~? nothing
+        ─────────
+        sy ~? all
 
     certain :
       ∙ sy ~∗ q
       ∙ sy ≁∗ (! q)
-        ────────────
-        sy ~? just q
+        ──────────────
+        sy ~? single q
 
-  ─Syllable = _~? just ─
-  ·Syllable = _~? just ·
+{- ** Simultaneous restricting/relaxing
+
+  data _~?′_ : Syllable → Flat Quantity → Type where
+
+    -- long by position
+    [522] :
+      ∀ (v∈ : Any Vowel sy) →
+      -- -- ∙ ¬ [526/1167.2] ... (lexicon-based)
+      ∙ FollowedBy (StartsWithDoubleConsonant ∪₁ StartsWithTwoConsonants) v∈
+        ────────────────────────────────────────────────────────────────────
+        sy ~?′ single ─
+
+    -- (572)
+    [1173] :
+      ∀ (v∈ : Any Vowel sy) →
+      ∙ LastAny v∈
+      ∙ sy ~ˢʸⁿ ─
+      ∙ FollowedBy StartsWithVowel v∈
+        ─────────────────────────────
+        sy ~?′ all
+
+    -- mutes followed by liquids within the same word make a short syllable
+    -- either long or short according to the needs of the verse
+    -- (a.k.a. *common* syllable)
+    [524] :
+      ∀ (v∈ : Any Vowel sy) →
+      ∙ sy ~ˢʸⁿ ·
+      ∙ FollowedByInner MuteThenLiquid v∈
+        ─────────────────────────────────
+        sy ~?′ all
+
+  data _~?_ : Syllable → Flat Quantity → Type where
+
+    fromBelow : sy ~?′ mq → sy ~? mq
+     -- ∙ ¬ [526/1167.2] ... (lexicon-based)
+
+    {- TODO: apparent exception 526/1167.2, lexicon-based -}
+    {- TODO: 1175, lexicon-based -}
+
+    default :
+      (∀ {mq} → ¬ sy ~?′ mq)
+      ──────────────────────
+      sy ~? none
+
+    -- ** ALTERNATIVE: thread Level1 through Level3
+    -- defaultByNature :
+    --   ∙ (∀ {mq} → ¬ sy ~?′ mq)
+    --   ∙ sy ~¹ mq
+    --     ──────────────────────
+    --     sy ~? mq
+
+-}
+
+{- -- ** Restrict before Relax
+
+  module _ (sy : Syllable) where
+
+    data RestrictByPosition : Type where
+
+      [522] :
+        ∀ (v∈ : Any Vowel sy) →
+        -- -- ∙ ¬ [526/1167.2] ... (lexicon-based)
+        ∙ FollowedBy (StartsWithDoubleConsonant ∪₁ StartsWithTwoConsonants) v∈
+          ────────────────────────────────────────────────────────────────────
+          RestrictByPosition
+
+
+    data RelaxByPosition : Type where
+
+      [1173] :
+        ∀ (v∈ : Any Vowel sy) →
+        ∙ LastAny v∈
+        ∙ sy ~ˢʸⁿ ─
+        ∙ FollowedBy StartsWithVowel v∈
+          ─────────────────────────────
+          RelaxByPosition
+
+      [524] :
+        ∀ (v∈ : Any Vowel sy) →
+        ∙ sy ~ˢʸⁿ ·
+        ∙ FollowedByInner MuteThenLiquid v∈
+          ─────────────────────────────────
+          RelaxByPosition
+
+  data _~?′_ : Syllable → Flat Quantity → Type where
+
+    single :
+      RestrictByPosition sy
+      ─────────────────────
+      sy ~?′ single ─
+
+    all :
+      ∙ ¬ RestrictByPosition sy
+      ∙ RelaxByPosition sy
+        ───────────────────────
+        sy ~?′ all
+
+    none :
+      ∙ ¬ RestrictByPosition sy
+      ∙ ¬ RelaxByPosition sy
+        ───────────────────────
+        sy ~?′ none
+
+  data _~?_ : Syllable → Flat Quantity → Type where
+
+    fromBelow : sy ~?′ mq → sy ~? mq
+     -- ∙ ¬ [526/1167.2] ... (lexicon-based)
+
+    {- TODO: apparent exception 526/1167.2, lexicon-based -}
+    {- TODO: 1175, lexicon-based -}
+
+    default :
+      (∀ {mq} → ¬ sy ~?′ mq)
+      ──────────────────────
+      sy ~? none
+
+    -- ** ALTERNATIVE: thread Level1 through Level3
+    -- defaultByNature :
+    --   ∙ (∀ {mq} → ¬ sy ~?′ mq)
+    --   ∙ sy ~¹ mq
+    --     ──────────────────────
+    --     sy ~? mq
+-}
+
+  ─Syllable = _~? single ─
+  ·Syllable = _~? single ·
 
 open QuantityRules
-  renaming ( _↝_ to _⊢_↝_
-           ; _~∗_ to _⊢_~∗_; _≁∗_ to _⊢_≁∗_
+  renaming ( _~∗_ to _⊢_~∗_; _≁∗_ to _⊢_≁∗_
            ; _~?_ to _⊢_~?_
            )
+  -- renaming (_~?′_ to _⊢_~?′_; _~?_ to _⊢_~?_)
 
 instance
-  Complies-Sy-MQ : (Syllable × Context) -compliesWith- Maybe Quantity
+  Complies-Sy-MQ : (Syllable × Context) -compliesWith- Flat Quantity
   Complies-Sy-MQ ._~_ (sy , ctx) mq = ctx ⊢ sy ~? mq
 
 firstSyllable : Word n → Syllable

@@ -38,20 +38,20 @@ instance
           ─────────────
           sy ~′ ·
 
-  Sy-MQ : Syllable -compliesWith- Maybe Quantity
+  Sy-MQ : Syllable -compliesWith- Flat Quantity
   Sy-MQ ._~_ = _~′_
     module ∣Sy-MQ∣ where
-    data _~′_ : Syllable → Maybe Quantity → Type where
+    data _~′_ : Syllable → Flat Quantity → Type where
 
       byNature :
         sy ~ q
-        ────────────
-        sy ~′ just q
+        ──────────────
+        sy ~′ single q
 
       doubtful :
         NonDerivable {B = Quantity} sy
         ──────────────────────────────
-        sy ~′ nothing
+        sy ~′ none
 
 module ∣Sys-Qs∣ where
   data _~′_ : Syllables n → Quantities n → Type where
