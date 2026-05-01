@@ -122,21 +122,21 @@ synezizeWords (word (sy ∷ sy′ ∷ sys) ∷ ws) {_ ∷ sys′} (_ ∺ syn) =
 -- ** minimal synezesis
 -- NB: if we allow minimal 0 synezeses, subsumes general rule.
 
-penalty : sys ~ sys′ → ℕ
-penalty = λ where
-  [] → 0
-  (_ ∷ syn) → penalty syn
-  (_ ∺ syn) → 1 + penalty syn
+-- penalty : sys ~ sys′ → ℕ
+-- penalty = λ where
+--   [] → 0
+--   (_ ∷ syn) → penalty syn
+--   (_ ∺ syn) → 1 + penalty syn
 
-record _-synezizes+-_ (sys : Syllables n) (sys′ : Syllables n′) : Type where
-  constructor _⊣_
-  field syn  : sys -synezizes*- sys′
-        syn+ : penalty syn > 0
+-- record _-synezizes+-_ (sys : Syllables n) (sys′ : Syllables n′) : Type where
+--   constructor _⊣_
+--   field syn  : sys -synezizes*- sys′
+--         syn+ : penalty syn > 0
 
--- a "minimal" synezesis has the least amount of ∺ operations.
-_≼_ _≺_ : ∀ {sys‴ : Syllables n} → (sys ~ sys′) → (sys″ ~ sys‴) → Type
-p ≼ q = penalty p ≤ penalty q
-p ≺ q = penalty p < penalty q
+-- -- a "minimal" synezesis has the least amount of ∺ operations.
+-- _≼_ _≺_ : ∀ {sys‴ : Syllables n} → (sys ~ sys′) → (sys″ ~ sys‴) → Type
+-- p ≼ q = penalty p ≤ penalty q
+-- p ≺ q = penalty p < penalty q
 
 -- ** unique synezesis
 
@@ -150,5 +150,7 @@ uniqueSyn (sy ∷ p) (.sy ∷ q) = cong (sy ∷_) (uniqueSyn p q)
 uniqueSyn (sy ∷ _) ((_ ∺ _) ⦃ eq ⦄) = ⊥-elim $ ⁀-irrefl eq
 uniqueSyn ((_ ∺ _) ⦃ eq ⦄) (sy ∷ _) = ⊥-elim $ ⁀-irrefl eq
 uniqueSyn (((lv , fv) ∺ p) ⦃ refl ⦄) (((lv′ , fv′) ∺ q) ⦃ refl ⦄)
-  rewrite Vowel-irr lv lv′ | Vowel-irr fv fv′
-  = cong (_ ∺_) $ uniqueSyn p q
+  -- rewrite Vowel-irr lv lv′ | Vowel-irr fv fv′
+  = subst (λ ◆ → _ ≡ (◆ , _) ∺ _) (Vowel-irr lv lv′)
+  $ subst (λ ◆ → _ ≡ (_ , ◆) ∺ _) (Vowel-irr fv fv′)
+  $ cong (_ ∺_) (uniqueSyn p q)
