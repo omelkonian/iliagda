@@ -3,11 +3,10 @@ module Iliagda.Show where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
-open import Iliagda.Dec.Core
-open import Iliagda.Prosody.Core
-open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody
+open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules
+open import Iliagda.Prosody.Rules.Level1.Dec
 
 open Nat
 
@@ -42,8 +41,6 @@ instance
     · → "·"
     ─ → "─"
 
-  Show-Letter = Show Letter ∋ λ where .show l → fromList (toChar l ∷ [])
-
   Show-Sy = Show Syllable ∋ λ where
     .show → merged ∘ toList
 
@@ -71,7 +68,6 @@ instance
     (sy ∷ syn) → show sy ◇ " " ◇ show syn
     (_∺_ {sy = sy} {sy′ = sy′} _ syn) → show sy ◇ "⁀" ◇ show sy′ ◇ " " ◇ show syn
 
-instance
   Show-mq : Show (Flat Quantity)
   Show-mq .show = λ where
     none → "?"
@@ -107,8 +103,6 @@ showIf b a = if b then show a else ""
 -- ** derivations
 
 open ∣Complies-Ws-HM∣
-
-open import Iliagda.Prosody.Rules.Level1.Dec
 
 instance
   Show-Ws-HM : Show (ws ~ hm)

@@ -7,6 +7,8 @@ open import Level public
   using (Level; 0ℓ) renaming (suc to lsuc; _⊔_ to _⊔ₗ_)
 open import Function public
   using (id; _∘_; _∘′_; _∘₂_; _$_; _$′_; const; flip; it; case_of_; _on_; _∋_)
+open import Function.Definitions public
+  using (Injective)
 
 open import Data.Empty public
   using (⊥; ⊥-elim)
@@ -148,7 +150,7 @@ open import Class.FromN public
 open import Class.Show public
 
 open import Tactic.Defaults public
--- open import Tactic.Derive.DecEq public
+open import Tactic.Derive.Show public
 open import Tactic.Derive.DecEqFast public
 
 variable

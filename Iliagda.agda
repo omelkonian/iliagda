@@ -16,8 +16,8 @@ open import Iliagda.Prosody.Rules
 -- ** Decision procedures.
 open import Iliagda.Prosody.Rules.Dec
 
--- -- ** Pretty-printing.
--- open import Iliagda.Show
+-- ** Pretty-printing.
+open import Iliagda.Show
 
 -- ** Example analyses of Iliad verses.
--- open import Iliagda.Examples
+open import Iliagda.Examples

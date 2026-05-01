@@ -270,6 +270,9 @@ allDerivations : (ws : Words n) → Derivations ws
 allDerivations ws = let ds , sound-ds , _ = allMeterDerivations ws in
    mapWith∈ ds (λ d∈ → -, -, sound-ds d∈)
 
+mkDerivations : Verses → List ∃Derivations
+mkDerivations = map λ (_ , v) → -, -, allDerivations v
+
 NonEmpty : List A → Type
 NonEmpty = λ where
   [] → ⊥

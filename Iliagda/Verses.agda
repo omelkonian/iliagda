@@ -1099,7 +1099,7 @@ v100 = word [ [ ἐ ⨾ ς ] ]
      ∷ word [ [ π ⨾ ε ] ⨾ [ π ⨾ ί ] ⨾ [ θ ⨾ ο ⨾ ι ] ⨾ [ μ ⨾ ε ⨾ ν ] ]
      ∷ []
 
-verses : List (∃ λ n → Verse {n})
+verses : Verses
 verses
   = (-, v1)
   ∷ (-, v2)
