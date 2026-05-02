@@ -98,9 +98,11 @@ f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 -- (519)
 ─Vowel ·Vowel Doubtful : Pred₀ Letter
 -- INCOMPLETE: add as needed
-─Vowel = _∈ [ η ⨾ ῆ ⨾ ἣ ⨾ ἡ ⨾ ή ⨾ ὴ ⨾ ἠ ⨾ ἦ ⨾ ω ⨾ ώ ⨾ ῶ ⨾ ῳ ]
+─Vowel = _∈ [ η ⨾ ῆ ⨾ ῇ ⨾ ῃ ⨾ ἠ ⨾ ἡ ⨾ ἢ ⨾ ἣ ⨾ ἤ ⨾ ἦ ⨾ ἥ ⨾ Ἥ ⨾ ή ⨾ ὴ ⨾ ᾔ ]
+          ◇ [ ω ⨾ ὠ ⨾ ὣ ⨾ ὤ ⨾ ὥ ⨾ ὦ ⨾ ᾤ ⨾ ᾧ ⨾ ώ ⨾ ὼ ⨾ ῶ ⨾ ῳ ⨾ ῴ ⨾ ῷ ]
 -- INCOMPLETE: add as needed
-·Vowel = _∈ [ ε ⨾ έ ⨾ ἔ ⨾ ὲ ⨾ ἑ ⨾ ἐ ⨾ ο ⨾ ὸ ⨾ ό ⨾ ὃ ⨾ ὄ ⨾ ὀ ]
+·Vowel = _∈ [ ε ⨾ ἐ ⨾ ἑ ⨾ ἔ ⨾ ἕ ⨾ έ ⨾ ὲ ]
+          ◇ [ ο ⨾ Ο ⨾ ὀ ⨾ Ὀ ⨾ ὁ ⨾ ὃ ⨾ ὄ ⨾ ὅ ⨾ ό ⨾ ὸ ]
 Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
 
 -- (534)
@@ -109,7 +111,7 @@ HasAccent = HasAcute ∪₁ HasGrave ∪₁ HasCircumflex
 -- INCOMPLETE: add as needed
 HasCircumflex = _∈ [ ῆ ⨾ ῖ ⨾ ῦ ⨾ ὗ ⨾ ᾶ ⨾ ῶ ]
 -- INCOMPLETE: add as needed
-HasAcute = _∈ [ Ἄ ⨾ ἄ ⨾ ά ⨾ έ ⨾ ἔ ⨾ ή ⨾ ί ⨾ ΐ ⨾ ό ⨾ ὄ ⨾ ὺ ⨾ ὕ ⨾ ώ ]
+HasAcute = _∈ [ Ἄ ⨾ ἄ ⨾ ά ⨾ έ ⨾ ἔ ⨾ ή ⨾ ί ⨾ ΐ ⨾ ό ⨾ ὄ ⨾ ὕ ⨾ ώ ]
 -- INCOMPLETE: add as needed
 HasGrave = _∈ [ ὰ ⨾ ὲ ⨾ ἣ ⨾ ὴ ⨾ ὶ ⨾ ὸ ⨾ ὃ ⨾ ὺ ]
 

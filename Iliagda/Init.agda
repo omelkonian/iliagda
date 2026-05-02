@@ -18,6 +18,8 @@ open import Data.Sum public
   using (_⊎_; inj₁; inj₂; isInj₁; isInj₂)
 open import Data.Product public
   using (_×_; _,_; proj₁; proj₂; ∃; ∃-syntax; -,_; _,′_; curry; uncurry)
+open import Data.Char public
+  using (Char)
 
 module 𝔹 where
   open import Data.Bool public

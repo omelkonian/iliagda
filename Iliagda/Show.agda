@@ -41,6 +41,9 @@ instance
     · → "·"
     ─ → "─"
 
+  Show-Letter = Show Letter ∋ λ where
+    .show l → fromList [ toChar l ]
+
   Show-Sy = Show Syllable ∋ λ where
     .show → merged ∘ toList
 
