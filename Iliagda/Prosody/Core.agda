@@ -103,17 +103,30 @@ f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 -- INCOMPLETE: add as needed
 ·Vowel = _∈ [ ε ⨾ ἐ ⨾ ἑ ⨾ ἔ ⨾ ἕ ⨾ έ ⨾ ὲ ]
           ◇ [ ο ⨾ Ο ⨾ ὀ ⨾ Ὀ ⨾ ὁ ⨾ ὃ ⨾ ὄ ⨾ ὅ ⨾ ό ⨾ ὸ ]
-Doubtful      = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
+Doubtful = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
 
 -- (534)
 HasAccent HasAcute HasGrave HasCircumflex : Pred₀ Letter
 HasAccent = HasAcute ∪₁ HasGrave ∪₁ HasCircumflex
 -- INCOMPLETE: add as needed
-HasCircumflex = _∈ [ ῆ ⨾ ῖ ⨾ ῦ ⨾ ὗ ⨾ ᾶ ⨾ ῶ ]
+HasCircumflex = _∈ [ ῆ ⨾ ῇ ⨾ ἶ ⨾ ῖ ⨾ ῦ ⨾ ὗ ⨾ ὖ ⨾ ᾶ ⨾ ᾷ ]
+                 ◇ [ ῶ ⨾ ὦ ⨾ ᾧ ⨾ ῷ ]
 -- INCOMPLETE: add as needed
-HasAcute = _∈ [ Ἄ ⨾ ἄ ⨾ ά ⨾ έ ⨾ ἔ ⨾ ή ⨾ ί ⨾ ΐ ⨾ ό ⨾ ὄ ⨾ ὕ ⨾ ώ ]
+HasAcute = _∈ [ Ἄ ⨾ ἄ ⨾ ά ]
+            ◇ [ έ ⨾ ἔ ⨾ ἕ ]
+            ◇ [ ἤ ⨾ ή ⨾ ἥ ⨾  Ἥ ⨾ ᾔ ]
+            ◇ [ ί ⨾ ἴ ⨾ Ἴ ⨾ ΐ ]
+            ◇ [ ὄ ⨾ ὅ ⨾ ό ]
+            ◇ [ ὔ ⨾ ὕ ⨾ ύ ⨾ ΰ ]
+            ◇ [ ὤ ⨾ ὥ ⨾ ᾤ ⨾ ώ ⨾ ῴ ]
 -- INCOMPLETE: add as needed
-HasGrave = _∈ [ ὰ ⨾ ὲ ⨾ ἣ ⨾ ὴ ⨾ ὶ ⨾ ὸ ⨾ ὃ ⨾ ὺ ]
+HasGrave = _∈ [ ἂ ⨾ ὰ ]
+            ◇ [ ὲ ]
+            ◇ [ ἢ ⨾ ἣ ⨾ ὴ ]
+            ◇ [ ὶ ⨾ ἳ ⨾ ῒ ]
+            ◇ [ ὸ ⨾ ὃ ]
+            ◇ [ ὺ ]
+            ◇ [ ὣ ⨾ ὼ ]
 
 -- (518)
 DoubleConsonant : Pred₀ Letter
@@ -122,17 +135,14 @@ DoubleConsonant = _∈ [ Ζ ⨾ ζ ⨾ Ξ ⨾ ξ ⨾ Ψ ⨾ ψ ]
 -- (504)
 Diphthong : Pred₀ (Letter × Letter)
 Diphthong = _∈
+-- TODO: refactor (better/complete)
 -- INCOMPLETE: add as needed
   ( (α , ι)
   ∷ (α , ὶ)
-  ∷ (α , υ)
-  ∷ (α , ὐ)
+  ∷ (α , ί)
   ∷ (ε , ι)
   ∷ (ε , ί)
   ∷ (ε , ὶ)
-  ∷ (ε , υ)
-  ∷ (ε , ῦ)
-  ∷ (ε , ύ)
   ∷ (η , υ)
   ∷ (ο , ι)
   ∷ (ο , ῖ)
@@ -159,20 +169,6 @@ VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c
 VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
 VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
 
-{-
--- ** example words
-
-w7 : Words _
-w7 =
-  ( word [ [ Ἀ ] ⨾ [ τ ⨾ ρ ⨾ ε ] ⨾ [ ΐ ] ⨾ [ δ ⨾ η ⨾ ς ] ]
-  ∷ word [ [ τ ⨾ ε ] ]
-  ∷ word [ [ ἄ ] ⨾ [ ν ⨾ α ⨾ ξ ] ]
-  ∷ word [ [ ἀ ⨾ ν ] ⨾ [ δ ⨾ ρ ⨾ ῶ ⨾ ν ] ]
-  ∷ word [ [ κ ⨾ α ⨾ ὶ ] ]
-  ∷ word [ [ δ ⨾ ῖ ] ⨾ [ ο ⨾ ς ] ]
-  ∷ word [ [ Ἀ ] ⨾ [ χ ⨾ ι ⨾ ƛ ] ⨾ [ ƛ ⨾ ε ⨾ ύ ⨾ ς ] ]
-  ∷ []
-  )
 -- -}
 -- -}
 -- -}
