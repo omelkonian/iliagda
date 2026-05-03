@@ -98,11 +98,15 @@ FollowedByInner Q = λ where
 
 module QuantityRules (next : Context) where
 
-  FollowedBy : (Q : Letters → Type) {P : Letter → Type} {ls : Letters} →
+  FollowedBy FollowedByOuter : (Q : Letters → Type) {P : Letter → Type} {ls : Letters} →
     Any P ls → Type
   FollowedBy Q = λ where
     (here {xs = sys} _) → Q (sys ++ toLetters next)
     (there p) → FollowedBy Q p
+  FollowedByOuter Q = λ where
+    (here {xs = []} _) → Q (toLetters next)
+    (here {xs = _ ∷ _} _) → ⊥
+    (there p) → FollowedByOuter Q p
 
 {- -- ** Liberal restricting
 -}
@@ -133,6 +137,7 @@ module QuantityRules (next : Context) where
       (v∈ : Any Vowel sy) →
       ∙ sy ~ˢʸⁿ ·
       ∙ FollowedByInner MuteThenLiquid v∈
+      ⊎ FollowedByOuter MuteThenLiquid v∈
         ─────────────────────────────────
         sy ~∗ q
 
