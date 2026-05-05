@@ -131,36 +131,33 @@ DoubleConsonant : Pred₀ Letter
 DoubleConsonant = _∈ [ Ζ ⨾ ζ ⨾ Ξ ⨾ ξ ⨾ Ψ ⨾ ψ ]
 
 -- (504)
+-- Diphthong V1 (fst): plain (no breathing/accent), since in Greek typography
+-- the breathing/accent of a word-initial diphthong falls on V2.
+fst-α fst-ε fst-η fst-ο fst-υ fst-ω : Pred₀ Letter
+fst-α = _∈ [ α ⨾ Α ]
+fst-ε = _∈ [ ε ⨾ Ε ]
+fst-η = _∈ [ η ]
+fst-ο = _∈ [ ο ⨾ Ο ]
+fst-υ = _∈ [ υ ]
+fst-ω = _∈ [ ω ]
+
+-- Diphthong V2 (snd): any lowercase ι- or υ-form *without* diaeresis.
+-- (Capitals omitted: word-initial caps like Αἰ-, Εὐ-, Οἰ- have V2 lowercase.)
+snd-ι snd-υ : Pred₀ Letter
+snd-ι = _∈ [ ι ⨾ ἰ ⨾ ἴ ⨾ ἲ ⨾ ἶ ⨾ ἱ ⨾ ἵ ⨾ ἳ ⨾ ἷ ⨾ ί ⨾ ὶ ⨾ ῖ ]
+snd-υ = _∈ [ υ ⨾ ὐ ⨾ ὔ ⨾ ὖ ⨾ ὑ ⨾ ὕ ⨾ ὓ ⨾ ὗ ⨾ ύ ⨾ ὺ ⨾ ῦ ]
+
 Diphthong : Pred₀ (Letter × Letter)
-Diphthong = _∈
--- TODO: refactor (better/complete)
--- INCOMPLETE: add as needed
-  ( (α , ι)
-  ∷ (α , ὶ)
-  ∷ (α , ί)
-  ∷ (ε , ι)
-  ∷ (ε , ί)
-  ∷ (ε , ὶ)
-  ∷ (ε , ἰ)
-  ∷ (η , υ)
-  ∷ (ο , ι)
-  ∷ (ο , ῖ)
-  ∷ (ο , ἰ)
-  ∷ (ο , ὶ)
-  ∷ (ο , ί)
-  ∷ (ο , ἱ)
-  ∷ (ο , υ)
-  ∷ (ο , ὐ)
-  ∷ (ο , ὺ)
-  ∷ (ο , ὗ)
-  ∷ (ο , ὕ)
-  ∷ (ο , ῦ)
-  ∷ (ο , ύ)
-  ∷ (υ , ι)
-  ∷ (υ , ὶ)
-  ∷ (υ , ἱ)
-  ∷ (ω , υ)
-  ∷ [])
+Diphthong (l , l′)
+  = (fst-α l × snd-ι l′)  -- αι
+  ⊎ (fst-α l × snd-υ l′)  -- αυ
+  ⊎ (fst-ε l × snd-ι l′)  -- ει
+  ⊎ (fst-ε l × snd-υ l′)  -- ευ
+  ⊎ (fst-η l × snd-υ l′)  -- ηυ
+  ⊎ (fst-ο l × snd-ι l′)  -- οι
+  ⊎ (fst-ο l × snd-υ l′)  -- ου
+  ⊎ (fst-υ l × snd-ι l′)  -- υι
+  ⊎ (fst-ω l × snd-υ l′)  -- ωυ
 
 VowelBeforeDoubleConsonant : Pred₀ (Letter × Letter)
 VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c
