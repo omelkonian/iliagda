@@ -62,9 +62,9 @@ data StartsWithTwoConsonants : Letters → Type where
       StartsWithTwoConsonants (l ∷ l′ ∷ ls)
 
 Mute Liquid Nasal : Letter → Type
-Mute   = _∈ [ π ⨾ β ⨾ φ ⨾ κ ⨾ γ ⨾ χ ⨾ τ ⨾ δ ⨾ θ ]
-Liquid = _∈ [ ƛ ⨾ ρ ]
-Nasal  = _∈ [ μ ⨾ ν ]
+Mute   = _∈ [ Β ⨾ β ⨾ Γ ⨾ γ ⨾ Δ ⨾ δ ⨾ Θ ⨾ θ ⨾ Κ ⨾ κ ⨾ Π ⨾ π ⨾ Τ ⨾ τ ⨾ Φ ⨾ φ ⨾ Χ ⨾ χ ]
+Liquid = _∈ [ Λ ⨾ ƛ ⨾ Ρ ⨾ ρ ⨾ Ῥ ⨾ ῥ ]
+Nasal  = _∈ [ Μ ⨾ μ ⨾ Ν ⨾ ν ]
 
 data MuteThenLiquid : Letters → Type where
   muteLiquid :

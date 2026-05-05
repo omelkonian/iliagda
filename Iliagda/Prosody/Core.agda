@@ -97,36 +97,34 @@ f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 
 -- (519)
 ─Vowel ·Vowel Doubtful : Pred₀ Letter
--- INCOMPLETE: add as needed
-─Vowel = _∈ [ η ⨾ ῆ ⨾ ῇ ⨾ ῃ ⨾ ἠ ⨾ ἡ ⨾ ἢ ⨾ ἣ ⨾ ἤ ⨾ ἦ ⨾ ἥ ⨾ Ἥ ⨾ ή ⨾ ὴ ⨾ ᾔ ]
-          ◇ [ ω ⨾ ὠ ⨾ ὣ ⨾ ὤ ⨾ ὥ ⨾ ὦ ⨾ ᾤ ⨾ ᾧ ⨾ ώ ⨾ ὼ ⨾ ῶ ⨾ ῳ ⨾ ῴ ⨾ ῷ ⨾ ὡ ]
--- INCOMPLETE: add as needed
-·Vowel = _∈ [ ε ⨾ ἐ ⨾ ἑ ⨾ ἔ ⨾ ἕ ⨾ έ ⨾ ὲ ]
-          ◇ [ ο ⨾ Ο ⨾ ὀ ⨾ Ὀ ⨾ ὁ ⨾ ὃ ⨾ ὄ ⨾ ὅ ⨾ ό ⨾ ὸ ]
+─Vowel = _∈ [ η ⨾ Ἠ ⨾ ἠ ⨾ Ἤ ⨾ ἤ ⨾ ᾔ ⨾ ἢ ⨾ ἦ ⨾ ᾖ ⨾ ᾐ ⨾ Ἡ ⨾ ἡ ⨾ Ἥ ⨾ ἥ ⨾ ᾕ ⨾ ἣ ⨾ ἧ ⨾ ᾗ ⨾ ή ⨾ ῄ ⨾ ὴ ⨾ ῂ ⨾ ῆ ⨾ ῇ ⨾ ῃ ]
+          ◇ [ ω ⨾ Ὠ ⨾ ὠ ⨾ Ὤ ⨾ ὤ ⨾ ᾤ ⨾ ὢ ⨾ Ὦ ⨾ ὦ ⨾ ᾦ ⨾ ᾠ ⨾ ὡ ⨾ ὥ ⨾ ὣ ⨾ Ὧ ⨾ ὧ ⨾ ᾧ ⨾ ώ ⨾ ῴ ⨾ ὼ ⨾ ῶ ⨾ ῷ ⨾ ῳ ]
+·Vowel = _∈ [ Ε ⨾ ε ⨾ Ἐ ⨾ ἐ ⨾ Ἔ ⨾ ἔ ⨾ Ἑ ⨾ ἑ ⨾ Ἕ ⨾ ἕ ⨾ ἓ ⨾ έ ⨾ ὲ ]
+          ◇ [ Ο ⨾ ο ⨾ Ὀ ⨾ ὀ ⨾ Ὄ ⨾ ὄ ⨾ ὁ ⨾ ὅ ⨾ ὃ ⨾ ό ⨾ ὸ ]
 Doubtful = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
 
 -- (534)
 HasAccent HasAcute HasGrave HasCircumflex : Pred₀ Letter
 HasAccent = HasAcute ∪₁ HasGrave ∪₁ HasCircumflex
--- INCOMPLETE: add as needed
-HasCircumflex = _∈ [ ῆ ⨾ ῇ ⨾ ἶ ⨾ ῖ ⨾ ῦ ⨾ ὗ ⨾ ὖ ⨾ ᾶ ⨾ ᾷ ]
-                 ◇ [ ῶ ⨾ ὦ ⨾ ᾧ ⨾ ῷ ]
--- INCOMPLETE: add as needed
-HasAcute = _∈ [ Ἄ ⨾ ἄ ⨾ ά ]
-            ◇ [ έ ⨾ ἔ ⨾ ἕ ]
-            ◇ [ ἤ ⨾ ή ⨾ ἥ ⨾  Ἥ ⨾ ᾔ ]
-            ◇ [ ί ⨾ ἴ ⨾ Ἴ ⨾ ΐ ]
-            ◇ [ ὄ ⨾ ὅ ⨾ ό ]
-            ◇ [ ὔ ⨾ ὕ ⨾ ύ ⨾ ΰ ]
-            ◇ [ ὤ ⨾ ὥ ⨾ ᾤ ⨾ ώ ⨾ ῴ ]
--- INCOMPLETE: add as needed
-HasGrave = _∈ [ ἂ ⨾ ὰ ]
-            ◇ [ ὲ ]
-            ◇ [ ἢ ⨾ ἣ ⨾ ὴ ]
-            ◇ [ ὶ ⨾ ἳ ⨾ ῒ ]
+HasCircumflex = _∈ [ ᾶ ⨾ ᾷ ⨾ Ἆ ⨾ ἆ ]
+                 ◇ [ ῆ ⨾ ῇ ⨾ ἦ ⨾ ᾖ ⨾ ἧ ⨾ ᾗ ]
+                 ◇ [ ῖ ⨾ ἶ ⨾ Ἶ ⨾ ἷ ⨾ ῗ ]
+                 ◇ [ ῦ ⨾ ὖ ⨾ ὗ ]
+                 ◇ [ ῶ ⨾ ῷ ⨾ ὦ ⨾ Ὦ ⨾ ᾦ ⨾ ὧ ⨾ Ὧ ⨾ ᾧ ]
+HasAcute = _∈ [ ά ⨾ Ἄ ⨾ ἄ ⨾ Ἅ ⨾ ἅ ]
+            ◇ [ έ ⨾ Ἔ ⨾ ἔ ⨾ Ἕ ⨾ ἕ ]
+            ◇ [ ή ⨾ Ἤ ⨾ ἤ ⨾ ᾔ ⨾ Ἥ ⨾ ἥ ⨾ ᾕ ⨾ ῄ ]
+            ◇ [ ί ⨾ Ἴ ⨾ ἴ ⨾ ἵ ⨾ ΐ ]
+            ◇ [ ό ⨾ Ὄ ⨾ ὄ ⨾ ὅ ]
+            ◇ [ ύ ⨾ ὔ ⨾ Ὕ ⨾ ὕ ⨾ ΰ ]
+            ◇ [ ώ ⨾ Ὤ ⨾ ὤ ⨾ ὥ ⨾ ᾤ ⨾ ῴ ]
+HasGrave = _∈ [ ὰ ⨾ ἂ ⨾ ἃ ]
+            ◇ [ ὲ ⨾ ἓ ]
+            ◇ [ ὴ ⨾ ἢ ⨾ ἣ ⨾ ῂ ]
+            ◇ [ ὶ ⨾ ἲ ⨾ ἳ ⨾ ῒ ]
             ◇ [ ὸ ⨾ ὃ ]
-            ◇ [ ὺ ]
-            ◇ [ ὣ ⨾ ὼ ]
+            ◇ [ ὺ ⨾ ὓ ⨾ ῢ ]
+            ◇ [ ὼ ⨾ ὢ ⨾ ὣ ]
 
 -- (518)
 DoubleConsonant : Pred₀ Letter
