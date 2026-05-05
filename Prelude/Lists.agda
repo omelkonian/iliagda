@@ -1,20 +1,13 @@
 {-# OPTIONS --safe #-}
 module Prelude.Lists where
 
-open import Agda.Primitive using () renaming (Set to Type)
-open import Agda.Builtin.Equality using (_≡_; refl)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; cong; subst; sym)
-open import Level using (Level)
-open import Function using (_∘_; _$_)
-open import Data.Product using (_×_; _,_; ∃; proj₁)
-open import Data.Nat using (ℕ)
+open import Class.Prelude hiding ([_])
+open L using (mapMaybe)
+open Nat using (ℕ; _∸_)
 open import Data.Nat.ListAction using (sum)
-open import Data.Maybe using (Maybe; just; nothing)
-open import Data.List using (List; []; _∷_; map; mapMaybe; _++_)
-open import Data.List.NonEmpty using (List⁺; _∷_)
-open import Data.Vec.Base using ([]; _∷_)
 open import Relation.Unary using () renaming (_⊆_ to _⊆¹_)
 open import Data.List.Membership.Propositional using (_∈_)
+open import Data.List.Relation.Unary.All using (All; []; _∷_)
 open import Data.List.Relation.Unary.Any using (here; there) renaming (map to anyMap)
 open import Data.List.Relation.Unary.Any.Properties using (map⁺; mapMaybe⁺)
 open import Data.Maybe.Relation.Unary.Any using (just)
@@ -22,10 +15,6 @@ open import Data.Maybe.Relation.Unary.Any using (just)
 open import Class.Anyable
 open import Class.ToList
 open import Class.Bifunctor
-
-private
-  Pred₀ : Type → Type₁
-  Pred₀ A = A → Type
 
 -- ** list notation
 
@@ -59,10 +48,6 @@ pattern [_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_⨾_] 
 
 -- ** sums
 
-private variable
-  ℓ : Level
-  A B : Type
-
 ∑₁ : ∀ {X : ℕ → Type ℓ} → List (∃ X) → ℕ
 ∑₁ = sum ∘ map proj₁
 
@@ -72,6 +57,10 @@ pairs : List A → List (A × A)
 pairs = λ where
   (x ∷ y ∷ xs) → (x , y) ∷ pairs (y ∷ xs)
   _            → []
+
+private
+  Pred₀ : Type → Type₁
+  Pred₀ A = A → Type
 
 Any× : Pred₀ (A × A) → Pred₀ (List⁺ A)
 Any× P = Any P ∘ pairs ∘ toList
@@ -85,7 +74,6 @@ Any×₃ P = Any P ∘ triples ∘ toList
 -- -- ** mapMaybe
 
 private variable
-  x x′ y : A
   xs ys : List A
 
 module _ (f : A → Maybe B) where
@@ -128,3 +116,34 @@ satisfied′ = λ where
   (here px)   → _ , here refl , px
   (there pxs) → let x , x∈ , px = satisfied′ pxs
                 in  x , there x∈ , px
+
+-- ** begins/ends with some sequence of predicates
+
+CheckList : List (A → Type) → List A → Type
+CheckList (P ∷ Ps) (x ∷ xs) = P x × CheckList Ps xs
+CheckList (_ ∷ _)  []       = ⊥
+CheckList []       _        = ⊤
+
+module _ (Ps : List (A → Type)) where
+  BeginsWith EndsWith : List A → Type
+  BeginsWith xs = CheckList Ps $ L.take (length Ps) xs
+  EndsWith   xs = CheckList Ps $ L.drop (length xs ∸ length Ps) xs
+
+private variable Ps : List (A → Type)
+
+CheckList? : All Decidable¹ Ps → Decidable¹ (CheckList Ps)
+CheckList? [] _ = yes tt
+CheckList? (_ ∷ _) [] = no λ ()
+CheckList? (P? ∷ Ps?) (x ∷ xs)
+  with P? x
+... | no ¬px = no $ ¬px ∘ proj₁
+... | yes px
+  with CheckList? Ps? xs
+... | no ¬pxs = no $ ¬pxs ∘ proj₂
+... | yes pxs = yes (px , pxs)
+
+BeginsWith? : All Decidable¹ Ps → Decidable¹ (BeginsWith Ps)
+BeginsWith? Ps? _ = CheckList? Ps? _
+
+EndsWith? : All Decidable¹ Ps → Decidable¹ (EndsWith Ps)
+EndsWith? Ps? _ = CheckList? Ps? _

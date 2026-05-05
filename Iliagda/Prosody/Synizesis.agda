@@ -102,41 +102,23 @@ unwords-++ʷˢ {sys = sy ∷ sys} {ws = ws} =
 synezizeWords : ∀ (ws : Words n) {sys′ : Syllables n′}
   (syn : unwords ws -synezizes*- sys′) →
   Words n′
-
 synezizeWords [] [] = []
-
-synezizeWords (word [ sy ] ∷ []) (.sy ∷ []) = word (sy ∷ []) ∷ []
-
+synezizeWords (word [ sy ] ∷ []) (.sy ∷ []) =
+  word [ sy ] ∷ []
 synezizeWords (word [ sy ] ∷ (word (sy′ ∷ sys) ∷ ws)) (.sy ∷ syn) =
-  sy ∷ʷˢ synezizeWords (word (sy′ ∷ sys) ∷ ws) syn
+  -- keep word boundary
+  word [ sy ] ∷ synezizeWords (word (sy′ ∷ sys) ∷ ws) syn
 synezizeWords (word [ sy ] ∷ (word (sy′ ∷ sys) ∷ ws)) {_ ∷ sys′} (_ ∺ syn) =
+  -- forget word boundary
   let syn′ = subst (_~ sys′) (sym $ unwords-++ʷˢ {ws = ws}) syn in
   (sy ⁀ sy′) ∷ʷˢ synezizeWords (sys ++ʷˢ ws) syn′
-
 synezizeWords (word (sy ∷ sy′ ∷ sys) ∷ ws) (.sy ∷ syn) =
+  -- no word boundary
   sy ∷ʷˢ synezizeWords (word (sy′ ∷ sys) ∷ ws) syn
 synezizeWords (word (sy ∷ sy′ ∷ sys) ∷ ws) {_ ∷ sys′} (_ ∺ syn) =
+  -- no word boundary
   let syn′ = subst (_~ sys′) (sym $ unwords-++ʷˢ {ws = ws}) syn in
   (sy ⁀ sy′) ∷ʷˢ synezizeWords (sys ++ʷˢ ws) syn′
-
--- ** minimal synezesis
--- NB: if we allow minimal 0 synezeses, subsumes general rule.
-
--- penalty : sys ~ sys′ → ℕ
--- penalty = λ where
---   [] → 0
---   (_ ∷ syn) → penalty syn
---   (_ ∺ syn) → 1 + penalty syn
-
--- record _-synezizes+-_ (sys : Syllables n) (sys′ : Syllables n′) : Type where
---   constructor _⊣_
---   field syn  : sys -synezizes*- sys′
---         syn+ : penalty syn > 0
-
--- -- a "minimal" synezesis has the least amount of ∺ operations.
--- _≼_ _≺_ : ∀ {sys‴ : Syllables n} → (sys ~ sys′) → (sys″ ~ sys‴) → Type
--- p ≼ q = penalty p ≤ penalty q
--- p ≺ q = penalty p < penalty q
 
 -- ** unique synezesis
 

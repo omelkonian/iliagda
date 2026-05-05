@@ -166,6 +166,12 @@ data Is {A : Type ℓ} : A → Type ℓ where
   ⟫_ : (x : A) → Is x
 infix -100 ⟫_
 
+-- ** iterated tuples
+
+_^_ : (A : Type) → ℕ → Type
+A ^ 0 = ⊤
+A ^ (suc n) = A × (A ^ n)
+
 -- ** utilities from omelkonian/formal-prelude
 
 open import Prelude.Lists public

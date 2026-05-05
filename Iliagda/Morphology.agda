@@ -70,14 +70,6 @@ Verse {n} = Words n
 Verses : Type
 Verses = List (∃ λ n → Verse {n})
 
-_ : Verse
-_ = word [ [ μ ⨾ ῆ ] ⨾ [ ν ⨾ ι ⨾ ν ] ]
-  ∷ word [ [ ἄ ] ⨾ [ ε ⨾ ι ] ⨾ [ δ ⨾ ε ] ]
-  ∷ word [ [ θ ⨾ ε ] ⨾ [ ὰ ] ]
-  ∷ word [ [ Π ⨾ η ] ⨾ [ ƛ ⨾ η ] ⨾ [ ϊ ] ⨾ [ ά ] ⨾ [ δ ⨾ ε ] ⨾ [ ω ] ]
-  ∷ word [ [ Ἀ ] ⨾ [ χ ⨾ ι ] ⨾ [ ƛ ⨾ ῆ ] ⨾ [ ο ⨾ ς ] ]
-  ∷ []
-
 variable
   l l′ : Letter
   ls ls′ : Letters

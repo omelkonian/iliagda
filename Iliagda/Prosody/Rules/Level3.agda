@@ -299,9 +299,6 @@ instance
   Complies-Sy-MQ : (Syllable × Context) -compliesWith- Flat Quantity
   Complies-Sy-MQ ._~_ (sy , ctx) mq = ctx ⊢ sy ~? mq
 
-firstSyllable : Word n → Syllable
-firstSyllable (word (sy ∷ _)) = sy
-
 _~³_ : Words n → Quantities n → Type
 _~³_ = VPointwise _~_ ∘ inContext
   module _ where

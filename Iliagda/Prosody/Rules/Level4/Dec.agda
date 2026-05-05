@@ -1,6 +1,8 @@
 {-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level4.Dec where
 
+open import Relation.Nullary.Decidable using (_×-dec_)
+
 open import Iliagda.Init
   hiding (n′)
 open import Iliagda.Morphology
@@ -22,51 +24,6 @@ open import Iliagda.Prosody.Synizesis.Dec
 private
   pattern 𝟘 = here refl
   pattern 𝟙 = there 𝟘
-
-allPMs :
-  (qs : Vec Quantity n) →
-  ∃ λ (pms : List (∃ λ m → Meter n m)) →
-      (∀ {m} {pm : Meter n m} → (m , pm) ∈ pms → qs ~ pm)
-    × (∀ {m} {pm : Meter n m} → qs ~ pm → (m , pm) ∈ pms)
-allPMs [] = [ 0 , mkPM [] ]
-          , (λ where 𝟘 → [])
-          , (λ where [] → 𝟘)
-allPMs (_ ∷ []) = [] , (λ ()) , (λ ())
-allPMs (· ∷ _ ∷ qs) = [] , (λ ()) , (λ ())
-allPMs (─ ∷ · ∷ []) = [] , (λ ()) , (λ ())
-allPMs (─ ∷ · ∷ ─ ∷ _) = [] , (λ ()) , (λ ())
-allPMs (─ ∷ ─ ∷ qs)
-  with pms , sound-pms , complete-pms ← allPMs qs
-  = QED
-  where
-  f = λ (m , pm) → 1 + m , (── ∷ᵖᵐ pm)
-
-  sou : _
-  sou pm∈
-    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
-    = sponde (sound-pms pm∈)
-
-  com : _
-  com (sponde p) = ∈-map⁺ f (complete-pms p)
-
-  QED : _
-  QED = map f pms , sou , com
-allPMs (─ ∷ · ∷ · ∷ qs)
-  with pms , sound-pms , complete-pms ← allPMs qs
-  = QED
-  where
-  f = λ (m , pm) → 1 + m , (─·· ∷ᵖᵐ pm)
-
-  sou : _
-  sou pm∈
-    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
-    = dactyl (sound-pms pm∈)
-
-  com : _
-  com (dactyl p) = ∈-map⁺ f (complete-pms p)
-
-  QED : _
-  QED = map f pms , sou , com
 
 allMasks :
   (mqs : Quantities n) →
@@ -149,6 +106,82 @@ allMasks (mq ∷ mqs)
   QED : _
   QED = qss′ , sou , com
 
+private
+  -- Measure-based termination of `allPMs` due to [1168] rule.
+  measure : Vec Quantity n → ℕ
+  measure = λ where
+    (─ ∷ qs) → 1 + measure qs
+    (· ∷ qs) → 2 + measure qs
+    [] → 0
+
+allPMs :
+  ∀ (ws : Words n) (qs : Vec Quantity n) {m} → measure qs ≡ m →
+  ∃ λ (pms : List (∃ λ m → Meter n m)) →
+      (∀ {m} {pm : Meter n m} → (m , pm) ∈ pms → ws , qs ~ pm)
+    × (∀ {m} {pm : Meter n m} → ws , qs ~ pm → (m , pm) ∈ pms)
+allPMs ws′ [] _
+  = [ 0 , mkPM [] ]
+  , (λ where 𝟘 → subst (λ ◆ → ◆ , [] ˢ~ᵐ mkPM []) (sym $ emptyWords ws′) [])
+  , (λ where [] → 𝟘)
+allPMs _ [ q ] _
+  = [] , (λ ()) , λ ()
+allPMs _ [ ─ ⨾ · ] _
+  = [] , (λ ()) , λ ()
+allPMs _ (─ ∷ · ∷ ─ ∷ _) _
+  = [] , (λ ()) , λ ()
+allPMs ws′ (─ ∷ ─ ∷ qs) refl
+  -- ** sponde
+  using ws ← dropSys 2 ws′
+  with pms , sound-pms , complete-pms ← allPMs ws qs refl
+  = QED
+  where
+  f = λ (m , pm) → 1 + m , (── ∷ᵖᵐ pm)
+
+  sou : _
+  sou pm∈
+    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
+    = sponde (sound-pms pm∈)
+
+  com : _
+  com (sponde p) = ∈-map⁺ f (complete-pms p)
+
+  QED : _
+  QED = map f pms , sou , com
+allPMs ws′ (─ ∷ · ∷ · ∷ qs) refl
+  -- ** dactyl
+  using ws ← dropSys 3 ws′
+  with pms , sound-pms , complete-pms ← allPMs ws qs refl
+  = QED
+  where
+  f = λ (m , pm) → 1 + m , (─·· ∷ᵖᵐ pm)
+
+  sou : _
+  sou pm∈
+    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
+    = dactyl (sound-pms pm∈)
+
+  com : _
+  com (dactyl p) = ∈-map⁺ f (complete-pms p)
+
+  QED : _
+  QED = map f pms , sou , com
+allPMs ws′ (· ∷ qs@(_ ∷ _)) {.suc (.suc m)} refl
+  with IH ← allPMs ws′ (─ ∷ qs) {suc m} refl
+  using sy , sy′ , tt ← firstSys 2 ws′
+  with ¿ SingleSyllable ws′ ¿
+... | no ¬single
+  = [] , (λ ()) , λ where ([1168] _ _ _) → ⊥-elim $ ¬single singleSy
+... | yes (singleSy {sy = sy} {ws = ws})
+  using sy′ ← firstSy ws
+  with EndsWith? [ Vowel? ⨾ Consonant? ] (toList sy)
+ ×-dec BeginsWith? [ Vowel? ] (toList sy′)
+... | no ¬pq
+  = [] , (λ ()) , λ where ([1168] p q _) → ⊥-elim $ ¬pq (p , q)
+... | yes (p , q)
+  with pms , sound-pms , complete-pms ← IH
+  = pms , ([1168] p q ∘ sound-pms)
+        , λ where ([1168] _ _ H) → complete-pms H
+
 onlyHexameters :
   List (∃ $ Meter n) → List (Hexameter n)
 onlyHexameters = L.mapMaybe onlyHexameter
@@ -161,38 +194,38 @@ onlyHexameters = L.mapMaybe onlyHexameter
 open ∣Complies-MQs-HM∣
 
 allHexameters :
-  (mqs : Quantities n) →
+  (smqs : Words n × Quantities n) →
   ∃ λ (hms : List (Hexameter n)) →
-      (∀ {hm} → hm ∈ hms → mqs ~ hm)
-    × (∀ {hm} → mqs ~ hm → hm ∈ hms)
-allHexameters {0} mqs = [] , (λ ()) , λ where
+      (∀ {hm} → hm ∈ hms → smqs ~ hm)
+    × (∀ {hm} → smqs ~ hm → hm ∈ hms)
+allHexameters {0} _ = [] , (λ ()) , λ where
   (reify {hm = hm} msk p) → ⊥-elim $ Hex≢0 hm
-allHexameters {n@(suc _)} mqs
+allHexameters {n@(suc _)} smqs@(sys , mqs)
   with n>0 ← n > 0
            ∋ s≤s z≤n
-  with qss , sound-qss , complete-qss ← allMasks mqs
+  using mqs─ ← mkLastLong {n = n} n>0 mqs
+  with qss , sound-qss , complete-qss ← allMasks mqs─
   = concatMap sols qss
   , sou
   , com
   where
   sols : Vec Quantity n → List (Hexameter n)
   sols qs =
-    let qs─ = mkLastLong {n = n} (s≤s z≤n) qs
-        pms , _ = allPMs qs─
+    let pms , _ = allPMs sys qs refl
     in onlyHexameters pms
 
-  sou : ∀ {hm} → hm ∈ concatMap sols qss → mqs ~ hm
+  sou : ∀ {hm} → hm ∈ concatMap sols qss → smqs ~ hm
   sou {hm} hm∈
     with qs , qs∈ , hm∈ ← satisfied′ $ ∈-concatMap⁻ sols {xs = qss} hm∈
-    with pms , sound-pms , complete-pms ← allPMs (mkLastLong {n = n} (s≤s z≤n) qs)
+    with pms , sound-pms , complete-pms ← allPMs sys qs refl
     with (m , hm) , hm∈ , hm≡ ← ∈-mapMaybe⁻ (onlyHexameter {n}) {xs = pms} hm∈
     with 6 ← m
     with refl ← hm≡
     = reify (sound-qss qs∈) (sound-pms hm∈)
 
-  com : ∀ {hm} → mqs ~ hm → hm ∈ concatMap sols qss
+  com : ∀ {hm} → smqs ~ hm → hm ∈ concatMap sols qss
   com {hm} (reify {qs = qs} msk hm~) =
-    let pms , sound-pms , complete-pms = allPMs (mkLastLong {n = n} (s≤s z≤n) qs) in
+    let pms , sound-pms , complete-pms = allPMs sys qs refl in
     ∈-concatMap⁺ sols {xs = qss}
         (L.Any.map
           (λ where refl → ∈-mapMaybe⁺ (onlyHexameter {n}) {xs = pms} (complete-pms hm~) refl)
@@ -216,7 +249,7 @@ allMeterDerivations ws
     using ws′  ← synezizeWords ws syn
     using mqs′ , _ , _ ← 𝟛-theQuantities ws′
     using mqs⊗ ← synezize syn mqs ⊗ mqs′
-    using hms , _ , _ ← allHexameters mqs⊗
+    using hms , _ , _ ← allHexameters (ws′ , mqs⊗)
     = map -,_ hms
 
   ds : List (∃ Hexameter)
@@ -224,19 +257,19 @@ allMeterDerivations ws
 
   sound-ds : ∀ {n′} {hm} → (n′ , hm) ∈ ds → ws ~ hm
   sound-ds {n′}{hm} x∈
-    with ys , y∈ , x∈ys ← satisfied′ $ ∈-concat⁻ (mapWith∈ n×syss mkDerivation) x∈
-    with z , z∈ , refl ← L.Any.mapWith∈⁻ n×syss mkDerivation y∈
+    with _ , y∈ , x∈ys ← satisfied′ $ ∈-concat⁻ (mapWith∈ n×syss mkDerivation) x∈
+    with _ , z∈ , refl ← L.Any.mapWith∈⁻ n×syss mkDerivation y∈
     using syn ← sound-syss z∈
     using ws′ ← synezizeWords ws syn
     using mqs′ , ws′~mqs′ , _ ← 𝟛-theQuantities ws′
     using mqs⊗ ← synezize syn mqs ⊗ mqs′
-    with hms , sound-hms , _ ← allHexameters mqs⊗
+    with hms , sound-hms , _ ← allHexameters (ws′ , mqs⊗)
     with hm , hm∈ , refl ← ∈-map⁻ -,_ x∈ys
     = ws~mqs ≫⟨ syn ⟩≫ ws′~mqs′ ≫ sound-hms hm∈
 
   complete-ds : ∀ {n′} {hm} → ws ~ hm → (n′ , hm) ∈ ds
   complete-ds {n′}{hm}
-    (_≫⟨_⟩≫_≫_ {ws = ws} {mqs = mqs} {sys′ = sys′} {mqs′ = mqs′↓}
+    (_≫⟨_⟩≫_≫_ {mqs = mqs} {mqs′ = mqs′↓} {ws = ws} {sys′ = sys′}
                ws~ syn ws′~ ~hm)
     using x∈ ← complete-syss syn
     using syn′ ← sound-syss x∈
@@ -249,22 +282,12 @@ allMeterDerivations ws
       using ws′ ← synezizeWords ws syn′
       with mqs′ , ws′~mqs′ , complete-mqs′ ← 𝟛-theQuantities ws′
       using mqs⊗ ← synezize syn′ mqs ⊗ mqs′
-      using hms , _ , complete-hms ← allHexameters mqs⊗
+      using hms , _ , complete-hms ← allHexameters (ws′ , mqs⊗)
       rewrite sym (complete-mqs ws~)
       = ∈-map⁺ (n′ ,_) {xs = hms} (complete-hms ~hm′)
       where
-
-      ~~hm : synezize syn mqs ⊗ mqs′↓ ~ hm
-      ~~hm = ~hm
-
-      mqs′≡ : mqs′↓ ≡ mqs′
-      mqs′≡ rewrite uniqueSyn syn′ syn = complete-mqs′ ws′~
-
-      ~hm1 : synezize syn mqs ⊗ mqs′ ~ hm
-      ~hm1 = subst (λ ◆ → synezize syn mqs ⊗ ◆ ~ hm) mqs′≡ ~~hm
-
-      ~hm′ : synezize syn′ mqs ⊗ mqs′ ~ hm
-      ~hm′ rewrite uniqueSyn syn′ syn = ~hm1
+      ~hm′ : ws′ , synezize syn′ mqs ⊗ mqs′ ~ hm
+      ~hm′ rewrite uniqueSyn syn′ syn | sym (complete-mqs′ ws′~) = ~hm
 
 allDerivations : (ws : Words n) → Derivations ws
 allDerivations ws = let ds , sound-ds , _ = allMeterDerivations ws in
@@ -287,3 +310,11 @@ instance
 
 Derivable : Words n → Type
 Derivable = NonEmpty ∘ allDerivations
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}

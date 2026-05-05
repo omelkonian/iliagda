@@ -225,20 +225,21 @@ Circ⇒¬·Vowel = λ where
   (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
   (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
 
-Vowel? = Decidable¹ Vowel ∋ λ l → ¿ Vowel l ¿
+Vowel?     = Decidable¹ Vowel     ∋ dec¹
+Consonant? = Decidable¹ Consonant ∋ dec¹
 
 onlyVowels : List Letter → List Letter
 onlyVowels = L.filter Vowel?
 
-vowels′ : List Letter → ℕ
-vowels′ = length ∘ onlyVowels
+♯vowels : List Letter → ℕ
+♯vowels = length ∘ onlyVowels
 
 module _ {l ls} where
 
   onlyVowels∷ : onlyVowels (l ∷ ls) ≡ onlyVowels [ l ] ++ onlyVowels ls
   onlyVowels∷ = L.filter-++ Vowel? [ l ] ls
 
-  vowels∷ : vowels (l ∷ ls) ≡ vowels [ l ] + vowels′ ls
+  vowels∷ : vowels (l ∷ ls) ≡ vowels [ l ] + ♯vowels ls
   vowels∷ =
     let open ≡-Reasoning in
     begin
@@ -250,7 +251,7 @@ module _ {l ls} where
     ≡⟨ L.length-++ (onlyVowels [ l ]) ⟩
       length (onlyVowels [ l ]) + length (onlyVowels ls)
     ≡⟨⟩
-      vowels [ l ] + vowels′ ls
+      vowels [ l ] + ♯vowels ls
     ∎
 
 vowelsDi : (l , l′) ∈ pairs (toList sy) → vowels sy ≥ vowels [ l ⨾ l′ ]
@@ -262,9 +263,9 @@ vowelsDi {sy = l ∷ l′ ∷ ls} 𝟘 =
   ≡⟨ vowels∷ {l} ⟩
     vowels [ l ] + vowels [ l′ ]
   ≤⟨ Nat.m≤m+n _ _ ⟩
-    vowels [ l ] + vowels [ l′ ] + vowels′ ls
+    vowels [ l ] + vowels [ l′ ] + ♯vowels ls
   ≡⟨ Nat.+-assoc (vowels [ l ]) _ _ ⟩
-    vowels [ l ] + (vowels [ l′ ] + vowels′ ls)
+    vowels [ l ] + (vowels [ l′ ] + ♯vowels ls)
   ≡˘⟨ cong (_ +_) $ vowels∷ {l′} ⟩
     vowels [ l ] + vowels (l′ ∷ ls)
   ≡˘⟨ vowels∷ {l} ⟩
@@ -275,9 +276,9 @@ vowelsDi {l}{l′}{sy = l↓ ∷ ls@(_ ∷ _)} (↠ p) =
   begin
     vowels [ l ⨾ l′ ]
   ≤⟨ vowelsDi p ⟩
-    vowels′ ls
+    ♯vowels ls
   ≤⟨ Nat.m≤n+m _ _ ⟩
-    vowels [ l↓ ] + vowels′ ls
+    vowels [ l↓ ] + ♯vowels ls
   ≡˘⟨ vowels∷ {l↓} ⟩
     vowels (l↓ ∷ ls)
   ∎
