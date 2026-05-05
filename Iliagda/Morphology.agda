@@ -4,6 +4,8 @@ module Iliagda.Morphology where
 open import Iliagda.Init
 open import Agda.Builtin.Char
 
+-- ** letters
+
 -- INCOMPLETE: add as needed
 data Letter : Type where
   -- ** vowels
@@ -13,7 +15,7 @@ data Letter : Type where
    ι ί ὶ ἰ ἱ ἳ ἴ ἶ Ἴ ῖ ϊ ΐ ῒ
    ο Ο ὀ Ὀ ὁ ὃ ὄ ὅ ό ὸ
    υ ὐ ὑ ὔ ὖ ὕ ὗ ὺ ύ ῦ ϋ ΰ
-   ω ὠ ὣ ὤ ὥ ὦ ᾤ ᾧ ώ ὼ ῶ ῳ ῴ ῷ
+   ω ὠ ὣ ὤ ὥ ὦ ᾤ ᾧ ώ ὼ ῶ ῳ ῴ ῷ ὡ
   -- ** consonants
    Β β Γ γ Δ δ Ζ ζ Θ θ Κ κ Λ ƛ Μ μ Ν ν Ξ ξ
    Π π Ρ ρ ῥ Σ σ ς Τ τ Φ φ Χ χ Ψ ψ
@@ -37,13 +39,15 @@ Vowel = _∈
   ∷ ι ∷ ί ∷ ὶ ∷ ἰ ∷ ἱ ∷ ἳ ∷ ἴ ∷ ἶ ∷ Ἴ ∷ ῖ ∷ ϊ ∷ ΐ ∷ ῒ
   ∷ ο ∷ Ο ∷ ὀ ∷ Ὀ ∷ ὁ ∷ ὃ ∷ ὄ ∷ ὅ ∷ ό ∷ ὸ
   ∷ υ ∷ ὐ ∷ ὑ ∷ ὔ ∷ ὖ ∷ ὕ ∷ ὗ ∷ ὺ ∷ ύ ∷ ῦ ∷ ϋ ∷ ΰ
-  ∷ ω ∷ ὠ ∷ ὣ ∷ ὤ ∷ ὥ ∷ ὦ ∷ ᾤ ∷ ᾧ ∷ ώ ∷ ὼ ∷ ῶ ∷ ῳ ∷ ῴ ∷ ῷ ∷ [])
+  ∷ ω ∷ ὠ ∷ ὣ ∷ ὤ ∷ ὥ ∷ ὦ ∷ ᾤ ∷ ᾧ ∷ ώ ∷ ὼ ∷ ῶ ∷ ῳ ∷ ῴ ∷ ῷ ∷ ὡ ∷ [])
 Apostrophe = _≡ ᾽
 
--- TODO: syllabification
-Syllable = List⁺ Letter
+-- ** syllables
 
+Syllable  = List⁺ Letter
 Syllables = Vec Syllable
+
+-- ** words
 
 data Word : ℕ {- syllables -} → Type where
   word : {_ : auto∶ n ≢ 0} → Syllables n → Word n
@@ -63,6 +67,8 @@ unwords : Words n → Syllables n
 unwords = λ where
   [] → []
   (w ∷ ws) → unword w V.++ unwords ws
+
+-- ** verses
 
 Verse : {ℕ} → Type
 Verse {n} = Words n

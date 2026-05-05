@@ -99,7 +99,7 @@ f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
 ─Vowel ·Vowel Doubtful : Pred₀ Letter
 -- INCOMPLETE: add as needed
 ─Vowel = _∈ [ η ⨾ ῆ ⨾ ῇ ⨾ ῃ ⨾ ἠ ⨾ ἡ ⨾ ἢ ⨾ ἣ ⨾ ἤ ⨾ ἦ ⨾ ἥ ⨾ Ἥ ⨾ ή ⨾ ὴ ⨾ ᾔ ]
-          ◇ [ ω ⨾ ὠ ⨾ ὣ ⨾ ὤ ⨾ ὥ ⨾ ὦ ⨾ ᾤ ⨾ ᾧ ⨾ ώ ⨾ ὼ ⨾ ῶ ⨾ ῳ ⨾ ῴ ⨾ ῷ ]
+          ◇ [ ω ⨾ ὠ ⨾ ὣ ⨾ ὤ ⨾ ὥ ⨾ ὦ ⨾ ᾤ ⨾ ᾧ ⨾ ώ ⨾ ὼ ⨾ ῶ ⨾ ῳ ⨾ ῴ ⨾ ῷ ⨾ ὡ ]
 -- INCOMPLETE: add as needed
 ·Vowel = _∈ [ ε ⨾ ἐ ⨾ ἑ ⨾ ἔ ⨾ ἕ ⨾ έ ⨾ ὲ ]
           ◇ [ ο ⨾ Ο ⨾ ὀ ⨾ Ὀ ⨾ ὁ ⨾ ὃ ⨾ ὄ ⨾ ὅ ⨾ ό ⨾ ὸ ]
@@ -162,8 +162,7 @@ Diphthong = _∈
   ∷ (υ , ὶ)
   ∷ (υ , ἱ)
   ∷ (ω , υ)
-  ∷ []
-  )
+  ∷ [])
 
 VowelBeforeDoubleConsonant : Pred₀ (Letter × Letter)
 VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c

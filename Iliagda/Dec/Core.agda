@@ -94,6 +94,7 @@ toChar = λ where
   ῳ → 'ῳ'
   ῴ → 'ῴ'
   ῷ → 'ῷ'
+  ὡ → 'ὡ'
   Β → 'Β'
   β → 'β'
   Γ → 'Γ'
@@ -132,6 +133,7 @@ toChar = λ where
   ψ → 'ψ'
   ᾽ → '᾽'
 
+-- INCOMPLETE: add as needed
 toChar-inj : Injective _≡_ _≡_ toChar
 toChar-inj {Ἀ} {Ἀ} refl = refl
 toChar-inj {Ἄ} {Ἄ} refl = refl
@@ -215,6 +217,7 @@ toChar-inj {ῶ} {ῶ} refl = refl
 toChar-inj {ῳ} {ῳ} refl = refl
 toChar-inj {ῴ} {ῴ} refl = refl
 toChar-inj {ῷ} {ῷ} refl = refl
+toChar-inj {ὡ} {ὡ} refl = refl
 toChar-inj {Β} {Β} refl = refl
 toChar-inj {β} {β} refl = refl
 toChar-inj {Γ} {Γ} refl = refl
