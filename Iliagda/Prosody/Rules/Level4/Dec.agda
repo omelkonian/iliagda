@@ -233,68 +233,93 @@ allHexameters {n@(suc _)} smqs@(sys , mqs)
 
 open ∣Complies-Ws-HM∣
 
-allMeterDerivations :
-  (ws : Words n) →
-  ∃ λ (ds : List (∃ Hexameter)) →
-      (∀ {n′} {hm} → (n′ , hm) ∈ ds → ws ~ hm)
-    × (∀ {n′} {hm} → ws ~ hm → (n′ , hm) ∈ ds)
-allMeterDerivations ws
-  using mqs , ws~mqs , complete-mqs ← 𝟚-theQuantities ws
-  using n×syss , sound-syss , complete-syss ← allSynezeses′ (unwords ws)
-  = ds , sound-ds , complete-ds
-  where
-  mkDerivation : ∀ {n′}{sys′} → (n′ , sys′) ∈ n×syss → List (∃ Hexameter)
-  mkDerivation x∈
-    using syn  ← sound-syss x∈
-    using ws′  ← synezizeWords ws syn
-    using mqs′ , _ , _ ← 𝟛-theQuantities ws′
-    using mqs⊗ ← synezize syn mqs ⊗ mqs′
-    using hms , _ , _ ← allHexameters (ws′ , mqs⊗)
-    = map -,_ hms
+-- ** minimal synizesis
 
-  ds : List (∃ Hexameter)
-  ds = concat $ mapWith∈ n×syss mkDerivation
+-- fix the number of synizeses
+module _ (n′ : ℕ) where
+  Derivation⟨_⟩ Derivations⟨_⟩ : Words n → Type
+  Derivation⟨_⟩  ws = ∃ λ (hm : Hexameter n′) → ws ~ hm
+  Derivations⟨_⟩ = List ∘ Derivation⟨_⟩
 
-  sound-ds : ∀ {n′} {hm} → (n′ , hm) ∈ ds → ws ~ hm
-  sound-ds {n′}{hm} x∈
-    with _ , y∈ , x∈ys ← satisfied′ $ ∈-concat⁻ (mapWith∈ n×syss mkDerivation) x∈
-    with _ , z∈ , refl ← L.Any.mapWith∈⁻ n×syss mkDerivation y∈
-    using syn ← sound-syss z∈
-    using ws′ ← synezizeWords ws syn
-    using mqs′ , ws′~mqs′ , _ ← 𝟛-theQuantities ws′
-    using mqs⊗ ← synezize syn mqs ⊗ mqs′
-    with hms , sound-hms , _ ← allHexameters (ws′ , mqs⊗)
-    with hm , hm∈ , refl ← ∈-map⁻ -,_ x∈ys
-    = ws~mqs ≫⟨ syn ⟩≫ ws′~mqs′ ≫ sound-hms hm∈
-
-  complete-ds : ∀ {n′} {hm} → ws ~ hm → (n′ , hm) ∈ ds
-  complete-ds {n′}{hm}
-    (_≫⟨_⟩≫_≫_ {mqs = mqs} {mqs′ = mqs′↓} {ws = ws} {sys′ = sys′}
-               ws~ syn ws′~ ~hm)
-    using x∈ ← complete-syss syn
-    using syn′ ← sound-syss x∈
-    = L.Any.concat⁺
-    $ L.Any.mapWith∈⁺ mkDerivation
-    $ -, x∈ , QED
+  allMeterDerivations⟨_⟩ :
+    (ws : Words n) →
+    ∃ λ (ds : List (Hexameter n′)) →
+        (∀ {hm} → hm ∈ ds → ws ~ hm)
+      × (∀ {hm} → ws ~ hm → hm ∈ ds)
+  allMeterDerivations⟨_⟩ ws
+    using mqs , ws~mqs , complete-mqs ← 𝟚-theQuantities ws
+    using syss , sound-syss , complete-syss ← allSynizeses (unwords ws) n′
+    = ds , sound-ds , complete-ds
     where
-    QED : (n′ , hm) ∈ mkDerivation x∈
-    QED
-      using ws′ ← synezizeWords ws syn′
-      with mqs′ , ws′~mqs′ , complete-mqs′ ← 𝟛-theQuantities ws′
-      using mqs⊗ ← synezize syn′ mqs ⊗ mqs′
-      using hms , _ , complete-hms ← allHexameters (ws′ , mqs⊗)
-      rewrite sym (complete-mqs ws~)
-      = ∈-map⁺ (n′ ,_) {xs = hms} (complete-hms ~hm′)
+    mkDerivation : ∀ {sys′} → sys′ ∈ syss → List (Hexameter n′)
+    mkDerivation x∈
+      using syn  ← sound-syss x∈
+      using ws′  ← synizizeWords ws syn
+      using mqs′ , _ , _ ← 𝟛-theQuantities ws′
+      using mqs⊗ ← synizize syn mqs ⊗ mqs′
+      using hms , _ , _ ← allHexameters (ws′ , mqs⊗)
+      = hms
+
+    ds : List (Hexameter n′)
+    ds = concat $ mapWith∈ syss mkDerivation
+
+    sound-ds : ∀ {hm} → hm ∈ ds → ws ~ hm
+    sound-ds {hm} x∈
+      with _ , y∈ , hm∈ ← satisfied′ $ ∈-concat⁻ (mapWith∈ syss mkDerivation) x∈
+      with _ , z∈ , refl ← L.Any.mapWith∈⁻ syss mkDerivation y∈
+      using syn ← sound-syss z∈
+      using ws′ ← synizizeWords ws syn
+      using mqs′ , ws′~mqs′ , _ ← 𝟛-theQuantities ws′
+      using mqs⊗ ← synizize syn mqs ⊗ mqs′
+      with hms , sound-hms , _ ← allHexameters (ws′ , mqs⊗)
+      = ws~mqs ≫⟨ syn ⟩≫ ws′~mqs′ ≫ sound-hms hm∈
+
+    complete-ds : ∀ {hm} → ws ~ hm → hm ∈ ds
+    complete-ds {hm}
+      (_≫⟨_⟩≫_≫_ {mqs = mqs} {mqs′ = mqs′↓} {ws = ws} {sys′ = sys′} ws~ syn ws′~ ~hm)
+      using x∈ ← complete-syss syn
+      using syn′ ← sound-syss x∈
+      = L.Any.concat⁺
+      $ L.Any.mapWith∈⁺ mkDerivation
+      $ -, x∈ , QED
       where
-      ~hm′ : ws′ , synezize syn′ mqs ⊗ mqs′ ~ hm
-      ~hm′ rewrite uniqueSyn syn′ syn | sym (complete-mqs′ ws′~) = ~hm
+      QED : hm ∈ mkDerivation x∈
+      QED
+        using ws′ ← synizizeWords ws syn′
+        with mqs′ , ws′~mqs′ , complete-mqs′ ← 𝟛-theQuantities ws′
+        using mqs⊗ ← synizize syn′ mqs ⊗ mqs′
+        using hms , _ , complete-hms ← allHexameters (ws′ , mqs⊗)
+        rewrite sym (complete-mqs ws~)
+        = complete-hms ~hm′
+        where
+        ~hm′ : ws′ , synizize syn′ mqs ⊗ mqs′ ~ hm
+        ~hm′ rewrite uniqueSyn syn′ syn | sym (complete-mqs′ ws′~) = ~hm
 
-allDerivations : (ws : Words n) → Derivations ws
-allDerivations ws = let ds , sound-ds , _ = allMeterDerivations ws in
-   mapWith∈ ds (λ d∈ → -, -, sound-ds d∈)
+  allDerivations⟨_⟩ : (ws : Words n) → Derivations⟨_⟩ ws
+  allDerivations⟨_⟩ ws = let ds , sound-ds , _ = allMeterDerivations⟨_⟩ ws in
+    mapWith∈ ds (-,_ ∘ sound-ds)
 
-mkDerivations : Verses → List ∃Derivations
-mkDerivations = map λ (_ , v) → -, -, allDerivations v
+private
+  WhichSynizeses   = Bool
+  MinimalSynizeses = true
+  AllSynizeses     = false
+
+allDerivations′ : WhichSynizeses → (ws : Words n) → Derivations ws
+allDerivations′ {n = n} minimal? ws = go (suc n)
+  where
+  go : ℕ → Derivations ws
+  go 0 = []
+  go (suc n′)
+    with ⋯ ← go n′
+    with allDerivations⟨ n′ ⟩ ws
+  ... | []         = ⋯
+  ... | ds@(_ ∷ _) = map -,_ ds ◇ (if minimal? then [] else ⋯)
+
+allDerivations allDerivationsMin : (ws : Words n) → Derivations ws
+allDerivations    = allDerivations′ AllSynizeses
+allDerivationsMin = allDerivations′ MinimalSynizeses
+
+-- ** derivability
 
 NonEmpty : List A → Type
 NonEmpty = λ where

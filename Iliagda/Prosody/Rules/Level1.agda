@@ -22,7 +22,7 @@ instance
   Sy-Q : Syllable -compliesWith- Quantity
   Sy-Q ._~_ = _~′_
     module ∣Sy-Q∣ where
-    -- PRECONDITIONS : no synezesis has taken place
+    -- PRECONDITIONS : no synizesis has taken place
     data _~′_ : Syllable → Quantity → Type where
 
       longByNature :

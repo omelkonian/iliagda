@@ -176,6 +176,7 @@ toChar = λ where
   ῷ → 'ῷ'
   ῳ → 'ῳ'
   ᾽ → '᾽'
+  ϝ → 'ϝ'
 
 toChar-inj : Injective _≡_ _≡_ toChar
 toChar-inj {Α} {Α} refl = refl
@@ -343,6 +344,7 @@ toChar-inj {ῶ} {ῶ} refl = refl
 toChar-inj {ῷ} {ῷ} refl = refl
 toChar-inj {ῳ} {ῳ} refl = refl
 toChar-inj {᾽} {᾽} refl = refl
+toChar-inj {ϝ} {ϝ} refl = refl
 
 instance
   DecEq-Letter : DecEq Letter

@@ -16,7 +16,7 @@ open import Iliagda.Prosody.Rules.Level3
 
 _~ˢʸⁿ?_ : (sy : Syllable) (q : Quantity) → Dec (sy ~ˢʸⁿ q)
 sy ~ˢʸⁿ? q
-  with ¿ SynezizedOrDipthong sy ¿ | q ≟ ─ | sy ~₁? q
+  with ¿ SynizizedOrDipthong sy ¿ | q ≟ ─ | sy ~₁? q
 ... | yes syn | yes refl | _       = yes (synLong syn)
 ... | yes syn | no  q≢─  | _       = no λ where (synLong _)     → q≢─ refl ; (¬synLong ns _) → ns syn
 ... | no ¬syn | _        | yes ~q  = yes (¬synLong ¬syn ~q)

@@ -2,6 +2,7 @@ module Iliagda.ToHaskell where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
+open import Iliagda.Prosody.Rules
 open import Iliagda.Prosody.Rules.Dec
 open import Iliagda.Show
 
@@ -16,11 +17,6 @@ postulate ERROR : List Char → A
 IMPOSSIBLE : String → A
 IMPOSSIBLE = ERROR ∘ primStringToList
   where open import Agda.Builtin.String
-
--- nonEmpty : List A → List⁺ A
--- nonEmpty = λ where
---   [] → IMPOSSIBLE
---   (x ∷ xs) → x ∷ xs
 
 mkLetter : RawLetter → Letter
 mkLetter = λ where
@@ -107,6 +103,28 @@ mkVerse = λ where
   [] → -, []
   (w ∷ ws) → -, mkWord w .proj₂ ∷ mkVerse ws .proj₂
 
-checkVerse : RawVerse → String
-checkVerse = show ∘ allDerivations ∘ proj₂ ∘ mkVerse
-{-# COMPILE GHC checkVerse as checkVerse #-}
+checkVerse checkVerseMin debugVerse : RawVerse → String
+{-# COMPILE GHC checkVerse    as checkVerse #-}
+{-# COMPILE GHC checkVerseMin as checkVerseMin #-}
+{-# COMPILE GHC debugVerse    as debugVerse #-}
+checkVerse    = show ∘ allDerivations    ∘ proj₂ ∘ mkVerse
+checkVerseMin = show ∘ allDerivationsMin ∘ proj₂ ∘ mkVerse
+debugVerse rv =
+  let
+    _ , ws = mkVerse rv
+    mqs1 , _ , _ = 𝟙-theQuantities (unwords ws)
+    mqs2 , _ , _ = 𝟚-theQuantities ws
+    mqs3 , _ , _ = 𝟛-theQuantities ws
+
+    `ws = show (unwords ws)
+    ns = map Str.length (Str.words `ws)
+    `mqs1 = map show (toList mqs1)
+    `mqs2 = map show (toList mqs2)
+    `mqs3 = map show (toList mqs3)
+    `mqs23 = map show (toList $ mqs2 ⊗ mqs3)
+  in
+     `ws ◇ "\n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs1 ns) ◇ " --𝟙 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs2 ns) ◇ " --𝟚 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs3 ns) ◇ " --𝟛 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗3\n"

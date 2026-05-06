@@ -8,19 +8,19 @@ open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
 
-SynezizedOrDipthong : Syllable → Type
-SynezizedOrDipthong sy = vowels sy ≥ 2
+SynizizedOrDipthong : Syllable → Type
+SynizizedOrDipthong sy = vowels sy ≥ 2
 
--- NB: separation of concerns between Level1~Synezesis
---     a.k.a. "by nature after synezesis"
+-- NB: separation of concerns between Level1~Synizesis
+--     a.k.a. "by nature after synizesis"
 data _~ˢʸⁿ_ : Syllable → Quantity → Type where
   synLong :
-    SynezizedOrDipthong sy
+    SynizizedOrDipthong sy
     ──────────────────────
     sy ~ˢʸⁿ ─
 
   ¬synLong :
-    ∙ ¬ SynezizedOrDipthong sy
+    ∙ ¬ SynizizedOrDipthong sy
     ∙ sy ~ q
       ────────────────────────
       sy ~ˢʸⁿ q

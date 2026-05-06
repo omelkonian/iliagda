@@ -21,16 +21,19 @@ data Letter : Type where
    Π π Ρ ρ Ῥ ῥ Σ σ ς Τ τ Φ φ Χ χ Ψ ψ
   -- ** special symbols
    ᾽ -- apostrophe
+   ϝ -- digamma
    : Letter
 
 Letters = List Letter
 
-Consonant Vowel Apostrophe : Pred₀ Letter
+Consonant Vowel Apostrophe Digamma : Pred₀ Letter
 Consonant = _∈
   ( Β ∷ β ∷ Γ ∷ γ ∷ Δ ∷ δ ∷ Ζ ∷ ζ
   ∷ Θ ∷ θ ∷ Κ ∷ κ ∷ Λ ∷ ƛ ∷ Μ ∷ μ ∷ Ν ∷ ν
   ∷ Ξ ∷ ξ ∷ Π ∷ π ∷ Ρ ∷ ρ ∷ Ῥ ∷ ῥ ∷ Σ ∷ σ ∷ ς
-  ∷ Τ ∷ τ ∷ Φ ∷ φ ∷ Χ ∷ χ ∷ Ψ ∷ ψ ∷ [])
+  ∷ Τ ∷ τ ∷ Φ ∷ φ ∷ Χ ∷ χ ∷ Ψ ∷ ψ
+  ∷ ϝ -- digamma
+  ∷ [])
 Vowel = _∈
   ( Α ∷ α ∷ Ἀ ∷ ἀ ∷ Ἄ ∷ ἄ ∷ ἂ ∷ Ἆ ∷ ἆ ∷ Ἁ ∷ ἁ ∷ Ἅ ∷ ἅ ∷ ἃ ∷ ά ∷ ὰ ∷ ᾶ ∷ ᾷ ∷ ᾳ
   ∷ Ε ∷ ε ∷ Ἐ ∷ ἐ ∷ Ἔ ∷ ἔ ∷ Ἑ ∷ ἑ ∷ Ἕ ∷ ἕ ∷ ἓ ∷ έ ∷ ὲ
@@ -41,6 +44,7 @@ Vowel = _∈
   ∷ ω ∷ Ὠ ∷ ὠ ∷ Ὤ ∷ ὤ ∷ ᾤ ∷ ὢ ∷ Ὦ ∷ ὦ ∷ ᾦ ∷ ᾠ ∷ ὡ ∷ ὥ ∷ ὣ ∷ Ὧ ∷ ὧ ∷ ᾧ ∷ ώ ∷ ῴ ∷ ὼ ∷ ῶ ∷ ῷ ∷ ῳ
   ∷ [])
 Apostrophe = _≡ ᾽
+Digamma    = _≡ ϝ
 
 -- ** syllables
 

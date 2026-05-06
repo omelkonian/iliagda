@@ -85,11 +85,11 @@ instance
 
         _≫⟨_⟩≫_≫_ : ∀ {ws : Words n} {sys′ : Syllables n′} {hm : Hexameter n′} →
           ∙ ws ~² mqs
-          -- [586] synezesis
-          → (syn : unwords ws -synezizes*- sys′) →
-          let ws′ = synezizeWords ws syn in
+          -- [586] synizesis
+          → (syn : unwords ws -synizizes*- sys′) →
+          let ws′ = synizizeWords ws syn in
           ∙ ws′ ~³ mqs′
-          ∙ ws′ , synezize syn mqs ⊗ mqs′ ~ hm
+          ∙ ws′ , synizize syn mqs ⊗ mqs′ ~ hm
             ──────────────────────────────────────────
             ws ~′ hm
 
@@ -98,8 +98,6 @@ Derivation ws = ∃ λ n′ → ∃ λ (hm : Hexameter n′) → ws ~ hm
 
 Derivations : Words n → Type
 Derivations ws = List (Derivation ws)
-
-∃Derivations = ∃ λ n → ∃ λ (ws : Words n) → Derivations ws
 
 -- -}
 -- -}

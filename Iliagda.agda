@@ -19,5 +19,5 @@ open import Iliagda.Prosody.Rules.Dec
 -- ** Pretty-printing.
 open import Iliagda.Show
 
--- ** Example analyses of Iliad verses.
-open import Iliagda.Examples
+-- ** Functions to extract to Haskell.
+open import Iliagda.ToHaskell

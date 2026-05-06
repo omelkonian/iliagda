@@ -2,159 +2,71 @@
 module Main where
 
 import Prelude hiding (Word)
-import Data.List (intercalate)
-import Control.Monad (forM_, forM)
 import System.Environment (getArgs)
-import MAlonzo.Code.Iliagda.ToHaskell (checkVerse)
+import Control.Monad (forM_, when)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
-type Word  = String
-type Verse = [Word]
-type Iliad = [Verse]
-
-readIliad :: String -> Iliad
-readIliad = map words . lines
-
--- ** digamma insertion
-
-insertDigamma :: Word -> Word
-insertDigamma = \case
-  "ἔδεισεν" -> "ἔδδεισεν"
-  w -> w
-
-digammaInsertion :: Iliad -> Iliad
-digammaInsertion = map (map insertDigamma)
-
--- ** syllabification
+import qualified MAlonzo.Code.Iliagda.ToHaskell as AGDA
+import Books.All (allBooks)
 
 type Syllable = String
-type WordSy   = [Syllable]
-type VerseSy  = [WordSy]
-type IliadSy  = [VerseSy]
+type Word     = [Syllable]
+type Verse    = [Word]
 
-writeIliadSy :: IliadSy -> String
-writeIliadSy = unlines . map writeVerse
-  where
-  writeVerse :: VerseSy -> String
-  writeVerse = unwords . map writeWord
+verses :: [Verse]
+verses = allBooks
 
-  writeWord :: WordSy -> String
-  writeWord = intercalate "-"
+insertDigamma :: Verse -> Verse
+insertDigamma = map $ \case
+  ["ἔ","δει","σεν"] -> ["ἔ","ϝδει","σεν"]
+  w -> w
 
--- INCOMPLETE: add as needed
-vowel, consonant, accentedVowel, dialytics :: Char -> Bool
-vowel = (`elem` "ἈἌαἀἁἂἄὰάᾶᾷεἐἑἔἕέὲηῆῇῃἠἡἢἣἤἦἥἭήὴᾔιίὶἰἱἳἴἶἼῖϊΐῒοΟὀὈὁὃὄὅόὸυὐὑὔὖὕὗὺύῦϋΰωὠὣὤὥὦᾤᾧώὼῶῳῴῷὡ")
-consonant = (`elem` "ΒβΓγΔδΖζΘθΚκΛƛΜμΝνΞξΠπΡρῥΣσςΤτΦφΧχΨψ")
-accentedVowel = (`elem` "ἈἌἀἁἂἄὰάᾶᾷἐἑἔἕέὲῆῇἠἡἢἣἤἦἥἭήὴᾔίὶἰἱἳἴἶἼῖϊΐῒὀὈὁὃὄὅόὸὐὑὔὖὕὗὺύῦϋΰὠὣὤὥὦᾤᾧώὼῶῴῷὡ")
-dialytics = (`elem` "ϊΐῒϋΰ")
+derivations :: Verse -> T.Text
+derivations = AGDA.checkVerseMin . insertDigamma
 
-dipthong :: Char -> Char -> Bool
-dipthong c c' = [c, c'] `elem`
-  [ "αι"
-  , "αὶ"
-  , "αί"
-  , "ει"
-  , "εί"
-  , "εὶ"
-  , "εἰ"
-  , "ηυ"
-  , "οι"
-  , "οῖ"
-  , "οἰ"
-  , "οὶ"
-  , "οί"
-  , "οἱ"
-  , "ου"
-  , "οὐ"
-  , "οὺ"
-  , "οὗ"
-  , "οὕ"
-  , "οῦ"
-  , "ού"
-  , "υι"
-  , "υὶ"
-  , "υἱ"
-  , "ωυ"
-  ]
+nonDerivable :: T.Text -> Bool
+nonDerivable = T.elem '∅'
 
-(\/) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
-(p \/ q) x = p x || q x
+-- ** ranges
 
-mergeVowel :: Char -> Char -> Bool
-mergeVowel c c'
-  | accentedVowel c
-  = False
-  | dialytics c'
-  = False
+data Range = Int :-: Int
+
+(!) :: [a] -> Range -> [a]
+xs ! (i :-: j) = take (j - i + 1) $ drop (i - 1) xs
+
+instance Show Range where
+  show (i :-: j) = show i <> ".." <> show j
+
+readRange :: String -> Range
+readRange s
+  | (i, ('.':'.':j)) <- break (== '.') s
+  = readIndex 1 i :-: readIndex (length verses - 1) j
   | otherwise
-  = dipthong c c'
+  = read s :-: read s
+  where readIndex def = \case {"" -> def; s -> read s}
 
-nextVowel :: Char -> String -> (String, String)
-nextVowel c s
-  | ([c'], s) <- splitAt 1 s
-  , mergeVowel c c'
-  = ([c'], s)
-  | otherwise
-  = ("", s)
-
-afterVowels :: String -> (String, String)
-afterVowels s
-  | all (not . vowel) s
-  = (s, "")
-  | otherwise
-  = ("", s)
-
-syllabify :: Word -> WordSy
-syllabify s
-  | (cs, s) <- break vowel s
-  , ([v], s) <- splitAt 1 s
-  , (vs, s) <- nextVowel v s
-  , (rest, s) <- afterVowels s
-  -- , (vs, s'') <- break (consonant \/ accentedVowel) s'
-  -- , sy <- cs <> vs
-  -- = if null sy then [s] else sy : syllabify s''
-  = cs <> [v] <> vs <> rest
-  : syllabify s
-  | otherwise
-  = []
-
-showSyllables :: WordSy -> Word
-showSyllables = intercalate "-"
-
-syllabification :: Iliad -> IliadSy
-syllabification = map (map syllabify)
-
-toRemove :: Char -> Bool
-toRemove = (`elem` "·,.;")
-
-sanitize :: String -> String
-sanitize = filter (not . toRemove)
-
-joinWords :: [String] -> [String]
-joinWords = \case
-  [] -> []
-  [ s ] -> [ s ]
-  (s:s':ss) ->
-    if all (not . vowel) s then
-      joinWords (s <> s' : ss)
-    else
-      s : joinWords (s':ss)
-
--- checkVerseMain :: IO ()
--- checkVerseMain = do
---   [userInput] <- getArgs
---   let v = read userInput
---   T.putStrLn $ checkVerse v
-
+-- ** USAGE **
+--
+-- FIND COUNTER-EXAMPLES:
+--   $ iliagda
+-- OR SHOW DERIVATIONS:
+--   $ iliagda <verse_range>*
+--  eg iliagda ..42 1258..3780 15000..
 main :: IO ()
-main = do
-  verses <- lines <$> readFile "artifacts/raw.txt"
-  forM_ verses $ \v -> do
-    let v' = sanitize v
-    let ws = joinWords . map insertDigamma $ words v'
-    let ws' = map syllabify ws
-    -- T.putStrLn $ checkVerse ws'
-    T.appendFile "artifacts/derivations.txt" $ checkVerse ws' <> T.pack "\n"
-    appendFile "artifacts/syllables.txt" $ unwords (map showSyllables ws') <> "\n"
+main = getArgs >>= \case
+  [] -> do
+    putStrLn "Counterexamples:"
+    forM_ (zip [1..] $ verses) $ \(i, v) ->
+      when (nonDerivable $ derivations v) $ print i
+  as -> forM_ (map readRange as) $ \r@(i0 :-: _) -> do
+    putStrLn "-----------------------------------------------"
+    putStrLn $ "Derivations (" <> show r <> "):\n\n"
+    forM_ (zip [i0..] $ verses ! r) $ \(i, v) -> do
+      putStrLn $ "v" <> show i <> ")\n"
+      let ds = derivations v
+      if (nonDerivable ds) then
+        T.putStrLn $ T.pack "∅\n" <> AGDA.debugVerse v
+      else
+        T.putStrLn ds
 

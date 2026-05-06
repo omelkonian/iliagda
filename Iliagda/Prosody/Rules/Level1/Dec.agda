@@ -10,11 +10,6 @@ open import Iliagda.Prosody.Rules.Level1
 
 open ∣Sy-Q∣; open ∣Sy-MQ∣; open ∣Sys-Qs∣
 
-noInj₁ : ¬ A → A ⊎ B → B
-noInj₁ ¬a = λ where
-  (inj₁ a) → ⊥-elim $ ¬a a
-  (inj₂ b) → b
-
 module _
   {P Q R : A → Type}
   (R? : Decidable¹ R)

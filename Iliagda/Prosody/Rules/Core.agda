@@ -44,14 +44,14 @@ variable
   mq mq′ mq″ : Flat Quantity
   mqs mqs′ : Quantities n
 
-synezize : ∀ {sys : Syllables n} {sys′ : Syllables n′}
-  (syn : sys -synezizes*- sys′) →
+synizize : ∀ {sys : Syllables n} {sys′ : Syllables n′}
+  (syn : sys -synizizes*- sys′) →
   Quantities n →
   Quantities n′
-synezize = λ where
+synizize = λ where
   []        mqs           → mqs
-  (_ ∷ syn) (mq ∷ mqs)    → mq ∷ synezize syn mqs
-  (_ ∺ syn) (_ ∷ _ ∷ mqs) → single ─ ∷ synezize syn mqs
+  (_ ∷ syn) (mq ∷ mqs)    → mq ∷ synizize syn mqs
+  (_ ∺ syn) (_ ∷ _ ∷ mqs) → single ─ ∷ synizize syn mqs
 
 -- ** enumerations
 
