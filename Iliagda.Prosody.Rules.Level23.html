@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="utf-8"><title>Iliagda.Prosody.Rules.Level23</title><link rel="stylesheet" href="css/Agda.css"></head><body><pre class="Agda"><a id="1" class="Symbol">{-#</a> <a id="5" class="Keyword">OPTIONS</a> <a id="13" class="Pragma">--safe</a> <a id="20" class="Symbol">#-}</a>
+<a id="24" class="Keyword">module</a> <a id="31" href="Iliagda.Prosody.Rules.Level23.html" class="Module">Iliagda.Prosody.Rules.Level23</a> <a id="61" class="Keyword">where</a>
+
+<a id="68" class="Keyword">open</a> <a id="73" class="Keyword">import</a> <a id="80" href="Iliagda.Init.html" class="Module">Iliagda.Init</a>
+<a id="93" class="Keyword">open</a> <a id="98" class="Keyword">import</a> <a id="105" href="Iliagda.Morphology.html" class="Module">Iliagda.Morphology</a>
+<a id="124" class="Keyword">open</a> <a id="129" class="Keyword">import</a> <a id="136" href="Iliagda.Prosody.Core.html" class="Module">Iliagda.Prosody.Core</a>
+<a id="157" class="Keyword">open</a> <a id="162" class="Keyword">import</a> <a id="169" href="Iliagda.Dec.Core.html" class="Module">Iliagda.Dec.Core</a>
+<a id="186" class="Keyword">open</a> <a id="191" class="Keyword">import</a> <a id="198" href="Iliagda.Prosody.Rules.Core.html" class="Module">Iliagda.Prosody.Rules.Core</a>
+<a id="225" class="Keyword">open</a> <a id="230" class="Keyword">import</a> <a id="237" href="Iliagda.Prosody.Rules.Level1.html" class="Module">Iliagda.Prosody.Rules.Level1</a>
+<a id="266" class="Keyword">open</a> <a id="271" class="Keyword">import</a> <a id="278" href="Iliagda.Prosody.Rules.Level2.html" class="Module">Iliagda.Prosody.Rules.Level2</a>
+<a id="307" class="Keyword">open</a> <a id="312" class="Keyword">import</a> <a id="319" href="Iliagda.Prosody.Rules.Level3.html" class="Module">Iliagda.Prosody.Rules.Level3</a>
+
+<a id="349" class="Comment">-- ** LEVEL 2&amp;3: merging information</a>
+
+<a id="_⊗₁_"></a><a id="387" href="Iliagda.Prosody.Rules.Level23.html#387" class="Function Operator">_⊗₁_</a> <a id="392" class="Symbol">:</a> <a id="394" href="Algebra.Core.html#527" class="Function">Op₂</a> <a id="398" href="Function.Base.html#1993" class="Function Operator">$</a> <a id="400" href="Iliagda.Prosody.Rules.Core.html#874" class="Datatype">Flat</a> <a id="405" href="Iliagda.Prosody.Core.html#121" class="Datatype">Quantity</a>
+<a id="414" href="Iliagda.Prosody.Rules.Level23.html#387" class="Function Operator">_⊗₁_</a> <a id="419" class="Symbol">=</a> <a id="421" class="Symbol">λ</a> <a id="423" class="Keyword">where</a>
+  <a id="431" class="Symbol">(</a><a id="432" href="Iliagda.Prosody.Rules.Core.html#905" class="InductiveConstructor">single</a> <a id="439" class="Symbol">_)</a> <a id="442" class="Symbol">(</a><a id="443" href="Iliagda.Prosody.Rules.Core.html#905" class="InductiveConstructor">single</a> <a id="450" href="Iliagda.Prosody.Rules.Level23.html#450" class="Bound">q</a><a id="451" class="Symbol">)</a> <a id="453" class="Symbol">→</a> <a id="455" href="Iliagda.Prosody.Rules.Core.html#905" class="InductiveConstructor">single</a> <a id="462" href="Iliagda.Prosody.Rules.Level23.html#450" class="Bound">q</a>  <a id="465" class="Comment">-- RIGHT BIASED</a>
+  <a id="483" class="Comment">-- (single q) (single q′) → if q == q′ then single q else *</a>
+  <a id="545" class="Symbol">(</a><a id="546" href="Iliagda.Prosody.Rules.Core.html#905" class="InductiveConstructor">single</a> <a id="553" href="Iliagda.Prosody.Rules.Level23.html#553" class="Bound">q</a><a id="554" class="Symbol">)</a> <a id="556" href="Iliagda.Prosody.Rules.Core.html#927" class="InductiveConstructor">none</a> <a id="561" class="Symbol">→</a> <a id="563" href="Iliagda.Prosody.Rules.Core.html#905" class="InductiveConstructor">single</a> <a id="570" href="Iliagda.Prosody.Rules.Level23.html#553" class="Bound">q</a>
+  <a id="574" class="Symbol">(</a><a id="575" href="Iliagda.Prosody.Rules.Core.html#905" class="InductiveConstructor">single</a> <a id="582" class="Symbol">_)</a> <a id="585" href="Iliagda.Prosody.Rules.Core.html#945" class="InductiveConstructor">all</a> <a id="589" class="Symbol">→</a> <a id="591" href="Iliagda.Prosody.Rules.Core.html#945" class="InductiveConstructor">all</a>              <a id="608" class="Comment">-- RIGHT BIASED</a>
+  <a id="626" href="Iliagda.Prosody.Rules.Core.html#927" class="InductiveConstructor">none</a> <a id="631" href="Iliagda.Prosody.Rules.Level23.html#631" class="Bound">mq</a> <a id="634" class="Symbol">→</a> <a id="636" href="Iliagda.Prosody.Rules.Level23.html#631" class="Bound">mq</a>
+  <a id="641" href="Iliagda.Prosody.Rules.Core.html#945" class="InductiveConstructor">all</a> <a id="645" href="Iliagda.Prosody.Rules.Level23.html#645" class="Bound">mq</a> <a id="648" class="Symbol">→</a> <a id="650" href="Iliagda.Prosody.Rules.Level23.html#645" class="Bound">mq</a>                       <a id="675" class="Comment">-- IMPOSSIBLE</a>
+  <a id="691" class="Comment">-- all (single x) → ?</a>
+  <a id="715" class="Comment">-- all none → all</a>
+  <a id="735" class="Comment">-- all all → all</a>
+
+<a id="_⊗_"></a><a id="753" href="Iliagda.Prosody.Rules.Level23.html#753" class="Function Operator">_⊗_</a> <a id="757" class="Symbol">:</a> <a id="759" href="Algebra.Core.html#527" class="Function">Op₂</a> <a id="763" href="Function.Base.html#1993" class="Function Operator">$</a> <a id="765" href="Iliagda.Prosody.Rules.Core.html#962" class="Function">Quantities</a> <a id="776" href="Iliagda.Init.html#4634" class="Generalizable">n</a>
+<a id="778" href="Iliagda.Prosody.Rules.Level23.html#753" class="Function Operator">_⊗_</a> <a id="782" class="Symbol">=</a> <a id="784" href="Data.Vec.Base.html#3745" class="Function">V.zipWith</a> <a id="794" href="Iliagda.Prosody.Rules.Level23.html#387" class="Function Operator">_⊗₁_</a>
+
+<a id="800" class="Keyword">data</a> <a id="_~ʷˢ_"></a><a id="805" href="Iliagda.Prosody.Rules.Level23.html#805" class="Datatype Operator">_~ʷˢ_</a> <a id="811" class="Symbol">:</a> <a id="813" href="Iliagda.Morphology.html#1810" class="Datatype">Words</a> <a id="819" href="Iliagda.Init.html#4634" class="Generalizable">n</a> <a id="821" class="Symbol">→</a> <a id="823" href="Iliagda.Prosody.Rules.Core.html#962" class="Function">Quantities</a> <a id="834" href="Iliagda.Init.html#4634" class="Generalizable">n</a> <a id="836" class="Symbol">→</a> <a id="838" href="Agda.Primitive.html#388" class="Primitive">Type</a> <a id="843" class="Keyword">where</a>
+
+  <a id="_~ʷˢ_._∪_"></a><a id="852" href="Iliagda.Prosody.Rules.Level23.html#852" class="InductiveConstructor Operator">_∪_</a> <a id="856" class="Symbol">:</a>
+     <a id="863" href="Prelude.InferenceRules.html#56349" class="Function Operator">∙</a> <a id="865" href="Iliagda.Morphology.html#2236" class="Generalizable">ws</a> <a id="868" href="Iliagda.Prosody.Rules.Level2.html#3795" class="Datatype Operator">~²</a> <a id="871" href="Iliagda.Prosody.Rules.Core.html#1058" class="Generalizable">mqs</a>
+     <a id="880" href="Prelude.InferenceRules.html#56280" class="Function Operator">∙</a> <a id="882" href="Iliagda.Morphology.html#2236" class="Generalizable">ws</a> <a id="885" href="Iliagda.Prosody.Rules.Level3.html#7768" class="Function Operator">~³</a> <a id="888" href="Iliagda.Prosody.Rules.Core.html#1062" class="Generalizable">mqs′</a>
+       <a id="900" href="Prelude.InferenceRules.html#14371" class="Function Operator">───────────────────</a>
+       <a id="927" href="Iliagda.Morphology.html#2236" class="Generalizable">ws</a> <a id="930" href="Iliagda.Prosody.Rules.Level23.html#805" class="Datatype Operator">~ʷˢ</a> <a id="934" class="Symbol">(</a><a id="935" href="Iliagda.Prosody.Rules.Core.html#1058" class="Generalizable">mqs</a> <a id="939" href="Iliagda.Prosody.Rules.Level23.html#753" class="Function Operator">⊗</a> <a id="941" href="Iliagda.Prosody.Rules.Core.html#1062" class="Generalizable">mqs′</a><a id="945" class="Symbol">)</a>
+
+<a id="948" class="Keyword">instance</a>
+  <a id="Complies-Ws-MQs"></a><a id="959" href="Iliagda.Prosody.Rules.Level23.html#959" class="Function">Complies-Ws-MQs</a> <a id="975" class="Symbol">:</a> <a id="977" href="Iliagda.Morphology.html#1810" class="Datatype">Words</a> <a id="983" href="Iliagda.Init.html#4634" class="Generalizable">n</a> <a id="985" href="Iliagda.Prosody.Rules.Core.html#250" class="Record Operator">-compliesWith-</a> <a id="1000" href="Iliagda.Prosody.Rules.Core.html#962" class="Function">Quantities</a> <a id="1011" href="Iliagda.Init.html#4634" class="Generalizable">n</a>
+  <a id="1015" href="Iliagda.Prosody.Rules.Level23.html#959" class="Function">Complies-Ws-MQs</a> <a id="1031" class="Symbol">.</a><a id="1032" href="Iliagda.Prosody.Rules.Core.html#316" class="Field Operator">_~_</a> <a id="1036" class="Symbol">=</a> <a id="1038" href="Iliagda.Prosody.Rules.Level23.html#805" class="Datatype Operator">_~ʷˢ_</a>
+
+<a id="1045" class="Comment">{- ** ALTERNATIVE DESIGNS
+
+data _∪₁_≈_ : MQuantity n → MQuantity n → MQuantity n : Type where
+
+  CLASH-LEFT :
+     (just q) ∪₁ (just q′) ≈ just q
+
+  CLASH-RIGHT :
+     (just q) ∪₁ (just q′) ≈ just q′
+
+  CLASH-RECONSIDER-LEFT :
+    TRY LEVEL2~&gt;3 DEPENDENCY
+  CLASH-RECONSIDER-RIGHT :
+    TRY LEVEL3~&gt;2 DEPENDENCY
+
+
+data _∪_ : Quantities n → Quantities n → Quantities n : Type where
+
+  [] :
+  _∷_
+
+_∪_ : Quantities n → Quantities n → Quantities n
+_∪_ = {!!}
+  -- (ans , ans′) ← ....
+  -- if left then
+  --   inj₁ ans
+  -- else if right then
+  --   inj₂ ans
+-}</a>
+
+
+<a id="1605" class="Comment">-- -}</a>
+<a id="1611" class="Comment">-- -}</a>
+<a id="1617" class="Comment">-- -}</a>
+<a id="1623" class="Comment">-- -}</a>
+</pre></body></html>
