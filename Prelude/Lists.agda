@@ -161,3 +161,17 @@ BeginsWith? Ps? _ = CheckList? Ps? _
 
 EndsWith? : All Decidable¹ Ps → Decidable¹ (EndsWith Ps)
 EndsWith? Ps? _ = CheckList? Ps? _
+
+-- ** membership of last element
+
+-- data LastAny {xs : List A} {P : A → Type} : Any P xs → Type where
+--   isLastAny : (p : P x) → LastAny (here {xs = []} p)
+LastAny : ∀ {xs : List A} {P : A → Type} → Any P xs → Type
+LastAny = λ where
+  (here {xs = xs} _) → xs ≡ []
+  (there p)          → LastAny p
+
+-- ** filter List⁺
+
+filter⁺ : ∀ {P : A → Type} → Decidable¹ P → List⁺ A → List A
+filter⁺ P? = L.filter P? ∘ toList

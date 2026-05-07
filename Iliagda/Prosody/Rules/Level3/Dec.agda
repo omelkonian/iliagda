@@ -156,7 +156,7 @@ module QuantityDec (next : Context) where
   open QuantityRules next
 
   private
-    doubleOrTwo? : (ls : Letters) → Dec ((StartsWithDoubleConsonant ∪₁ StartsWithTwoConsonants) ls)
+    doubleOrTwo? : (ls : Letters) → Dec ((StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) ls)
     doubleOrTwo? ls with StartsWithDoubleConsonant? ls | StartsWithTwoConsonants? ls
     ... | yes dc  | _      = yes (inj₁ dc)
     ... | no  _   | yes tc = yes (inj₂ tc)
@@ -303,11 +303,3 @@ module QuantityDec (next : Context) where
     = mq ∷ mqs
     , mq~ ∷ mqs~
     , λ where (mq~′ ∷ mqs~′) → cong₂ _∷_ (mq-uniq mq~′) (mqs-uniq mqs~′)
-
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}

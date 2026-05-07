@@ -13,10 +13,10 @@ open import Iliagda.Prosody
 open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules
 
--- ** Decision procedures.
+-- ** Decision procedures and calculating all possible derivations.
 open import Iliagda.Prosody.Rules.Dec
 
--- ** Pretty-printing.
+-- ** Pretty-printing rule explanations.
 open import Iliagda.Show
 
 -- ** Functions to extract to Haskell.

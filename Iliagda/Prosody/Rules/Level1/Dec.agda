@@ -485,8 +485,3 @@ sy ~₁? q
     mq ∷ mqs
   , sy~mq ∷ sys~mqs
   , λ where (sy~ ∷ sys~) → cong₂ _∷_ (complete-mq sy~) (complete-mqs sys~)
-
--- -}
--- -}
--- -}
--- -}

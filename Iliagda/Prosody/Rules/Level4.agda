@@ -3,7 +3,7 @@
 {-# OPTIONS --safe #-}
 module Iliagda.Prosody.Rules.Level4 where
 
-open import Iliagda.Init
+open import Iliagda.Init; open import Prelude.Vectors
 open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
@@ -12,7 +12,6 @@ open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level2
 open import Iliagda.Prosody.Rules.Level3
 open import Iliagda.Prosody.Rules.Level23 using (_⊗_)
-
 
 -- ** masking
 
@@ -66,13 +65,9 @@ instance
     module ∣Complies-MQs-HM∣ where
       -- (1184)
       -- The last syllable of a verse is considered long (due to pause).
-      mkLastLong : n > 0 → Quantities n → Quantities n
-      mkLastLong {n = suc n} _ = V._[ ultIndex ]≔ single ─
-        where ultIndex = Fi.fromℕ n
-
       data _~′_ : (Words n × Quantities n) → Hexameter n → Type where
-        reify : {mqs : Quantities n} → let mqs─ = mkLastLong (Hex>0 hm) mqs in
-          ∙ mqs─ -masks*- qs
+        reify : {mqs : Quantities n} → let mkLastLong = _≔ₙ⟨ Hex>0 hm ⟩ single ─ in
+          ∙ mkLastLong mqs -masks*- qs
           ∙ ws , qs ~ hm
             ─────────────────────────────────────
             (ws , mqs) ~′ hm
@@ -98,10 +93,3 @@ Derivation ws = ∃ λ n′ → ∃ λ (hm : Hexameter n′) → ws ~ hm
 
 Derivations : Words n → Type
 Derivations ws = List (Derivation ws)
-
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}

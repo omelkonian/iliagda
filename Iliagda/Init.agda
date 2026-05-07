@@ -120,7 +120,7 @@ open import Relation.Nullary.Decidable.Core public
   using (Dec; yes; no; ⌊_⌋; ¬?) renaming (map′ to mapDec)
 open import Relation.Unary public
   using (Pred)
-  renaming (_∪_ to _∪₁_; _∩_ to _∩¹_; _⊆_ to _⊆¹_; Decidable to Decidable¹)
+  renaming (_∪_ to _∪¹_; _∩_ to _∩¹_; _⊆_ to _⊆¹_; Decidable to Decidable¹)
 open import Relation.Binary public
   using (Rel)
   renaming (Decidable to Decidable²)

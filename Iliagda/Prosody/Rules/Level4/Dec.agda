@@ -3,8 +3,7 @@ module Iliagda.Prosody.Rules.Level4.Dec where
 
 open import Relation.Nullary.Decidable using (_×-dec_)
 
-open import Iliagda.Init
-  hiding (n′)
+open import Iliagda.Init; open import Prelude.Vectors
 open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
   hiding (hm′)
@@ -203,7 +202,7 @@ allHexameters {0} _ = [] , (λ ()) , λ where
 allHexameters {n@(suc _)} smqs@(sys , mqs)
   with n>0 ← n > 0
            ∋ s≤s z≤n
-  using mqs─ ← mkLastLong {n = n} n>0 mqs
+  using mqs─ ← mqs ≔ₙ⟨ n>0 ⟩ single ─
   with qss , sound-qss , complete-qss ← allMasks mqs─
   = concatMap sols qss
   , sou
@@ -321,25 +320,5 @@ allDerivationsMin = allDerivations′ MinimalSynizeses
 
 -- ** derivability
 
-NonEmpty : List A → Type
-NonEmpty = λ where
-  [] → ⊥
-  (_ ∷ _) → ⊤
-
-instance
-  Dec-NonEmpty : NonEmpty {A} ⁇¹
-  Dec-NonEmpty {x = xs} .dec
-    with xs
-  ... | []    = no λ ()
-  ... | _ ∷ _ = yes tt
-
-Derivable : Words n → Type
-Derivable = NonEmpty ∘ allDerivations
-
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}
+isNonDerivable : Words n → Bool
+isNonDerivable ws = length (allDerivationsMin ws) == 0

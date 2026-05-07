@@ -8,6 +8,19 @@ private variable
   xs : Vec A n
   P Q R : A → Type
 
+_≔ₙ_ : Vec A (1 + n) → A → Vec A (1 + n)
+_≔ₙ_ {n = n} xs = xs V.[ lastIndex ]≔_
+  where lastIndex = Fi.fromℕ n
+
+_≔ₙ₋₁_ : Vec A (2 + n) → A → Vec A (2 + n)
+_≔ₙ₋₁_ {n = n} xs = xs V.[ penultIndex ]≔_
+  where penultIndex = Fi.inject₁ $ Fi.fromℕ n
+
+_≔ₙ⟨_⟩_ : Vec A n → n > 0 → A → Vec A n
+_≔ₙ⟨_⟩_ {n = suc n} xs _ = xs ≔ₙ_
+
+infix 10 _≔ₙ_ _≔ₙ₋₁_ _≔ₙ⟨_⟩_
+
 module _ (P : A → Type) where
   data InUlt : Vec A n → Type where
     here  : P x → InUlt [ x ]

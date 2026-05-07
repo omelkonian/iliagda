@@ -59,11 +59,15 @@ main = getArgs >>= \case
     putStrLn "Counterexamples:"
     forM_ (zip [1..] $ verses) $ \(i, v) ->
       when (nonDerivable $ derivations v) $ print i
-  as -> forM_ (map readRange as) $ \r@(i0 :-: _) -> do
+  ["explain", s] -> do
+    putStrLn $ "\nv" <> s <> ")\n"
+    let v = verses !! read s
+    T.putStrLn $ AGDA.explainVerse v
+  as -> forM_ (map readRange as) $ \r@(i0 :-: j) -> do
     putStrLn "-----------------------------------------------"
-    putStrLn $ "Derivations (" <> show r <> "):\n\n"
+    when (i0 /= j) $ putStrLn $ "Derivations (" <> show r <> "):\n"
     forM_ (zip [i0..] $ verses ! r) $ \(i, v) -> do
-      putStrLn $ "v" <> show i <> ")\n"
+      putStrLn $ "\nv" <> show i <> ")\n"
       let ds = derivations v
       if (nonDerivable ds) then
         T.putStrLn $ T.pack "∅\n" <> AGDA.debugVerse v

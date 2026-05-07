@@ -105,7 +105,7 @@ Doubtful = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
 
 -- (534)
 HasAccent HasAcute HasGrave HasCircumflex : Pred₀ Letter
-HasAccent = HasAcute ∪₁ HasGrave ∪₁ HasCircumflex
+HasAccent = HasAcute ∪¹ HasGrave ∪¹ HasCircumflex
 HasCircumflex = _∈ [ ᾶ ⨾ ᾷ ⨾ Ἆ ⨾ ἆ ]
                  ◇ [ ῆ ⨾ ῇ ⨾ ἦ ⨾ ᾖ ⨾ ἧ ⨾ ᾗ ]
                  ◇ [ ῖ ⨾ ἶ ⨾ Ἶ ⨾ ἷ ⨾ ῗ ]
@@ -164,10 +164,3 @@ VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c
 
 VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
 VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′
-
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}

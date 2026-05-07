@@ -40,15 +40,6 @@ data _-synizizes*-_ where
     → ───────────────────────────────
       (sy ∷ sy′ ∷ sys) ~ (sy″ ∷ sys′)
 
-  {- TODO: to allow recursive/iterative synizesis
-  _∺_ :
-      LastVowel sy × FirstVowel sy′
-    → sy″ ∷ sys ~ sys′
-    → ⦃ _ : sy″ ≡ sy ⁀ sy′ ⦄
-    → ───────────────────────────────
-      (sy ∷ sy′ ∷ sys) ~ sys′
-  -}
-
 m>0⇒n≢n+m : m > 0 → n ≢ n + m
 m>0⇒n≢n+m {suc _} {zero}  _ = auto
 m>0⇒n≢n+m {suc m} {suc n} _ rewrite Nat.+-suc n m = Nat.m≢1+m+n _

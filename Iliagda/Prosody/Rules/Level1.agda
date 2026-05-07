@@ -9,12 +9,6 @@ open import Iliagda.Prosody.Rules.Core
 
 -- ** LEVEL 1: inherent quantities
 
-open import Relation.Unary public
-  using () renaming (Decidable to Decidable¹)
-
-filter⁺ : ∀ {P : A → Type} → Decidable¹ P → List⁺ A → List A
-filter⁺ P? = L.filter P? ∘ toList
-
 vowels : Syllable → ℕ
 vowels = length ∘ filter⁺ {P = Vowel} dec¹
 

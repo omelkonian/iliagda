@@ -232,11 +232,3 @@ theF sys
       , (w~mqs ∷ ws~mqs′)
       , λ where (_∷_ ⦃ refl ⦄ w~mqs ws~mqs′) →
                      cong₂ V._++_ (complete-mqs  w~mqs) (complete-mqs′ ws~mqs′)
-
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}
--- -}

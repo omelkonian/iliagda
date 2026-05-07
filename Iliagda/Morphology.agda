@@ -83,7 +83,7 @@ Verses = List (∃ λ n → Verse {n})
 variable
   l l′ : Letter
   ls ls′ : Letters
-  sy sy′ sy″ penult penult′ ult ult′ : Syllable
+  sy sy′ sy″ ult ult′ penult penult′ antepenult antepenult′ : Syllable
   sys sys′ sys″ : Syllables n
   w  w′ : Word n
   ws ws′ : Words n

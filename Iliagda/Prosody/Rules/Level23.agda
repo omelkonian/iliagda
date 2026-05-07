@@ -20,9 +20,6 @@ _⊗₁_ = λ where
   (single _) all → all              -- RIGHT BIASED
   none mq → mq
   all mq → mq                       -- IMPOSSIBLE
-  -- all (single x) → ?
-  -- all none → all
-  -- all all → all
 
 _⊗_ : Op₂ $ Quantities n
 _⊗_ = V.zipWith _⊗₁_
@@ -38,39 +35,3 @@ data _~ʷˢ_ : Words n → Quantities n → Type where
 instance
   Complies-Ws-MQs : Words n -compliesWith- Quantities n
   Complies-Ws-MQs ._~_ = _~ʷˢ_
-
-{- ** ALTERNATIVE DESIGNS
-
-data _∪₁_≈_ : MQuantity n → MQuantity n → MQuantity n : Type where
-
-  CLASH-LEFT :
-     (just q) ∪₁ (just q′) ≈ just q
-
-  CLASH-RIGHT :
-     (just q) ∪₁ (just q′) ≈ just q′
-
-  CLASH-RECONSIDER-LEFT :
-    TRY LEVEL2~>3 DEPENDENCY
-  CLASH-RECONSIDER-RIGHT :
-    TRY LEVEL3~>2 DEPENDENCY
-
-
-data _∪_ : Quantities n → Quantities n → Quantities n : Type where
-
-  [] :
-  _∷_
-
-_∪_ : Quantities n → Quantities n → Quantities n
-_∪_ = {!!}
-  -- (ans , ans′) ← ....
-  -- if left then
-  --   inj₁ ans
-  -- else if right then
-  --   inj₂ ans
--}
-
-
--- -}
--- -}
--- -}
--- -}

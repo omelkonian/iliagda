@@ -25,20 +25,6 @@ circumflexPenult? (word w)
   with _ ∷ penult ∷ _ ← V.reverse w
   = dec
 
-variable antepenult : Syllable
-
-_≔ₙ_ : Quantities (1 + n) → Quantity → Quantities (1 + n)
-_≔ₙ_ {n = n} mqs q = mqs V.[ lastIndex ]≔ single q
-  where lastIndex = Fi.fromℕ n
-
-_≔ₙ₋₁_ : Quantities (2 + n) → Quantity → Quantities (2 + n)
-_≔ₙ₋₁_ {n = n} mqs q = mqs V.[ penultIndex ]≔ single q
-  where penultIndex = Fi.inject₁ $ Fi.fromℕ n
-
-infix 10 _≔ₙ_ _≔ₙ₋₁_
-
---
-
 -- (547) final αι/oι are counted short *only* for accent
 FinalDiphthong : Pred₀ (Letter × Letter)
 FinalDiphthong = _∈
@@ -76,7 +62,7 @@ data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
   [1160] :
     InPenult (Any HasCircumflex) sys
     ────────────────────────────────
-    sys ~%′ (_≔ₙ ·)
+    sys ~%′ (_≔ₙ single ·)
 
   -- If a long penult has the acute accent,
   -- then the ultima must be long also.
@@ -85,7 +71,7 @@ data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
     -- ∙ toList ult ⊢ penult ↝ ─
     InPenult ((_~ ─) ∩¹ Any HasAcute) sys
     ─────────────────────────────────────
-    sys ~%′ (_≔ₙ ─)
+    sys ~%′ (_≔ₙ single ─)
 
   -- If the ultima is short and the penult has the acute accent,
   -- then the penult must be short also.
@@ -97,14 +83,14 @@ data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
                ∩¹ Any HasAcute
                ) sys
       ────────────────────────
-      sys ~%′ (_≔ₙ₋₁ ·)
+      sys ~%′ (_≔ₙ₋₁ single ·)
 
   -- If the antepenult has the accent,
   -- the vowel of the ultima must be short (544).
   [1163] :
     InAntepenult (Any HasAccent) sys
     ────────────────────────────────
-    sys ~%′ (_≔ₙ ·)
+    sys ~%′ (_≔ₙ single ·)
 
 data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
 
