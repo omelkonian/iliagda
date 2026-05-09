@@ -9,6 +9,9 @@ open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules
 
 data Explanation : Type where
+
+  -- _⨾_ : Explanation → Explanation → Explanation
+
   ？
   -- Level 1
     byNature

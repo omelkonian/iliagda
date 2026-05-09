@@ -1,6 +1,4 @@
-Counterexamples:
-113
-201
+201 -- πτερόεντα, ᾰ
 227
 275
 277
@@ -241,6 +239,7 @@ Counterexamples:
 8212
 8260
 8338
+8342 -- ὄρεϊ (long i lexically, short i due to accent in ὄ, long needed for the meter)
 8387
 8416
 8427

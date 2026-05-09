@@ -17,13 +17,22 @@ type Verse    = [Word]
 verses :: [Verse]
 verses = allBooks
 
-insertDigamma :: Verse -> Verse
+-- ** pre-processing
+
+preprocess, insertDigamma, fixDoubtfuls :: Verse -> Verse
+preprocess
+  = insertDigamma
+  . fixDoubtfuls
 insertDigamma = map $ \case
   ["ἔ","δει","σεν"] -> ["ἔ","ϝδει","σεν"]
   w -> w
+fixDoubtfuls = map $ \case
+  ["ῥα"] -> ["ῥᾰ"]
+  ["ῥά"] -> ["ῥᾰ"]
+  w -> w
 
 derivations :: Verse -> T.Text
-derivations = AGDA.checkVerseMin . insertDigamma
+derivations = AGDA.checkVerseMin . insertDigamma . fixDoubtfuls
 
 nonDerivable :: T.Text -> Bool
 nonDerivable = T.elem '∅'
@@ -61,16 +70,17 @@ main = getArgs >>= \case
       when (nonDerivable $ derivations v) $ print i
   ["explain", s] -> do
     putStrLn $ "\nv" <> s <> ")\n"
-    let v = verses !! read s
+    let v = verses !! (read s - 1)
     T.putStrLn $ AGDA.explainVerse v
   as -> forM_ (map readRange as) $ \r@(i0 :-: j) -> do
     putStrLn "-----------------------------------------------"
     when (i0 /= j) $ putStrLn $ "Derivations (" <> show r <> "):\n"
     forM_ (zip [i0..] $ verses ! r) $ \(i, v) -> do
       putStrLn $ "\nv" <> show i <> ")\n"
-      let ds = derivations v
+      let v' = preprocess v
+      let ds = derivations v'
       if (nonDerivable ds) then
-        T.putStrLn $ T.pack "∅\n" <> AGDA.debugVerse v
+        T.putStrLn $ T.pack "∅\n" <> AGDA.debugVerse v'
       else
         T.putStrLn ds
 

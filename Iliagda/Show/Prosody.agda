@@ -61,7 +61,7 @@ instance
     ◇ spaces (map (uncurry pad) $ L.zip `mqs1 ns) ◇ " --𝟙 \n"
     ◇ spaces (map (uncurry pad) $ L.zip `mqs2 ns) ◇ " --𝟚 \n"
     ◇ spaces (map (uncurry pad) $ L.zip `mqs3 ns) ◇ " --𝟛 \n"
-    ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗3\n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗𝟛\n"
     ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
 
   Show-Derivations : Show (Derivations ws)

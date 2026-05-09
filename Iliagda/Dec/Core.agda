@@ -30,6 +30,7 @@ toChar = λ where
   ᾶ → 'ᾶ'
   ᾷ → 'ᾷ'
   ᾳ → 'ᾳ'
+  ᾰ → 'ᾰ'
   Β → 'Β'
   β → 'β'
   Γ → 'Γ'
@@ -198,6 +199,7 @@ toChar-inj {ὰ} {ὰ} refl = refl
 toChar-inj {ᾶ} {ᾶ} refl = refl
 toChar-inj {ᾷ} {ᾷ} refl = refl
 toChar-inj {ᾳ} {ᾳ} refl = refl
+toChar-inj {ᾰ} {ᾰ} refl = refl
 toChar-inj {Β} {Β} refl = refl
 toChar-inj {β} {β} refl = refl
 toChar-inj {Γ} {Γ} refl = refl

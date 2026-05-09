@@ -6,10 +6,9 @@ open import Agda.Builtin.Char
 
 -- ** letters
 
--- INCOMPLETE: add as needed
 data Letter : Type where
   -- ** vowels
-  Α α Ἀ ἀ Ἄ ἄ ἂ Ἆ ἆ Ἁ ἁ Ἅ ἅ ἃ ά ὰ ᾶ ᾷ ᾳ
+  Α α Ἀ ἀ Ἄ ἄ ἂ Ἆ ἆ Ἁ ἁ Ἅ ἅ ἃ ά ὰ ᾶ ᾷ ᾳ ᾰ
    Ε ε Ἐ ἐ Ἔ ἔ Ἑ ἑ Ἕ ἕ ἓ έ ὲ
    η Ἠ ἠ Ἤ ἤ ᾔ ἢ ἦ ᾖ ᾐ Ἡ ἡ Ἥ ἥ ᾕ ἣ ἧ ᾗ ή ῄ ὴ ῂ ῆ ῇ ῃ
    ι Ἰ ἰ Ἴ ἴ ἲ Ἶ ἶ Ἱ ἱ ἵ ἳ ἷ ί ὶ ῖ ϊ ΐ ῒ ῗ
@@ -35,7 +34,7 @@ Consonant = _∈
   ∷ ϝ -- digamma
   ∷ [])
 Vowel = _∈
-  ( Α ∷ α ∷ Ἀ ∷ ἀ ∷ Ἄ ∷ ἄ ∷ ἂ ∷ Ἆ ∷ ἆ ∷ Ἁ ∷ ἁ ∷ Ἅ ∷ ἅ ∷ ἃ ∷ ά ∷ ὰ ∷ ᾶ ∷ ᾷ ∷ ᾳ
+  ( Α ∷ α ∷ Ἀ ∷ ἀ ∷ Ἄ ∷ ἄ ∷ ἂ ∷ Ἆ ∷ ἆ ∷ Ἁ ∷ ἁ ∷ Ἅ ∷ ἅ ∷ ἃ ∷ ά ∷ ὰ ∷ ᾶ ∷ ᾷ ∷ ᾳ ∷ ᾰ
   ∷ Ε ∷ ε ∷ Ἐ ∷ ἐ ∷ Ἔ ∷ ἔ ∷ Ἑ ∷ ἑ ∷ Ἕ ∷ ἕ ∷ ἓ ∷ έ ∷ ὲ
   ∷ η ∷ Ἠ ∷ ἠ ∷ Ἤ ∷ ἤ ∷ ᾔ ∷ ἢ ∷ ἦ ∷ ᾖ ∷ ᾐ ∷ Ἡ ∷ ἡ ∷ Ἥ ∷ ἥ ∷ ᾕ ∷ ἣ ∷ ἧ ∷ ᾗ ∷ ή ∷ ῄ ∷ ὴ ∷ ῂ ∷ ῆ ∷ ῇ ∷ ῃ
   ∷ ι ∷ Ἰ ∷ ἰ ∷ Ἴ ∷ ἴ ∷ ἲ ∷ Ἶ ∷ ἶ ∷ Ἱ ∷ ἱ ∷ ἵ ∷ ἳ ∷ ἷ ∷ ί ∷ ὶ ∷ ῖ ∷ ϊ ∷ ΐ ∷ ῒ ∷ ῗ
@@ -56,9 +55,6 @@ Syllables = Vec Syllable
 data Word : ℕ {- syllables -} → Type where
   word : {_ : auto∶ n ≢ 0} → Syllables n → Word n
 ∃Word = ∃ Word
-
-_ : Word 3
-_ = word ([ μ ⨾ ῆ ]  ∷ ([ ν ⨾ ι ⨾ ν ] ∷ ([ δ ⨾ ε ] ∷ [])))
 
 unword : Word n → Syllables n
 unword (word sys) = sys
