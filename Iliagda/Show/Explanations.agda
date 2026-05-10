@@ -61,9 +61,10 @@ explain2 = λ where
   explain21 (𝟙-then-𝟚 p1 p2)
     with p2
   ... | [1164] _ = explain1 p1
+  ... | [574] _ = explain1 p1
   ... | [575] _ = explain1 p1
   ... | noop _ = explain1 p1
-  ... | fromBelow _ _ _ p2
+  ... | fromBelow _ _ _ _ p2
     with p2
   ... | [1160] _ = explain1 p1 ≔ₙ [1160]
   ... | [1161] _ = explain1 p1 ≔ₙ [1161]

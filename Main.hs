@@ -1,9 +1,10 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE LambdaCase, ViewPatterns #-}
 module Main where
 
 import Prelude hiding (Word)
 import System.Environment (getArgs)
 import Control.Monad (forM_, when)
+import Data.List.Split (splitOn)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
@@ -13,16 +14,15 @@ import Books.All (allBooks)
 type Syllable = String
 type Word     = [Syllable]
 type Verse    = [Word]
-
-verses :: [Verse]
-verses = allBooks
+type Book     = [Verse]
 
 -- ** pre-processing
 
-preprocess, insertDigamma, fixDoubtfuls :: Verse -> Verse
+preprocess, insertDigamma, fixDoubtfuls, unlambda :: Verse -> Verse
 preprocess
   = insertDigamma
   . fixDoubtfuls
+  . unlambda
 insertDigamma = map $ \case
   ["ἔ","δει","σεν"] -> ["ἔ","ϝδει","σεν"]
   w -> w
@@ -30,6 +30,9 @@ fixDoubtfuls = map $ \case
   ["ῥα"] -> ["ῥᾰ"]
   ["ῥά"] -> ["ῥᾰ"]
   w -> w
+unlambda = map $ map $ map $ \case
+  'ƛ' -> 'λ'
+  c -> c
 
 derivations :: Verse -> T.Text
 derivations = AGDA.checkVerseMin . insertDigamma . fixDoubtfuls
@@ -37,50 +40,62 @@ derivations = AGDA.checkVerseMin . insertDigamma . fixDoubtfuls
 nonDerivable :: T.Text -> Bool
 nonDerivable = T.elem '∅'
 
--- ** ranges
+data VerseIndex = Int :.: Int
 
-data Range = Int :-: Int
+instance Show VerseIndex where
+  show (b :.: v) = show (b + 1) <> "." <> show (v + 1)
 
-(!) :: [a] -> Range -> [a]
-xs ! (i :-: j) = take (j - i + 1) $ drop (i - 1) xs
+readVerseIndex :: String -> VerseIndex
+readVerseIndex s =
+  let
+    (b,'.':v) = break (== '.') s
+  in
+    (read b - 1) :.: (read v - 1)
 
-instance Show Range where
-  show (i :-: j) = show i <> ".." <> show j
+getVerse :: VerseIndex -> Verse
+getVerse (b :.: v) = (allBooks !! b) !! v
 
-readRange :: String -> Range
-readRange s
-  | (i, ('.':'.':j)) <- break (== '.') s
-  = readIndex 1 i :-: readIndex (length verses - 1) j
-  | otherwise
-  = read s :-: read s
-  where readIndex def = \case {"" -> def; s -> read s}
+enumerateFrom :: Int -> [a] -> [(Int, a)]
+enumerateFrom n = zip [n..]
 
--- ** USAGE **
---
--- FIND COUNTER-EXAMPLES:
---   $ iliagda
--- OR SHOW DERIVATIONS:
---   $ iliagda <verse_range>*
---  eg iliagda ..42 1258..3780 15000..
+enumerate :: [a] -> [(Int, a)]
+enumerate = enumerateFrom 0
+
+allIndices :: [VerseIndex]
+allIndices =
+  flip concatMap (enumerate allBooks) $ \(i, b) ->
+    flip map (enumerate b) $ \(j, _) ->
+      i :.: j
+
 main :: IO ()
 main = getArgs >>= \case
   [] -> do
     putStrLn "Counterexamples:"
-    forM_ (zip [1..] $ verses) $ \(i, v) ->
-      when (nonDerivable $ derivations v) $ print i
-  ["explain", s] -> do
-    putStrLn $ "\nv" <> s <> ")\n"
-    let v = verses !! (read s - 1)
+    forM_ allIndices $ \i -> let v = getVerse i in
+      when (nonDerivable $ derivations v) $
+        print i
+  ["--explain", s] -> do
+    v <- readVerse s
+    checkVerse v
     T.putStrLn $ AGDA.explainVerse v
-  as -> forM_ (map readRange as) $ \r@(i0 :-: j) -> do
-    putStrLn "-----------------------------------------------"
-    when (i0 /= j) $ putStrLn $ "Derivations (" <> show r <> "):\n"
-    forM_ (zip [i0..] $ verses ! r) $ \(i, v) -> do
-      putStrLn $ "\nv" <> show i <> ")\n"
-      let v' = preprocess v
-      let ds = derivations v'
-      if (nonDerivable ds) then
-        T.putStrLn $ T.pack "∅\n" <> AGDA.debugVerse v'
-      else
-        T.putStrLn ds
+  [s] -> checkVerse =<< readVerse s
+  as -> checkVerse (parseVerse as)
+ where
+  readVerse :: String -> IO Verse
+  readVerse s = do
+    let i = readVerseIndex s
+    putStrLn $ "\nv" <> show i <> ")\n"
+    return $ getVerse i
+
+  parseVerse :: [String] -> Verse
+  parseVerse = map (splitOn "-")
+
+  checkVerse :: Verse -> IO ()
+  checkVerse (preprocess -> v) = do
+    let ds = derivations v
+    if (nonDerivable ds) then
+      T.putStrLn $ T.pack "∅\n" <> AGDA.debugVerse v
+    else
+      T.putStrLn ds
+
 

@@ -26,6 +26,11 @@ circ⇒acc = inj₂ ∘ inj₂
 singleAccentSy : ¬ (Affinely⁺ HasAccent ∩¹ Any HasCircumflex ∩¹ Any HasAcute) sy
 singleAccentSy = AffinelyP⇒¬Q×R circ⇒acc acu⇒acc ¬circ×acu
 
+instance
+  Dec-ApparentException : ApparentException {n} ⁇¹
+  Dec-ApparentException {x = sys} .dec =
+    mapDec [1165] (λ where ([1165] p) → p) ¿ IsCompound sys ¿
+
 module _ (sacc : SingleAccents sys) where
 
   1160#1161/2 : ∀ {P} →
@@ -166,43 +171,57 @@ theF sys
   -- exception [1164], straight to Level 1
   = id , [1164] fdi , λ where
     ([1164] _) → refl
+    ([574] _) → refl
     ([575] _) → refl
-    (fromBelow ¬fdi _ _ _) → ⊥-elim $ ¬fdi fdi
+    (fromBelow ¬fdi _ _ _ _) → ⊥-elim $ ¬fdi fdi
     (noop _) → refl
 ... | no ¬fdi
+  with ¿ ApparentException sys ¿
+... | yes ae
+  = id , [574] ae , λ where
+    ([1164] _) → refl
+    ([574] _) → refl
+    ([575] _) → refl
+    (fromBelow _ ¬ae _ _ _) → ⊥-elim $ ¬ae ae
+    (noop _) → refl
+... | no ¬ae
   with ¿ EndsInApostrophe sys ¿
 ... | yes apo
   -- exception [575], straight to Level 1
   = id , [575] apo , λ where
     ([1164] _) → refl
+    ([574] _) → refl
     ([575] _) → refl
-    (fromBelow _ ¬apo _ _) → ⊥-elim $ ¬apo apo
+    (fromBelow _ _ ¬apo _ _) → ⊥-elim $ ¬apo apo
     (noop _) → refl
 ... | no ¬apo
   with ¿ SingleAccents sys ¿
 ... | no ¬sacc
   = id , noop (inj₁ ¬sacc) , λ where
     ([1164] _) → refl
+    ([574] _) → refl
     ([575] _) → refl
-    (fromBelow _ _ sacc _) → ⊥-elim $ ¬sacc sacc
+    (fromBelow _ _ _ sacc _) → ⊥-elim $ ¬sacc sacc
     (noop _) → refl
 ... | yes sacc
   with theF′? sys sacc
 ... | inj₂ sys≁
   = id , noop (inj₂ sys≁) , λ where
     ([1164] _) → refl
+    ([574] _) → refl
     ([575] _) → refl
-    (fromBelow _ _ _ sys~) → ⊥-elim $ sys≁ sys~
+    (fromBelow _ _ _ _ sys~) → ⊥-elim $ sys≁ sys~
     (noop _) → refl
 ... | inj₁ (f , sys~ , unique-f)
   = f
-  , fromBelow ¬fdi ¬apo sacc sys~
+  , fromBelow ¬fdi ¬ae ¬apo sacc sys~
   , λ where
     ([1164] fdi) → ⊥-elim $ ¬fdi fdi
+    ([574] ae) → ⊥-elim $ ¬ae ae
     ([575] apo) → ⊥-elim $ ¬apo apo
     (noop (inj₁ ¬sacc)) → ⊥-elim $ ¬sacc sacc
     (noop (inj₂ sys≁)) → ⊥-elim $ sys≁ sys~
-    (fromBelow _ _ _ sys~′) → unique-f sys~′
+    (fromBelow _ _ _ _ sys~′) → unique-f sys~′
 
 𝟚-theQuantities₁ :
   (w : Word n) →

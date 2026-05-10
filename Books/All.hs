@@ -25,8 +25,8 @@ import Books.Book22
 import Books.Book23
 import Books.Book24
 
-allBooks :: [[[String]]]
-allBooks = mconcat
+allBooks :: [[[[String]]]]
+allBooks =
   [ book1
   , book2
   , book3

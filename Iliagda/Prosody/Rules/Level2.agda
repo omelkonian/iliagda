@@ -92,6 +92,26 @@ data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
     ────────────────────────────────
     sys ~%′ (_≔ₙ single ·)
 
+unsyllables : Syllables n → Letters
+unsyllables = L.concat ∘ map toList ∘ toList
+
+IsCompound : Syllables n → Type
+IsCompound sys = unsyllables sys ∈
+  [ [ ο ⨾ ὔ ⨾ τ ⨾ ε ]
+  ⨾ [ μ ⨾ ή ⨾ τ ⨾ ε ]
+  ⨾ [ ο ⨾ ὔ ⨾ τ ⨾ ι ⨾ ς ]
+  ⨾ [ μ ⨾ ή ⨾ τ ⨾ ι ⨾ ς ]
+  ⨾ [ ἥ ⨾ δ ⨾ ε ]
+  ⨾ [ ο ⨾ ἵ ⨾ δ ⨾ ε ]
+  ⨾ [ α ⨾ ἵ ⨾ δ ⨾ ε ]
+  ⨾ [ τ ⨾ ο ⨾ ύ ⨾ σ ⨾ δ ⨾ ε ]
+  ⨾ [ τ ⨾ ά ⨾ σ ⨾ δ ⨾ ε ]
+  -- INCOMPLETE: add as needed
+  ]
+
+data ApparentException : Syllables n → Type where
+  [1165] : IsCompound sys → ApparentException sys
+
 data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
 
   [1164] :
@@ -99,12 +119,10 @@ data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
     ────────────────────────
     sys ~% id
 
-{- ** TODO: lexicon-based
-  [1165/574] :
+  [574] :
     ApparentException sys
-    ──────────────────
+    ─────────────────────
     sys ~% id
--}
 
   -- (575/583) Elision has taken place.
   [575] :
@@ -114,7 +132,7 @@ data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
 
   fromBelow : ∀ {f} →
     ∙ ¬ EndsInFinalDiphthong sys
-    -- ∙ ¬ ApparentException sys
+    ∙ ¬ ApparentException sys
     ∙ ¬ EndsInApostrophe sys
     ∙ SingleAccents sys
     ∙ sys ~%′ f
