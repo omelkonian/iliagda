@@ -4,7 +4,8 @@ module Main where
 import Prelude hiding (Word)
 import System.Environment (getArgs)
 import System.IO
-import Control.Monad (forM_, when)
+import Control.Monad (forM, when)
+import Data.List (sort)
 import Data.List.Split (splitOn)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -65,28 +66,55 @@ type Derivations = [[T.Text]]
 derivations :: Verse -> Derivations
 derivations = AGDA.checkVerseMin . insertDigamma . fixDoubtfuls
 
-reportDerivations :: Derivations -> String
-reportDerivations ds
-  | null ds   = "×"
-  | otherwise = "✓ " <> show (map length ds)
-
 showDerivations :: Verse -> Derivations -> T.Text
 showDerivations v (concat -> ds)
   | null ds   = T.pack "∅\n" <> AGDA.debugVerse v
   | otherwise = T.unlines $ map (<> T.pack "\n") ds
 
--- **
+reportDerivations :: [Int] -> String
+reportDerivations ns
+  | null ns   = "×"
+  | otherwise = "✓ " <> show ns
+
+reportStats :: [[Int]] -> String
+reportStats nss = unlines (byFeet ++ [""] ++ bySpurious)
+  where
+  byFeet = let fs = map length nss in
+    flip map [0..maximum fs] $ \f ->
+     show f <> "-feet derivations: " <> show (length $ filter (== f) fs)
+  bySpurious = let ns = concat nss in
+    flip map [1..maximum ns] $ \n ->
+     show n <> "-parse derivations: " <> show (length $ filter (== n) ns)
+
+-- ** USAGE **
+--
+-- Report on derivations of all verses:
+--    $ iliagda
+--
+-- Check a single verse from one of the books:
+--    $ iliagda <BOOK>.<VERSE>
+--
+-- Explain a single verse from one of the books:
+--    $ iliagda <BOOK>.<VERSE>
+--
+-- Explain a single given verse (syllables separated by '-'):
+--    $ iliagda sy₁-sy₂-...-syₙ <WORD₂> ... <WORDₘ>
+--
 main :: IO ()
 main = getArgs >>= \case
   [] -> do
-    forM_ allIndices $ \i -> let ds = derivations $ getVerse i in do
-      putStrLn $ show i <> ": " <> reportDerivations ds
+    nss <- forM allIndices $ \i -> let ds = derivations $ getVerse i in do
+      let ns = map length ds
+      putStrLn $ show i <> ": " <> reportDerivations ns
       hFlush stdout
+      return ns
+    putStrLn "--------------------------------"
+    putStrLn $ reportStats nss
+  [s] -> checkVerse =<< readVerse s
   ["--explain", s] -> do
     v <- readVerse s
     checkVerse v
     T.putStrLn $ AGDA.explainVerse v
-  [s] -> checkVerse =<< readVerse s
   as -> checkVerse (parseVerse as)
     where
     parseVerse :: [String] -> Verse

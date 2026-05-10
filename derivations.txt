@@ -15689,3 +15689,14 @@
 24.802: ✓ [1]
 24.803: ✓ [1]
 24.804: ✓ [1]
+--------------------------------
+0-feet derivations: 408
+1-feet derivations: 15084
+2-feet derivations: 189
+3-feet derivations: 10
+
+1-parse derivations: 14591
+2-parse derivations: 884
+3-parse derivations: 5
+4-parse derivations: 12
+
