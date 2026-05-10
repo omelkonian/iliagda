@@ -2,6 +2,7 @@ module Iliagda.ToHaskell where
 
 open import Iliagda.Init
 open import Iliagda.Morphology
+open import Iliagda.Prosody
 open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules
 open import Iliagda.Prosody.Rules.Dec
@@ -106,13 +107,36 @@ mkVerse = λ where
   [] → -, []
   (w ∷ ws) → -, mkWord w .proj₂ ∷ mkVerse ws .proj₂
 
-open ∣Complies-Ws-HM∣
-open ∣Complies-MQs-HM∣
-
 module _ (v : RawVerse) (let _ , ws = mkVerse v) where
-  checkVerse checkVerseMin debugVerse explainVerse : String
-  checkVerse    = show $ allDerivations ws
-  checkVerseMin = show $ allDerivationsMin ws
+
+  RawDerivations = List (List String)
+
+  private
+    groupDerivations′ : Derivations ws → List (Feet × List String)
+    groupDerivations′ [] = []
+    groupDerivations′ ((_ , hm , p) ∷ ds)
+      using i ← unmkPM hm
+      using s ← show p
+      using ids ← groupDerivations′ ds
+      with ¿ i ∈ map proj₁ ids ¿
+    ... | no _
+      = (i , [ s ]) ∷ ids
+    ... | yes i∈
+      with _ , y∈ , refl ← ∈-map⁻ proj₁ i∈
+      with _ , as ← L.Any.lookup y∈
+      = y∈ ∷= (i , s ∷ as)
+
+    groupDerivations : Derivations ws → RawDerivations
+    groupDerivations = map proj₂ ∘ groupDerivations′
+
+  checkVerse checkVerseMin : RawDerivations
+  checkVerse    = groupDerivations $ allDerivations ws
+  checkVerseMin = groupDerivations $ allDerivationsMin ws
+
+  open ∣Complies-Ws-HM∣
+  open ∣Complies-MQs-HM∣
+
+  debugVerse explainVerse : String
   debugVerse    =
     let
       mqs1 , _ , _ = 𝟙-theQuantities (unwords ws)
@@ -147,8 +171,6 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
       spaces (map (uncurry pad) $ L.zip `ws′ ns) ◇ "\n"
     ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
     ◇ `es ◇ "\n"
-    -- ◇ "Explanations:\n"
-    -- ◇ show (explain d)
 {-# COMPILE GHC checkVerse    as checkVerse #-}
 {-# COMPILE GHC checkVerseMin as checkVerseMin #-}
 {-# COMPILE GHC debugVerse    as debugVerse #-}
