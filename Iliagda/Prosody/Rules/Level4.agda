@@ -53,6 +53,14 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
       ───────────────────────────────────────────
       word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
 
+  -- ** 3rd-foot caesura
+  -- There is almost always a caesura in the third foot.
+  [1186] : ∀ {pm : Meter _ m} →
+    ∙ m ≡ 4  -- start of 3rd foot ≈ 4 foots remaining
+    ∙ word [ sy ] ∷ ws , ─ ∷ qs ˢ~ᵐ pm
+      ───────────────────────────────────────────
+      word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
+
 instance
   Complies-Qs-PM :
     (Words n × Vec Quantity n) -compliesWith- Meter n m
