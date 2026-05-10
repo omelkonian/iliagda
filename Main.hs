@@ -4,9 +4,11 @@ module Main where
 import Prelude hiding (Word)
 import System.Environment (getArgs)
 import System.IO
+import System.CPUTime
 import Control.Monad (forM, when)
 import Data.List (sort)
 import Data.List.Split (splitOn)
+import Text.Printf (printf)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
@@ -95,7 +97,7 @@ reportStats nss = unlines (byFeet ++ [""] ++ bySpurious)
 --    $ iliagda <BOOK>.<VERSE>
 --
 -- Explain a single verse from one of the books:
---    $ iliagda <BOOK>.<VERSE>
+--    $ iliagda explain <BOOK>.<VERSE>
 --
 -- Explain a single given verse (syllables separated by '-'):
 --    $ iliagda sy₁-sy₂-...-syₙ <WORD₂> ... <WORDₘ>
@@ -103,11 +105,16 @@ reportStats nss = unlines (byFeet ++ [""] ++ bySpurious)
 main :: IO ()
 main = getArgs >>= \case
   [] -> do
+    start <- getCPUTime
     nss <- forM allIndices $ \i -> let ds = derivations $ getVerse i in do
       let ns = map length ds
       putStrLn $ show i <> ": " <> reportDerivations ns
       hFlush stdout
       return ns
+    end <- getCPUTime
+    putStrLn "--------------------------------"
+    let diff = (fromIntegral (end - start)) / (10^12)
+    printf "total time: %0.3f sec\n" (diff :: Double)
     putStrLn "--------------------------------"
     putStrLn $ reportStats nss
   [s] -> checkVerse =<< readVerse s
