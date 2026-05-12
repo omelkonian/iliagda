@@ -83,7 +83,7 @@ reportStats nss = unlines (byFeet ++ [""] ++ bySpurious)
   where
   byFeet = let fs = map length nss in
     flip map [0..maximum fs] $ \f ->
-     show f <> "-feet derivations: " <> show (length $ filter (== f) fs)
+     show f <> "-meter derivations: " <> show (length $ filter (== f) fs)
   bySpurious = let ns = concat nss in
     flip map [1..maximum ns] $ \n ->
      show n <> "-parse derivations: " <> show (length $ filter (== n) ns)
@@ -122,10 +122,7 @@ main = getArgs >>= \case
     v <- readVerse s
     checkVerse v
     T.putStrLn $ AGDA.explainVerse v
-  as -> checkVerse (parseVerse as)
-    where
-    parseVerse :: [String] -> Verse
-    parseVerse = map (splitOn "-")
+  as -> checkVerse (map (splitOn "-") as)
  where
   readVerse :: String -> IO Verse
   readVerse s = do

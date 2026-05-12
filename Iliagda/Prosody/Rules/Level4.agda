@@ -34,12 +34,12 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
 
   sponde : let ws = dropSys 2 ws′ in
     ws , qs ˢ~ᵐ pm
-    ───────────────────────────────────
+    ────────────────────────────────
     ws′ , ─  ∷ ─ ∷ qs ˢ~ᵐ ── ∷ᵖᵐ pm
 
   dactyl : let ws = dropSys 3 ws′ in
     ws , qs ˢ~ᵐ pm
-    ─────────────────────────────────────────
+    ────────────────────────────────────
     ws′ , ─  ∷ · ∷ · ∷ qs ˢ~ᵐ ─·· ∷ᵖᵐ pm
 
   -- ** Lengthen-by-thesis
@@ -50,16 +50,14 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
     ∙ EndsWith [ Vowel ⨾ Consonant ] (toList sy)
     ∙ BeginsWith [ Vowel ] (toList sy′)
     ∙ word [ sy ] ∷ ws , ─ ∷ qs ˢ~ᵐ pm
-      ───────────────────────────────────────────
+      ──────────────────────────────────────────
       word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
 
-  -- ** 3rd-foot caesura
-  -- There is almost always a caesura in the third foot.
-  [1186] : ∀ {pm : Meter _ m} →
-    ∙ m ≡ 4  -- start of 3rd foot ≈ 4 foots remaining
-    ∙ word [ sy ] ∷ ws , ─ ∷ qs ˢ~ᵐ pm
-      ───────────────────────────────────────────
-      word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
+  -- Whenever a word ends within a foot, it is called caesura. (1185)
+  [1167/1] :
+    word [ sy ] ∷ ws , ─ ∷ qs ˢ~ᵐ pm
+    ────────────────────────────────
+    word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
 
 instance
   Complies-Qs-PM :

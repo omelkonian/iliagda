@@ -123,7 +123,7 @@ allPMs ws′ [] _
   , (λ where 𝟘 → subst (λ ◆ → ◆ , [] ˢ~ᵐ mkPM []) (sym $ emptyWords ws′) [])
   , (λ where [] → 𝟘)
 allPMs _ [ q ] _
-  = [] , (λ ()) , λ where ([1186] refl ())
+  = [] , (λ ()) , λ where ([1167/1] ())
 allPMs _ [ ─ ⨾ · ] _
   = [] , (λ ()) , λ ()
 allPMs _ (─ ∷ · ∷ ─ ∷ _) _
@@ -171,7 +171,7 @@ allPMs ws′ (· ∷ qs@(_ ∷ _)) {.suc (.suc m)} refl
 ... | no ¬single
   = [] , (λ ()) , λ where
   ([1168] _ _ _) → ⊥-elim $ ¬single singleSy
-  ([1186] _ _) → ⊥-elim $ ¬single singleSy
+  ([1167/1] _) → ⊥-elim $ ¬single singleSy
 ... | yes (singleSy {sy = sy} {ws = ws})
   using sy′ ← firstSy ws
   with EndsWith? [ Vowel? ⨾ Consonant? ] (toList sy)
@@ -180,16 +180,12 @@ allPMs ws′ (· ∷ qs@(_ ∷ _)) {.suc (.suc m)} refl
   with pms , sound-pms , complete-pms ← IH
   = pms , ([1168] p q ∘ sound-pms) , λ where
   ([1168] _ _ H) → complete-pms H
-  ([1186] _ H) → complete-pms H
+  ([1167/1] H) → complete-pms H
 ... | no ¬1168
   with pms , sound-pms , complete-pms ← IH
-  using ≟4 ← (_≟ 4) ∘ proj₁
-  = L.filter ≟4 pms
-  , (λ p∈ → let p∈ , m≡4 = ∈-filter⁻ ≟4 p∈
-            in [1186] m≡4 $ sound-pms p∈)
-  , λ where
+  = pms , ([1167/1] ∘ sound-pms) , λ where
   ([1168] p q _) → ⊥-elim $ ¬1168 (p , q)
-  ([1186] m≡4 H) → ∈-filter⁺ ≟4 (complete-pms H) m≡4
+  ([1167/1] H) → complete-pms H
 
 onlyHexameters :
   List (∃ $ Meter n) → List (Hexameter n)
