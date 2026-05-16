@@ -120,8 +120,7 @@ main = getArgs >>= \case
   [s] -> checkVerse =<< readVerse s
   ["--explain", s] -> do
     v <- readVerse s
-    checkVerse v
-    T.putStrLn $ AGDA.explainVerse v
+    T.putStrLn $ AGDA.explainVerse (preprocess v)
   as -> checkVerse (map (splitOn "-") as)
  where
   readVerse :: String -> IO Verse
@@ -134,5 +133,3 @@ main = getArgs >>= \case
   checkVerse (preprocess -> v) = do
     let ds = derivations v
     T.putStrLn $ showDerivations v ds
-
-

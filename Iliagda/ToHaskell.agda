@@ -158,19 +158,21 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
   explainVerse
     with allDerivationsMin ws
   ... | [] = IMPOSSIBLE "Cannot explain non-derivable verse"
-  ... | (_ , _ , d@(_≫⟨_⟩≫_≫_ _ syn _ (reify {qs = qs} _ _))) ∷ _
-    =
-    let
-      ws′  = synizizeWords ws syn
-      `ws′ = map show (toList $ unwords ws′)
-      es   = explain d
-      `es  = spaced (toList es)
-      ns   = map Str.length (Str.words `es)
-      `qs  = map show (toList qs)
-    in
-      spaces (map (uncurry pad) $ L.zip `ws′ ns) ◇ "\n"
-    ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
-    ◇ `es ◇ "\n"
+  ... | ds = lined $ map explainVerse1 ds
+    where
+    explainVerse1 : _ → String
+    explainVerse1 (_ , _ , d@(_≫⟨_⟩≫_≫_ _ syn _ (reify {qs = qs} _ _))) =
+      let
+        ws′  = synizizeWords ws syn
+        `ws′ = map show (toList $ unwords ws′)
+        es   = explain d
+        `es  = spaced (toList es)
+        ns   = map Str.length (Str.words `es)
+        `qs  = map show (toList qs)
+      in
+        spaces (map (uncurry pad) $ L.zip `ws′ ns) ◇ "\n"
+      ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
+      ◇ `es ◇ "\n"
 {-# COMPILE GHC checkVerse    as checkVerse #-}
 {-# COMPILE GHC checkVerseMin as checkVerseMin #-}
 {-# COMPILE GHC debugVerse    as debugVerse #-}
