@@ -14,11 +14,7 @@ open import Iliagda.Prosody.Rules
 open import Iliagda.Prosody.Rules.Level2
 open import Iliagda.Prosody.Rules.Level3
 open import Iliagda.Prosody.Rules.Level23 using (_⊗_)
-
-open import Iliagda.Prosody.Rules.Level1.Dec
-open import Iliagda.Prosody.Rules.Level2.Dec
-open import Iliagda.Prosody.Rules.Level3.Dec
-open import Iliagda.Prosody.Synizesis.Dec
+open import Iliagda.Prosody.Rules.Level4
 
 private
   pattern 𝟘 = here refl
@@ -118,20 +114,60 @@ allPMs :
   ∃ λ (pms : List (∃ λ m → Meter n m)) →
       (∀ {m} {pm : Meter n m} → (m , pm) ∈ pms → ws , qs ~ pm)
     × (∀ {m} {pm : Meter n m} → ws , qs ~ pm → (m , pm) ∈ pms)
-allPMs ws′ [] _
+allPMs ws [] _
   = [ 0 , mkPM [] ]
-  , (λ where 𝟘 → subst (λ ◆ → ◆ , [] ˢ~ᵐ mkPM []) (sym $ emptyWords ws′) [])
+  , (λ where 𝟘 → subst (λ ◆ → ◆ , [] ˢ~ᵐ mkPM []) (sym $ emptyWords ws) [])
   , (λ where [] → 𝟘)
 allPMs _ [ q ] _
-  = [] , (λ ()) , λ where ([1167/1] ())
-allPMs _ [ ─ ⨾ · ] _
-  = [] , (λ ()) , λ ()
-allPMs _ (─ ∷ · ∷ ─ ∷ _) _
-  = [] , (λ ()) , λ ()
-allPMs ws′ (─ ∷ ─ ∷ qs) refl
+  = [] , (λ ()) , λ where ([1167/1a] ())
+
+allPMs ws [ ─ ⨾ · ] _
+  with ¿ Split 2 ws ¿
+... | no ¬sp
+  = [] , (λ ()) , λ where ([1167/1b] sp _) → ⊥-elim $ ¬sp sp
+... | yes sp
+  using ws′ ← dropSys 2 ws
+  using ws′≡ ← emptyWords ws′
+  = pms
+  , (λ where 𝟘 → [1167/1b] sp $ subst (λ ◆ → ◆ , [] ~ mkPM []) (sym ws′≡) [])
+  , com
+  where
+  pms = [ -, mkPM [ -, -, ── ] ]
+
+  com : ∀ {m} {pm : Meter 2 m} → ws , [ ─ ⨾ · ] ˢ~ᵐ pm → (m , pm) ∈ pms
+  com ([1167/1b] sp p)
+    rewrite ws′≡
+    with [] ← p
+    = 𝟘
+
+allPMs ws (─ ∷ · ∷ ─ ∷ qs) {.suc (.suc (.suc (.suc m)))} refl
+  using ws′ ← dropSys 2 ws
+  with IH ← allPMs ws′ (─ ∷ qs) {suc m} refl
+  with ¿ Split 2 ws ¿
+... | no ¬sp
+  = [] , (λ ()) , λ where ([1167/1b] sp _) → ⊥-elim $ ¬sp sp
+... | yes sp
+  -- ** sponde by diairesis
+  with pms , sound-pms , complete-pms ← IH
+  = QED
+  where
+  f = λ (m , pm) → 1 + m , (── ∷ᵖᵐ pm)
+
+  sou : _
+  sou pm∈
+    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
+    = [1167/1b] sp (sound-pms pm∈)
+
+  com : _
+  com ([1167/1b] _ p) = ∈-map⁺ f (complete-pms p)
+
+  QED : _
+  QED = map f pms , sou , com
+
+allPMs ws (─ ∷ ─ ∷ qs) refl
   -- ** sponde
-  using ws ← dropSys 2 ws′
-  with pms , sound-pms , complete-pms ← allPMs ws qs refl
+  using ws′ ← dropSys 2 ws
+  with pms , sound-pms , complete-pms ← allPMs ws′ qs refl
   = QED
   where
   f = λ (m , pm) → 1 + m , (── ∷ᵖᵐ pm)
@@ -146,10 +182,40 @@ allPMs ws′ (─ ∷ ─ ∷ qs) refl
 
   QED : _
   QED = map f pms , sou , com
-allPMs ws′ (─ ∷ · ∷ · ∷ qs) refl
+
+allPMs ws (─ ∷ · ∷ · ∷ qs) refl
+  -- ** sponde by diairesis
+  using dws′ ← dropSys 2 ws
+  with dpms , sound-dpms , complete-dpms ← allPMs dws′ (· ∷ qs) refl
+
   -- ** dactyl
-  using ws ← dropSys 3 ws′
-  with pms , sound-pms , complete-pms ← allPMs ws qs refl
+  using ws′ ← dropSys 3 ws
+  with pms , sound-pms , complete-pms ← allPMs ws′ qs refl
+
+  with ¿ Split 2 ws ¿
+... | yes sp
+  = QED
+  where
+  f  = λ (m , pm) → 1 + m , (─·· ∷ᵖᵐ pm)
+  df = λ (m , pm) → 1 + m , (──  ∷ᵖᵐ pm)
+
+  sou : _
+  sou pm∈
+    with ∈-++⁻ (map f pms) pm∈
+  ... | inj₁ pm∈
+    with _ , pm∈ , refl ← ∈-map⁻ f pm∈
+    = dactyl (sound-pms pm∈)
+  ... | inj₂ pm∈
+    with _ , pm∈ , refl ← ∈-map⁻ df pm∈
+    = [1167/1b] sp (sound-dpms pm∈)
+
+  com : _
+  com (dactyl p)      = ∈-++⁺ˡ $ ∈-map⁺ f (complete-pms p)
+  com ([1167/1b] _ p) = ∈-++⁺ʳ _ $ ∈-map⁺ df (complete-dpms p)
+
+  QED : _
+  QED = map f pms ++ map df dpms , sou , com
+... | no ¬sp
   = QED
   where
   f = λ (m , pm) → 1 + m , (─·· ∷ᵖᵐ pm)
@@ -161,17 +227,19 @@ allPMs ws′ (─ ∷ · ∷ · ∷ qs) refl
 
   com : _
   com (dactyl p) = ∈-map⁺ f (complete-pms p)
+  com ([1167/1b] sp _) = ⊥-elim $ ¬sp sp
 
   QED : _
   QED = map f pms , sou , com
-allPMs ws′ (· ∷ qs@(_ ∷ _)) {.suc (.suc m)} refl
-  with IH ← allPMs ws′ (─ ∷ qs) {suc m} refl
-  using sy , sy′ , tt ← firstSys 2 ws′
-  with ¿ SingleSyllable ws′ ¿
+
+allPMs ws (· ∷ qs@(_ ∷ _)) {.suc (.suc m)} refl
+  with IH ← allPMs ws (─ ∷ qs) {suc m} refl
+  using sy , sy′ , tt ← firstSys 2 ws
+  with ¿ SingleSyllable ws ¿
 ... | no ¬single
   = [] , (λ ()) , λ where
   ([1168] _ _ _) → ⊥-elim $ ¬single singleSy
-  ([1167/1] _) → ⊥-elim $ ¬single singleSy
+  ([1167/1a] _) → ⊥-elim $ ¬single singleSy
 ... | yes (singleSy {sy = sy} {ws = ws})
   using sy′ ← firstSy ws
   with EndsWith? [ Vowel? ⨾ Consonant? ] (toList sy)
@@ -180,12 +248,12 @@ allPMs ws′ (· ∷ qs@(_ ∷ _)) {.suc (.suc m)} refl
   with pms , sound-pms , complete-pms ← IH
   = pms , ([1168] p q ∘ sound-pms) , λ where
   ([1168] _ _ H) → complete-pms H
-  ([1167/1] H) → complete-pms H
+  ([1167/1a] H) → complete-pms H
 ... | no ¬1168
   with pms , sound-pms , complete-pms ← IH
-  = pms , ([1167/1] ∘ sound-pms) , λ where
+  = pms , ([1167/1a] ∘ sound-pms) , λ where
   ([1168] p q _) → ⊥-elim $ ¬1168 (p , q)
-  ([1167/1] H) → complete-pms H
+  ([1167/1a] H) → complete-pms H
 
 onlyHexameters :
   List (∃ $ Meter n) → List (Hexameter n)
@@ -231,16 +299,18 @@ allHexameters {n@(suc _)} smqs@(sys , mqs)
   com : ∀ {hm} → smqs ~ hm → hm ∈ concatMap sols qss
   com {hm} (reify {qs = qs} msk hm~) =
     let pms , sound-pms , complete-pms = allPMs sys qs refl in
-    ∈-concatMap⁺ sols {xs = qss}
-        (L.Any.map
-          (λ where refl → ∈-mapMaybe⁺ (onlyHexameter {n}) {xs = pms} (complete-pms hm~) refl)
-          (complete-qss msk))
+    ∈-concatMap⁺ sols {xs = qss} $
+      L.Any.map
+        (λ where refl → ∈-mapMaybe⁺ (onlyHexameter {n}) (complete-pms hm~) refl)
+        (complete-qss msk)
 
 open ∣Complies-Ws-HM∣
 
--- ** minimal synizesis
+open import Iliagda.Prosody.Rules.Level1.Dec
+open import Iliagda.Prosody.Rules.Level2.Dec
+open import Iliagda.Prosody.Rules.Level3.Dec
+open import Iliagda.Prosody.Synizesis.Dec
 
--- fix the number of synizeses
 module _ (n′ : ℕ) where
   Derivation⟨_⟩ Derivations⟨_⟩ : Words n → Type
   Derivation⟨_⟩  ws = ∃ λ (hm : Hexameter n′) → ws ~ hm
@@ -304,6 +374,8 @@ module _ (n′ : ℕ) where
   allDerivations⟨_⟩ ws = let ds , sound-ds , _ = allMeterDerivations⟨_⟩ ws in
     mapWith∈ ds (-,_ ∘ sound-ds)
 
+-- ** minimal synizesis
+
 private
   WhichSynizeses   = Bool
   MinimalSynizeses = true
@@ -328,3 +400,9 @@ allDerivationsMin = allDerivations′ MinimalSynizeses
 
 isNonDerivable : Words n → Bool
 isNonDerivable ws = length (allDerivationsMin ws) == 0
+
+-- -}
+-- -}
+-- -}
+-- -}
+-- -}

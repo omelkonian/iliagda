@@ -36,7 +36,8 @@ data Explanation : Type where
   mkLastLong
     ⁀
     [1168]
-    [1167/1]
+    [1167/1a]
+    [1167/1b]
     : Explanation
 
 Explanations : ℕ → Type
@@ -121,7 +122,8 @@ explain4m = λ where
   (sponde p) → ？ ∷ ？ ∷ explain4m p
   (dactyl p) → ？ ∷ ？ ∷ ？ ∷ explain4m p
   ([1168] _ _ p) → [1168] ∷ V.tail (explain4m p)
-  ([1167/1] p) → [1167/1] ∷ V.tail (explain4m p)
+  ([1167/1a] p) → [1167/1a] ∷ V.tail (explain4m p)
+  ([1167/1b] _ p) → ？ ∷ [1167/1b] ∷ explain4m p
 
 explain4 : {ws : Words n} {mqs : Quantities n} {hm : Hexameter n} →
   (ws , mqs) ~ hm → Explanations n
@@ -183,7 +185,8 @@ instance
     mkLastLong → "mkLastLong"
     ⁀ → "⁀"
     [1168] → "[1168]"
-    [1167/1] → "[1167/1]"
+    [1167/1a] → "[1167/1a]"
+    [1167/1b] → "[1167/1b]"
 
 -- -}
 -- -}

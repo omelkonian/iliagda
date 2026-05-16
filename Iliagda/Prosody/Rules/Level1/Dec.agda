@@ -326,9 +326,6 @@ Circ⇒¬·Vowel = λ where
   (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
   (↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ ↠ 𝟘 , p) → contradict p
 
-Vowel?     = Decidable¹ Vowel     ∋ dec¹
-Consonant? = Decidable¹ Consonant ∋ dec¹
-
 onlyVowels : List Letter → List Letter
 onlyVowels = L.filter Vowel?
 

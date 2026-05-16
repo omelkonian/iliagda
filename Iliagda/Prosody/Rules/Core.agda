@@ -67,42 +67,53 @@ open Enumeration public
 firstSyllable : Word n → Syllable
 firstSyllable (word (sy ∷ _)) = sy
 
-private
-  -- Forded `Words`
-  data `Words : ℕ → Type where
-    [] : ⦃ n ≡ 0 ⦄ → `Words n
-    _∷_ : ⦃ m ≡ n + n′ ⦄ → Word n → `Words n′ → `Words m
+-- Single-syllable words
+data SingleSyllable : Words n → Type where
+  singleSy : SingleSyllable (word [ sy ] ∷ ws)
 
-  toWords : `Words n → Words n
-  toWords = λ where
-    ([] ⦃ refl ⦄) → []
-    (_∷_ ⦃ refl ⦄ w ws) → w ∷ toWords ws
+instance
+  Dec-SingleSyllable : SingleSyllable ws ⁇
+  Dec-SingleSyllable {ws = ws} .dec
+    with ws
+  ... | [] = no λ ()
+  ... | word [ _ ] ∷ _ = yes singleSy
+  ... | word (_ ∷ _ ∷ _) ∷ _ = no λ ()
 
-  fromWords : Words n → `Words n
-  fromWords = λ where
-    [] → []
-    (w ∷ ws) → w ∷ fromWords ws
+-- Forded Words
+data `Words : ℕ → Type where
+  [] : ⦃ n ≡ 0 ⦄ → `Words n
+  _∷_ : ⦃ m ≡ n + n′ ⦄ → Word n → `Words n′ → `Words m
 
-  to∘fromWords : toWords (fromWords ws) ≡ ws
-  to∘fromWords {ws = []} = refl
-  to∘fromWords {ws = _ ∷ ws} rewrite to∘fromWords {ws = ws} = refl
+variable `ws `ws′ : `Words n
 
-  private variable `ws : `Words n
+toWords : `Words n → Words n
+toWords = λ where
+  ([] ⦃ refl ⦄) → []
+  (_∷_ ⦃ refl ⦄ w ws) → w ∷ toWords ws
 
-  from∘toWords : fromWords (toWords `ws) ≡ `ws
-  from∘toWords {`ws = [] ⦃ refl ⦄} = refl
-  from∘toWords {`ws = _∷_ ⦃ refl ⦄ _ ws} rewrite from∘toWords {`ws = ws} = refl
+fromWords : Words n → `Words n
+fromWords = λ where
+  [] → []
+  (w ∷ ws) → w ∷ fromWords ws
 
-  `emptyWords : (ws : `Words 0) → ws ≡ []
-  `emptyWords ([] ⦃ refl ⦄) = refl
-  `emptyWords (_∷_ (word {zero} {n≢0} _) _) = contradict n≢0
-  `emptyWords (_∷_ ⦃ m≡ ⦄ (word {suc _} _) _) = contradict m≡
+to∘fromWords : toWords (fromWords ws) ≡ ws
+to∘fromWords {ws = []} = refl
+to∘fromWords {ws = _ ∷ ws} rewrite to∘fromWords {ws = ws} = refl
 
-  `dropSy′ : `Words (1 + n) → Syllable × `Words n
-  `dropSy′ (word [ sy ] ∷ ws)
-    = sy , subst `Words (Nat.suc-injective (sym it)) ws
-  `dropSy′ (word (sy ∷ sys@(_ ∷ _)) ∷ ws)
-    = sy , subst `Words (Nat.suc-injective $ sym it) (word sys ∷ ws)
+from∘toWords : fromWords (toWords `ws) ≡ `ws
+from∘toWords {`ws = [] ⦃ refl ⦄} = refl
+from∘toWords {`ws = _∷_ ⦃ refl ⦄ _ ws} rewrite from∘toWords {`ws = ws} = refl
+
+`emptyWords : (ws : `Words 0) → ws ≡ []
+`emptyWords ([] ⦃ refl ⦄) = refl
+`emptyWords (_∷_ (word {zero} {n≢0} _) _) = contradict n≢0
+`emptyWords (_∷_ ⦃ m≡ ⦄ (word {suc _} _) _) = contradict m≡
+
+`dropSy′ : `Words (1 + n) → Syllable × `Words n
+`dropSy′ (word [ sy ] ∷ ws)
+  = sy , subst `Words (Nat.suc-injective (sym it)) ws
+`dropSy′ (word (sy ∷ sys@(_ ∷ _)) ∷ ws)
+  = sy , subst `Words (Nat.suc-injective $ sym it) (word sys ∷ ws)
 
 emptyWords : (ws : Words 0) → ws ≡ []
 emptyWords = trans (sym to∘fromWords) ∘ cong toWords ∘ `emptyWords ∘ fromWords
@@ -130,13 +141,54 @@ module _ m (ws : Words (m + n)) where
   dropSys : Words n
   dropSys = dropSys′ m ws .proj₂
 
-data SingleSyllable : Words n → Type where
-  singleSy : SingleSyllable (word [ sy ] ∷ ws)
+-- *Words
+
+variable ns ns′ : List ℕ
+
+data *Words : List ℕ → Type where
+  [] : *Words []
+  _∷_ : Word n → *Words ns → *Words (n ∷ ns)
+
+*words : *Words ns → Words (Nat.sum ns)
+*words = λ where
+  [] → []
+  (w ∷ ws) → w ∷ *words ws
+
+*unwords : Words n → ∃ λ ns → (n ≡ Nat.sum ns) × *Words ns
+*unwords = λ where
+  [] → -, refl , []
+  (w ∷ ws) →
+    let ns , ns≡ , ws = *unwords ws
+    in (_ ∷ ns) , cong (_ +_) ns≡ , (w ∷ ws)
+
+_*++_ : *Words ns → *Words ns′ → *Words (ns ++ ns′)
+[] *++ ws′ = ws′
+(w ∷ ws) *++ ws′ = w ∷ (ws *++ ws′)
+
+data *Split : ℕ → *Words ns → Type where
+
+  here : ∀ {*ws : *Words ns} →
+    ────────────
+    *Split 0 *ws
+
+  there : ∀ {w : Word n} {ws : *Words ns} →
+    ∙ n ≤ m
+    ∙ *Split (m ∸ n) ws
+      ─────────────────
+      *Split m (w ∷ ws)
 
 instance
-  Dec-SingleSyllable : SingleSyllable ws ⁇
-  Dec-SingleSyllable {ws = ws} .dec
-    with ws
-  ... | [] = no λ ()
-  ... | word [ _ ] ∷ _ = yes singleSy
-  ... | word (_ ∷ _ ∷ _) ∷ _ = no λ ()
+  Dec-*Split : {ws : *Words ns} → *Split m ws ⁇
+  Dec-*Split {m = zero} .dec = yes here
+  Dec-*Split {m = suc _} {ws = []} .dec = no λ ()
+  Dec-*Split {ns = n ∷ ns} {m = m@(suc _)} {ws = w ∷ ws} .dec
+    with ¿ n ≤ m ¿
+  ... | no n≰ = no λ where (there n≤ _) → n≰ n≤
+  ... | yes n≤
+    with ¿ *Split (m ∸ n) ws ¿
+  ... | no ¬sp = no λ where (there _ sp) → ¬sp sp
+  ... | yes sp = yes (there n≤ sp)
+
+Split : ℕ → Words n → Type
+Split m ws = let _ , _ , *ws = *unwords ws in
+  *Split m *ws

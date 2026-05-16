@@ -351,3 +351,6 @@ toChar-inj {ϝ} {ϝ} refl = refl
 instance
   DecEq-Letter : DecEq Letter
   DecEq-Letter ._≟_ _ _ = mapDec toChar-inj (cong toChar) $ _ ≟ _
+
+Vowel?     = Decidable¹ Vowel     ∋ dec¹
+Consonant? = Decidable¹ Consonant ∋ dec¹

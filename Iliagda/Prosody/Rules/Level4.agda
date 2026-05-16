@@ -25,6 +25,8 @@ data _-masks-_ {X : Type} : Flat X → X → Type where
 _-masks*-_ : Vec (Flat X) n → Vec X n → Type
 _-masks*-_ = VPointwise _-masks-_
 
+---------------
+
 infix 2 _ˢ~ᵐ_
 data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
 
@@ -32,15 +34,15 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
     ───────────────────
     [] , [] ˢ~ᵐ mkPM []
 
-  sponde : let ws = dropSys 2 ws′ in
-    ws , qs ˢ~ᵐ pm
-    ────────────────────────────────
-    ws′ , ─  ∷ ─ ∷ qs ˢ~ᵐ ── ∷ᵖᵐ pm
+  sponde :
+    dropSys 2 ws , qs ˢ~ᵐ pm
+    ──────────────────────────────
+    ws , ─  ∷ ─ ∷ qs ˢ~ᵐ ── ∷ᵖᵐ pm
 
-  dactyl : let ws = dropSys 3 ws′ in
-    ws , qs ˢ~ᵐ pm
-    ────────────────────────────────────
-    ws′ , ─  ∷ · ∷ · ∷ qs ˢ~ᵐ ─·· ∷ᵖᵐ pm
+  dactyl :
+    dropSys 3 ws , qs ˢ~ᵐ pm
+    ───────────────────────────────────
+    ws , ─  ∷ · ∷ · ∷ qs ˢ~ᵐ ─·· ∷ᵖᵐ pm
 
   -- ** Lengthen-by-thesis
   -- Short syllables ending in a single consonant are occasionally
@@ -53,11 +55,19 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
       ──────────────────────────────────────────
       word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
 
-  -- Whenever a word ends within a foot, it is called caesura. (1185)
-  [1167/1] :
+  -- Whenever a word ends within a foot, it is called *caesura*. (1185)
+  [1167/1a] :
     word [ sy ] ∷ ws , ─ ∷ qs ˢ~ᵐ pm
     ────────────────────────────────
     word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
+
+  -- Whenever the end of a word coincides with the end of a foot,
+  -- it is called *diaeresis*. (1188)
+  [1167/1b] :
+    ∙ Split 2 ws
+    ∙ dropSys 2 ws , qs ˢ~ᵐ pm
+      ───────────────────────────────────────
+      ws , ─ ∷ · ∷ qs ˢ~ᵐ (── ∷ᵖᵐ pm)
 
 instance
   Complies-Qs-PM :
