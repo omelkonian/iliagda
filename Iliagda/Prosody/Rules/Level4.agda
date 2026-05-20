@@ -56,10 +56,10 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
       word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
 
   -- Whenever a word ends within a foot, it is called *caesura*. (1185)
-  [1167/1a] :
-    word [ sy ] ∷ ws , ─ ∷ qs ˢ~ᵐ pm
-    ────────────────────────────────
-    word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
+  -- [1167/1a] :
+  --   word [ sy ] ∷ ws , ─ ∷ qs ˢ~ᵐ pm
+  --   ────────────────────────────────
+  --   word [ sy ] ∷ ws , · ∷ qs ˢ~ᵐ pm
 
   -- Whenever the end of a word coincides with the end of a foot,
   -- it is called *diaeresis*. (1188)
