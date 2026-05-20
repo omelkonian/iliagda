@@ -184,16 +184,20 @@ allPMs ws (─ ∷ ─ ∷ qs) refl
   QED = map f pms , sou , com
 
 allPMs ws (─ ∷ · ∷ · ∷ qs) refl
+
   -- ** sponde by diairesis
   using dws′ ← dropSys 2 ws
-  with dpms , sound-dpms , complete-dpms ← allPMs dws′ (· ∷ qs) refl
+  with go── ← allPMs dws′ (· ∷ qs)
 
   -- ** dactyl
   using ws′ ← dropSys 3 ws
-  with pms , sound-pms , complete-pms ← allPMs ws′ qs refl
+  with go─·· ← allPMs ws′ qs
+  with pms , sound-pms , complete-pms ← go─·· refl
 
   with ¿ Split 2 ws ¿
 ... | yes sp
+  using dpms , sound-dpms , complete-dpms ← go── refl
+
   = QED
   where
   f  = λ (m , pm) → 1 + m , (─·· ∷ᵖᵐ pm)

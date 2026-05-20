@@ -66,7 +66,7 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
   [1167/1b] :
     ∙ Split 2 ws
     ∙ dropSys 2 ws , qs ˢ~ᵐ pm
-      ───────────────────────────────────────
+      ───────────────────────────────
       ws , ─ ∷ · ∷ qs ˢ~ᵐ (── ∷ᵖᵐ pm)
 
 instance

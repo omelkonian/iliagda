@@ -29,10 +29,13 @@ preprocess
   . unlambda
 insertDigamma = map $ \case
   ["ἔ","δει","σεν"] -> ["ἔ","ϝδει","σεν"]
+  ["ὑ","πέ","δει","σαν"] -> ["ὑ","πέ","δϝει","σαν"]
   w -> w
 fixDoubtfuls = map $ \case
   ["ῥα"] -> ["ῥᾰ"]
   ["ῥά"] -> ["ῥᾰ"]
+  ["πτε","ρό","εν","τα"] -> ["πτε","ρό","εν","τᾰ"]
+  -- vrachy iota: Ῐ
   w -> w
 unlambda = map $ map $ map $ \case
   'ƛ' -> 'λ'

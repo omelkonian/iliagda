@@ -154,7 +154,7 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
       ◇ spaces (map (uncurry pad) $ L.zip `mqs1 ns) ◇ " --𝟙 \n"
       ◇ spaces (map (uncurry pad) $ L.zip `mqs2 ns) ◇ " --𝟚 \n"
       ◇ spaces (map (uncurry pad) $ L.zip `mqs3 ns) ◇ " --𝟛 \n"
-      ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗3\n"
+      ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗𝟛\n"
   explainVerse
     with allDerivationsMin ws
   ... | [] = IMPOSSIBLE "Cannot explain non-derivable verse"
