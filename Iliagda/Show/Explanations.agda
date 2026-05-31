@@ -122,7 +122,7 @@ explain4m = λ where
   (dactyl p) → ？ ∷ ？ ∷ ？ ∷ explain4m p
   ([1168] _ _ p) → [1168] ∷ V.tail (explain4m p)
   ([1167/1a] p) → [1167/1a] ∷ V.tail (explain4m p)
-  ([1167/1b] _ p) → ？ ∷ [1167/1b] ∷ explain4m p
+  -- ([1167/1b] _ p) → ？ ∷ [1167/1b] ∷ explain4m p
 
 explain4 : {ws : Words n} {mqs : Quantities n} {hm : Hexameter n} →
   (ws , mqs) ~ hm → Explanations n

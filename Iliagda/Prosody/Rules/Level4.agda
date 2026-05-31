@@ -62,11 +62,13 @@ data _ˢ~ᵐ_ : Words n × Vec Quantity n → Meter n m → Type where
 
   -- Whenever the end of a word coincides with the end of a foot,
   -- it is called *diaeresis*. (1188)
+{-
   [1167/1b] :
     ∙ Split 2 ws
     ∙ dropSys 2 ws , qs ˢ~ᵐ pm
       ───────────────────────────────
       ws , ─ ∷ · ∷ qs ˢ~ᵐ (── ∷ᵖᵐ pm)
+-}
 
 instance
   Complies-Qs-PM :
