@@ -16,17 +16,23 @@ open import Iliagda.Prosody.Rules.Level3
 
 StartsWithDoubleConsonant? : (ls : Letters) → Dec (StartsWithDoubleConsonant ls)
 StartsWithDoubleConsonant? []       = no λ ()
-StartsWithDoubleConsonant? (l ∷ ls) =
-  mapDec doubleConsonant (λ where (doubleConsonant dc) → dc) ¿ DoubleConsonant l ¿
+StartsWithDoubleConsonant? (l ∷ ls)
+  with l ≟ Ζ
+... | yes l≡ = no λ where (doubleConsonant l≢ _) → l≢ l≡
+... | no  l≢ = mapDec (doubleConsonant l≢) (λ where (doubleConsonant _ dc) → dc)
+                      ¿ DoubleConsonant l ¿
 
 StartsWithTwoConsonants? : (ls : Letters) → Dec (StartsWithTwoConsonants ls)
 StartsWithTwoConsonants? []            = no λ ()
 StartsWithTwoConsonants? (_ ∷ [])      = no λ ()
 StartsWithTwoConsonants? (l ∷ l′ ∷ ls)
+  with (l , l′) ≟ (Σ , κ)
+... | yes l≡ = no λ where (twoConsonants l≢ _ _) → l≢ l≡
+... | no  l≢
   with ¿ Consonant l ¿ | ¿ Consonant l′ ¿
-... | yes cl | yes cl′ = yes (twoConsonants cl cl′)
-... | no ¬cl | _       = no λ where (twoConsonants cl _)  → ¬cl  cl
-... | _      | no ¬cl′ = no λ where (twoConsonants _  cl′) → ¬cl′ cl′
+... | yes cl | yes cl′ = yes (twoConsonants l≢ cl cl′)
+... | no ¬cl | _       = no λ where (twoConsonants _ cl _)  → ¬cl  cl
+... | _      | no ¬cl′ = no λ where (twoConsonants _ _  cl′) → ¬cl′ cl′
 
 StartsWithVowel? : (ls : Letters) → Dec (StartsWithVowel ls)
 StartsWithVowel? []       = no λ ()
@@ -276,3 +282,7 @@ module QuantityDec fq next (let ⋯ = fq , next) where
     = mq ∷ mqs
     , mq~ ∷ mqs~
     , λ where (mq~′ ∷ mqs~′) → cong₂ _∷_ (mq-uniq mq~′) (mqs-uniq mqs~′)
+
+-- -}
+-- -}
+-- -}

@@ -25,12 +25,14 @@ variable ctx ctx′ : Context
 
 data StartsWithDoubleConsonant : Letters → Type where
   doubleConsonant :
-    DoubleConsonant l
-    ──────────────────────────────────
-    StartsWithDoubleConsonant (l ∷ ls)
+    ∙ l ≢ Ζ
+    ∙ DoubleConsonant l
+      ──────────────────────────────────
+      StartsWithDoubleConsonant (l ∷ ls)
 
 data StartsWithTwoConsonants : Letters → Type where
   twoConsonants :
+    ∙ (l , l′) ≢ (Σ , κ)
     ∙ Consonant l
     ∙ Consonant l′
       ─────────────────────────────────────
