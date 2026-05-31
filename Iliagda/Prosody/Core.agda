@@ -101,7 +101,7 @@ f ∷ᵖᵐ (mkPM fs) = mkPM ((-, -, f) ∷ fs)
           ◇ [ ω ⨾ Ὠ ⨾ ὠ ⨾ Ὤ ⨾ ὤ ⨾ ᾤ ⨾ ὢ ⨾ Ὦ ⨾ ὦ ⨾ ᾦ ⨾ ᾠ ⨾ ὡ ⨾ ὥ ⨾ ὣ ⨾ Ὧ ⨾ ὧ ⨾ ᾧ ⨾ ώ ⨾ ῴ ⨾ ὼ ⨾ ῶ ⨾ ῷ ⨾ ῳ ]
 ·Vowel = _∈ [ Ε ⨾ ε ⨾ Ἐ ⨾ ἐ ⨾ Ἔ ⨾ ἔ ⨾ Ἑ ⨾ ἑ ⨾ Ἕ ⨾ ἕ ⨾ ἓ ⨾ έ ⨾ ὲ ]
           ◇ [ Ο ⨾ ο ⨾ Ὀ ⨾ ὀ ⨾ Ὄ ⨾ ὄ ⨾ ὁ ⨾ ὅ ⨾ ὃ ⨾ ό ⨾ ὸ ]
-          ◇ [ ᾰ ]
+          ◇ [ Ᾰ ⨾ ᾰ ⨾ Ῐ ⨾ ῐ ⨾ Ῠ ⨾ ῠ ]
 Doubtful = (¬_ ∘ ─Vowel) ∩¹ (¬_ ∘ ·Vowel)
 
 -- (534)
@@ -130,6 +130,7 @@ HasGrave = _∈ [ ὰ ⨾ ἂ ⨾ ἃ ]
 -- (518)
 DoubleConsonant : Pred₀ Letter
 DoubleConsonant = _∈ [ Ζ ⨾ ζ ⨾ Ξ ⨾ ξ ⨾ Ψ ⨾ ψ ]
+-- TODO (optimization): remove Z instead of the a-posteriori treatment in Lvl3
 
 -- (504)
 -- Diphthong V1 (fst): plain (no breathing/accent), since in Greek typography
@@ -159,9 +160,3 @@ Diphthong (l , l′)
   ⊎ (fst-ο l × snd-υ l′)  -- ου
   ⊎ (fst-υ l × snd-ι l′)  -- υι
   ⊎ (fst-ω l × snd-υ l′)  -- ωυ
-
-VowelBeforeDoubleConsonant : Pred₀ (Letter × Letter)
-VowelBeforeDoubleConsonant (v , c) = Vowel v × DoubleConsonant c
-
-VowelBeforeTwoConsonants : Pred₀ (Letter × Letter × Letter)
-VowelBeforeTwoConsonants (v , c , c′) = Vowel v × Consonant c × Consonant c′

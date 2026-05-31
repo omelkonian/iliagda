@@ -30,6 +30,7 @@ toChar = λ where
   ᾶ → 'ᾶ'
   ᾷ → 'ᾷ'
   ᾳ → 'ᾳ'
+  Ᾰ → 'Ᾰ'
   ᾰ → 'ᾰ'
   Β → 'Β'
   β → 'β'
@@ -99,6 +100,8 @@ toChar = λ where
   ΐ → 'ΐ'
   ῒ → 'ῒ'
   ῗ → 'ῗ'
+  Ῐ → 'Ῐ'
+  ῐ → 'ῐ'
   Κ → 'Κ'
   κ → 'κ'
   Λ → 'Λ'
@@ -147,6 +150,8 @@ toChar = λ where
   ϋ → 'ϋ'
   ΰ → 'ΰ'
   ῢ → 'ῢ'
+  Ῠ → 'Ῠ'
+  ῠ → 'ῠ'
   Φ → 'Φ'
   φ → 'φ'
   Χ → 'Χ'
@@ -199,6 +204,7 @@ toChar-inj {ὰ} {ὰ} refl = refl
 toChar-inj {ᾶ} {ᾶ} refl = refl
 toChar-inj {ᾷ} {ᾷ} refl = refl
 toChar-inj {ᾳ} {ᾳ} refl = refl
+toChar-inj {Ᾰ} {Ᾰ} refl = refl
 toChar-inj {ᾰ} {ᾰ} refl = refl
 toChar-inj {Β} {Β} refl = refl
 toChar-inj {β} {β} refl = refl
@@ -268,6 +274,8 @@ toChar-inj {ϊ} {ϊ} refl = refl
 toChar-inj {ΐ} {ΐ} refl = refl
 toChar-inj {ῒ} {ῒ} refl = refl
 toChar-inj {ῗ} {ῗ} refl = refl
+toChar-inj {Ῐ} {Ῐ} refl = refl
+toChar-inj {ῐ} {ῐ} refl = refl
 toChar-inj {Κ} {Κ} refl = refl
 toChar-inj {κ} {κ} refl = refl
 toChar-inj {Λ} {Λ} refl = refl
@@ -316,6 +324,8 @@ toChar-inj {ῦ} {ῦ} refl = refl
 toChar-inj {ϋ} {ϋ} refl = refl
 toChar-inj {ΰ} {ΰ} refl = refl
 toChar-inj {ῢ} {ῢ} refl = refl
+toChar-inj {Ῠ} {Ῠ} refl = refl
+toChar-inj {ῠ} {ῠ} refl = refl
 toChar-inj {Φ} {Φ} refl = refl
 toChar-inj {φ} {φ} refl = refl
 toChar-inj {Χ} {Χ} refl = refl
