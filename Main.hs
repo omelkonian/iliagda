@@ -122,8 +122,8 @@ main = getArgs >>= \case
     putStrLn $ reportStats nss
   [s] -> checkVerse =<< readVerse s
   ["--explain", s] -> do
-    v <- readVerse s
-    T.putStrLn $ AGDA.explainVerse (preprocess v)
+    v <- preprocess <$> readVerse s
+    T.putStrLn $ AGDA.explainVerse v
   as -> checkVerse (map (splitOn "-") as)
  where
   readVerse :: String -> IO Verse

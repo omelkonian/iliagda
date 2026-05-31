@@ -12,21 +12,6 @@ open import Iliagda.Prosody.Rules.Level1
 open import Iliagda.Prosody.Rules.Level1.Dec
 open import Iliagda.Prosody.Rules.Level3
 
--- ** ~ˢʸⁿ decidability
-
-_~ˢʸⁿ?_ : (sy : Syllable) (q : Quantity) → Dec (sy ~ˢʸⁿ q)
-sy ~ˢʸⁿ? q
-  with ¿ SynizizedOrDipthong sy ¿ | q ≟ ─ | sy ~₁? q
-... | yes syn | yes refl | _       = yes (synLong syn)
-... | yes syn | no  q≢─  | _       = no λ where (synLong _)     → q≢─ refl ; (¬synLong ns _) → ns syn
-... | no ¬syn | _        | yes ~q  = yes (¬synLong ¬syn ~q)
-... | no ¬syn | _        | no  ¬~q = no λ where (synLong s)     → ¬syn s   ; (¬synLong _ ~q) → ¬~q ~q
-
-¬bothByNatureˢʸⁿ : ¬ ((sy ~ˢʸⁿ ─) × (sy ~ˢʸⁿ ·))
-¬bothByNatureˢʸⁿ = λ where
-  (synLong  p , ¬synLong ¬p _) → ¬p p
-  (¬synLong _ ─sy , ¬synLong _ ·sy) → ¬bothByNature (─sy , ·sy)
-
 -- ** StartsWith predicates
 
 StartsWithDoubleConsonant? : (ls : Letters) → Dec (StartsWithDoubleConsonant ls)
@@ -69,8 +54,8 @@ dec-LastAny (there v∈)             = dec-LastAny v∈
 
 -- ** FollowedBy / FollowedByInner existentials (parameterised by context)
 
-module _ (next : Context) where
-  open QuantityRules next
+module _ (⋯ : Flat Quantity × Context) (let fq , next = ⋯) where
+  open QuantityRules ⋯
 
   -- ∃ vowel position s.t. FollowedBy Q holds
   ∃-vowel-followedBy :
@@ -152,8 +137,8 @@ module _ (next : Context) where
 
 -- ** ~?′/~? decisions (parameterised by context)
 
-module QuantityDec (next : Context) where
-  open QuantityRules next
+module QuantityDec fq next (let ⋯ = fq , next) where
+  open QuantityRules ⋯
 
   private
     doubleOrTwo? : (ls : Letters) → Dec ((StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) ls)
@@ -165,85 +150,74 @@ module QuantityDec (next : Context) where
   -- sy ~∗ ─
   dec-~∗─ : (sy : Syllable) → Dec (sy ~∗ ─)
   dec-~∗─ sy
-    with ∃-vowel-followedBy next doubleOrTwo? (toList sy)
+    with ∃-vowel-followedBy ⋯ doubleOrTwo? (toList sy)
   ... | yes (v∈ , fb) = yes ([522] v∈ fb)
   ... | no  ¬522
-    with sy ~ˢʸⁿ? ─ | sy ~ˢʸⁿ? ·
-  ... | yes ─sy  | yes ·sy
-    = ⊥-elim $ ¬bothByNatureˢʸⁿ (─sy , ·sy)
-  ... | no ¬─sy | no ¬·sy
+
+    with ⟫ fq
+
+  ... | ⟫ all = no λ where
+    ([522] v∈ fb) → ¬522 (v∈ , fb)
+    ([1173] _ () _ _)
+    ([524] _ () _)
+
+  ... | ⟫ none
     = no λ where
     ([522] v∈ fb) → ¬522 (v∈ , fb)
-    ([1173] _ _ ─sy _) → ¬─sy ─sy
-    ([524]  _ ·sy _)   → ¬·sy ·sy
-  ... | yes ─sy | no ¬·sy
+
+  ... | ⟫ single ─
     = QED
     where
     QED : _
     QED
-      with ∃-lastVowel-followedBy next StartsWithVowel? (toList sy)
+      with ∃-lastVowel-followedBy ⋯ StartsWithVowel? (toList sy)
     ... | yes (v∈ , lv∈ , sv)
-      = yes $ [1173] v∈ lv∈ ─sy sv
+      = yes $ [1173] v∈ refl lv∈ sv
     ... | no ¬1173
       = no λ where
       ([522] v∈ fb) → ¬522 (v∈ , fb)
-      ([1173] v∈ lv∈ _ sv) → ¬1173 (v∈ , lv∈ , sv)
-      ([524]  _ ·sy _) → ¬·sy ·sy
-  ... | no ¬─sy | yes ·sy
+      ([1173] v∈ refl lv∈ sv) → ¬1173 (v∈ , lv∈ , sv)
+
+  ... | ⟫ single ·
     = QED
     where
     QED : _
     QED
       with ∃-vowel-followedByInner MuteThenLiquid? (toList sy)
-     ⊎-dec ∃-vowel-followedByOuter next MuteThenLiquid? (toList sy)
+     ⊎-dec ∃-vowel-followedByOuter ⋯ MuteThenLiquid? (toList sy)
     ... | yes (inj₁ (v∈ , ml))
-      = yes $ [524] v∈ ·sy (inj₁ ml)
+      = yes $ [524] v∈ refl (inj₁ ml)
     ... | yes (inj₂ (v∈ , ml))
-      = yes $ [524] v∈ ·sy (inj₂ ml)
+      = yes $ [524] v∈ refl (inj₂ ml)
     ... | no ¬524
       = no λ where
       ([522] v∈ fb) → ¬522 (v∈ , fb)
-      ([1173] _ _ ─sy _) → ¬─sy ─sy
       ([524] v∈ _ (inj₁ ml)) → ¬524 $ inj₁ (v∈ , ml)
       ([524] v∈ _ (inj₂ ml)) → ¬524 $ inj₂ (v∈ , ml)
 
   -- sy ~∗ ·
   dec-~∗· : (sy : Syllable) → Dec (sy ~∗ ·)
   dec-~∗· sy
-    with sy ~ˢʸⁿ? ─
-  ... | yes syn─
-    with ∃-lastVowel-followedBy next StartsWithVowel? (toList sy)
-  ... | yes (v∈ , la , sv) = yes ([1173] v∈ la syn─ sv)
-  ... | no  ¬1173
-    with sy ~ˢʸⁿ? ·
-  ... | yes syn·
+    with ⟫ fq
+  dec-~∗· sy | ⟫ single ─
+    with ∃-lastVowel-followedBy ⋯ StartsWithVowel? (toList sy)
+  ... | yes (v∈ , la , sv) = yes ([1173] v∈ refl la sv)
+  ... | no  ¬1173 = no λ where
+    ([1173] v∈ refl la sv) → ¬1173 (v∈ , la , sv)
+  dec-~∗· sy | ⟫ single ·
     with ∃-vowel-followedByInner MuteThenLiquid? (toList sy)
-   ⊎-dec ∃-vowel-followedByOuter next MuteThenLiquid? (toList sy)
-  ... | yes (inj₁ (v∈ , ml)) = yes $ [524] v∈ syn· (inj₁ ml)
-  ... | yes (inj₂ (v∈ , ml)) = yes $ [524] v∈ syn· (inj₂ ml)
+   ⊎-dec ∃-vowel-followedByOuter ⋯ MuteThenLiquid? (toList sy)
+  ... | yes (inj₁ (v∈ , ml)) = yes $ [524] v∈ refl (inj₁ ml)
+  ... | yes (inj₂ (v∈ , ml)) = yes $ [524] v∈ refl (inj₂ ml)
   ... | no  ¬ml       = no λ where
-    ([1173] v∈ la _ sv) → ¬1173 (v∈ , la , sv)
-    ([524]  v∈ syn· (inj₁ ml)) → ¬ml $ inj₁ (v∈ , ml)
-    ([524]  v∈ syn· (inj₂ ml)) → ¬ml $ inj₂ (v∈ , ml)
-  dec-~∗· sy | yes syn─ | no ¬1173 | no ¬syn·
+    ([524] v∈ refl (inj₁ ml)) → ¬ml $ inj₁ (v∈ , ml)
+    ([524] v∈ refl (inj₂ ml)) → ¬ml $ inj₂ (v∈ , ml)
+  dec-~∗· sy | ⟫ none
     = no λ where
-    ([1173] v∈ la _ sv) → ¬1173 (v∈ , la , sv)
-    ([524]  _ syn· _)   → ¬syn· syn·
-  dec-~∗· sy | no ¬syn─
-    with sy ~ˢʸⁿ? ·
-  ... | yes syn·
-    with ∃-vowel-followedByInner MuteThenLiquid? (toList sy)
-   ⊎-dec ∃-vowel-followedByOuter next MuteThenLiquid? (toList sy)
-  ... | yes (inj₁ (v∈ , ml)) = yes $ [524] v∈ syn· (inj₁ ml)
-  ... | yes (inj₂ (v∈ , ml)) = yes $ [524] v∈ syn· (inj₂ ml)
-  ... | no  ¬ml       = no λ where
-    ([1173] _ _ syn─ _) → ¬syn─ syn─
-    ([524] v∈ _ (inj₁ ml)) → ¬ml $ inj₁ (v∈ , ml)
-    ([524] v∈ _ (inj₂ ml)) → ¬ml $ inj₂ (v∈ , ml)
-  dec-~∗· sy | no ¬syn─ | no ¬syn·
+    ([1173] _ () _ _)
+  dec-~∗· sy | ⟫ all
     = no λ where
-    ([1173] _ _ syn─ _) → ¬syn─ syn─
-    ([524]  _ syn· _)   → ¬syn· syn·
+    ([1173] _ () _ _)
 
   -- sy ~? mq  (unique mq for each (sy, ctx))
   𝟛-theQuantity :
@@ -281,24 +255,23 @@ module QuantityDec (next : Context) where
               (certain {q = ─} ~─ _) → ⊥-elim (¬~─ ~─)
               (certain {q = ·} ~· _) → ⊥-elim (¬~· ~·)
 
-
 -- ** Lift to sequences and connect to _~³_
 
 𝟛-theQuantities :
-  (ws : Words n) →
-  ∃ λ (mqs : Quantities n) →
-      (ws ~³ mqs)
-    × (∀ {mqs′} → ws ~³ mqs′ → mqs′ ≡ mqs)
-𝟛-theQuantities {n = n} ws = go (inContext {n = n} ws)
+  (ws : Words n) (mqs₂ : Quantities n) →
+  ∃ λ (mqs₃ : Quantities n) →
+      ((ws , mqs₂) ~³ mqs₃)
+    × (∀ {mqs₃′} → (ws , mqs₂) ~³ mqs₃′ → mqs₃′ ≡ mqs₃)
+𝟛-theQuantities {n = n} ws mqs₂ = go (inContext ws mqs₂)
   where
   go : ∀ {m} →
-    (syctxs : Vec (Syllable × Context) m) →
-    ∃ λ (mqs : Quantities m) →
-        VPointwise _~_ syctxs mqs
-      × (∀ {mqs′} → VPointwise _~_ syctxs mqs′ → mqs′ ≡ mqs)
+    (syctxs : Vec (Syllable × Flat Quantity × Context) m) →
+    ∃ λ (mqs₃ : Quantities m) →
+        VPointwise _~_ syctxs mqs₃
+      × (∀ {mqs₃′} → VPointwise _~_ syctxs mqs₃′ → mqs₃′ ≡ mqs₃)
   go [] = [] , [] , λ where [] → refl
-  go ((sy , ctx) ∷ syctxs)
-    with QuantityDec.𝟛-theQuantity ctx sy | go syctxs
+  go ((sy , fq , ctx) ∷ syctxs)
+    with QuantityDec.𝟛-theQuantity fq ctx sy | go syctxs
   ... | mq , mq~ , mq-uniq | mqs , mqs~ , mqs-uniq
     = mq ∷ mqs
     , mq~ ∷ mqs~

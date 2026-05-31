@@ -81,15 +81,14 @@ module _ {ctx} (let open QuantityRules ctx) where
     (here _)   → id
     (there l∈) → FollowedBy-∪⁻ l∈
 
-
-explain31 : (sy , ctx) ~ mq → Explanation
-explain31 = λ where
+explain31 : (sy , mq , ctx) ~ mq′ → Explanation
+explain31 {mq = mq} = λ where
   (ambiguous _) → ？
   (ambivalent p q) → ambivalent (explain311 p) (explain311 q)
   (certain p _) → explain311 p
  where
   open QuantityRules
-  explain311 : ctx ⊢ sy ~∗ q → Explanation
+  explain311 : (mq , ctx) ⊢ sy ~∗ q → Explanation
   explain311 = λ where
     ([522] v∈ p) → case FollowedBy-∪⁻ v∈ p of λ where
       (inj₁ _) → [522]dc
@@ -110,7 +109,7 @@ module _
     [] → []
     (p ∷ ps) → explain~ p ∷ explain-VPointwise ps
 
-explain3 : {ws : Words n} → ws ~³ mqs → Explanations n
+explain3 : {ws : Words n} → (ws , mqs₂) ~³ mqs₃ → Explanations n
 explain3 = explain-VPointwise explain31
 
 open ∣Complies-MQs-HM∣
@@ -187,3 +186,9 @@ instance
     [1168] → "[1168]"
     [1167/1a] → "[1167/1a]"
     [1167/1b] → "[1167/1b]"
+
+
+-- -}
+-- -}
+-- -}
+-- -}

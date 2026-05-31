@@ -11,7 +11,6 @@ open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level2
 open import Iliagda.Prosody.Rules.Level3
-open import Iliagda.Prosody.Rules.Level23 using (_⊗_)
 
 -- ** masking
 
@@ -85,7 +84,7 @@ instance
         reify : {mqs : Quantities n} → let mkLastLong = _≔ₙ⟨ Hex>0 hm ⟩ single ─ in
           ∙ mkLastLong mqs -masks*- qs
           ∙ ws , qs ~ hm
-            ─────────────────────────────────────
+            ──────────────────────────
             (ws , mqs) ~′ hm
 
   Complies-Ws-HM : Words n -compliesWith- Hexameter n′
@@ -95,13 +94,16 @@ instance
       data _~′_ : Words n → Hexameter n′ → Type where
 
         _≫⟨_⟩≫_≫_ : ∀ {ws : Words n} {sys′ : Syllables n′} {hm : Hexameter n′} →
-          ∙ ws ~² mqs
+          ∙ ws ~² mqs₂
           -- [586] synizesis
           → (syn : unwords ws -synizizes*- sys′) →
-          let ws′ = synizizeWords ws syn in
-          ∙ ws′ ~³ mqs′
-          ∙ ws′ , synizize syn mqs ⊗ mqs′ ~ hm
-            ──────────────────────────────────────────
+          let
+            ws′   = synizizeWords ws syn
+            mqs₂′ = synizize syn mqs₂
+          in
+          ∙ (ws′ , mqs₂′) ~³ mqs₃
+          ∙ (ws′ , mqs₂′ ⊗ mqs₃) ~ hm
+            ────────────────────────────
             ws ~′ hm
 
 Derivation : Words n → Type

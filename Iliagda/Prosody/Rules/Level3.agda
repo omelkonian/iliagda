@@ -8,23 +8,6 @@ open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
 
-SynizizedOrDipthong : Syllable → Type
-SynizizedOrDipthong sy = vowels sy ≥ 2
-
--- NB: separation of concerns between Level1~Synizesis
---     a.k.a. "by nature after synizesis"
-data _~ˢʸⁿ_ : Syllable → Quantity → Type where
-  synLong :
-    SynizizedOrDipthong sy
-    ──────────────────────
-    sy ~ˢʸⁿ ─
-
-  ¬synLong :
-    ∙ ¬ SynizizedOrDipthong sy
-    ∙ sy ~ q
-      ────────────────────────
-      sy ~ˢʸⁿ q
-
 -- ** LEVEL 3: syllable context
 
 -- (522)
@@ -88,7 +71,7 @@ FollowedByInner Q = λ where
   (here {xs = sys} _) → Q sys
   (there p) → FollowedByInner Q p
 
-module QuantityRules (next : Context) where
+module QuantityRules (⋯ : Flat Quantity × Context) (let mq , next = ⋯) where
 
   FollowedBy FollowedByOuter : (Q : Letters → Type) {P : Letter → Type} {ls : Letters} →
     Any P ls → Type
@@ -113,8 +96,8 @@ module QuantityRules (next : Context) where
     -- (572)
     [1173] :
       (v∈ : Any Vowel sy) →
+      ∙ mq ≡ single ─
       ∙ LastAny v∈
-      ∙ sy ~ˢʸⁿ ─
       ∙ FollowedBy StartsWithVowel v∈
         ─────────────────────────────
         sy ~∗ q
@@ -124,7 +107,7 @@ module QuantityRules (next : Context) where
     -- (a.k.a. *common* syllable)
     [524] :
       (v∈ : Any Vowel sy) →
-      ∙ sy ~ˢʸⁿ ·
+      ∙ mq ≡ single ·
       ∙ FollowedByInner MuteThenLiquid v∈
       ⊎ FollowedByOuter MuteThenLiquid v∈
         ─────────────────────────────────
@@ -156,22 +139,27 @@ open QuantityRules public
   renaming (_~∗_ to _⊢_~∗_; _≁∗_ to _⊢_≁∗_; _~?_ to _⊢_~?_)
 
 instance
-  Complies-Sy-MQ : (Syllable × Context) -compliesWith- Flat Quantity
-  Complies-Sy-MQ ._~_ (sy , ctx) mq = ctx ⊢ sy ~? mq
+  Complies-Sy-MQ : (Syllable × Flat Quantity × Context) -compliesWith- Flat Quantity
+  Complies-Sy-MQ ._~_ (sy , mq , ctx) = (mq , ctx) ⊢ sy ~?_
 
-_~³_ : Words n → Quantities n → Type
-_~³_ = VPointwise _~_ ∘ inContext
-  module _ where
-  inContext : Words n → Vec (Syllable × Context) n
-  inContext [] = []
-  inContext (w ∷ ws) = go (unword w) (next ws) V.++ inContext ws
-    where
-    next : Words n → Context
-    next []      = ∅
-    next (w ∷ _) = outer $ firstSyllable w
+inContext : Words n → Quantities n
+          → Vec (Syllable × Flat Quantity × Context) n
+inContext []       _  = []
+inContext (w ∷ ws) qs = go (unword w) (V.take _ qs) (next ws)
+                   V.++ inContext ws (V.drop _ qs)
+  where
+  next : Words n → Context
+  next []      = ∅
+  next (w ∷ _) = outer $ firstSyllable w
 
-    go : Syllables n → Context → Vec (Syllable × Context) n
-    go = λ where
-      [] _ → []
-      [ sy ] nxt → [ sy , nxt ]
-      (sy ∷ sys@(sy′ ∷ _)) nxt → (sy , inner sy′) ∷ go sys nxt
+  go : Syllables n
+      → Quantities n
+      → Context
+      → Vec (Syllable × Flat Quantity × Context) n
+  go = λ where
+    [] _ _ → []
+    [ sy ] [ mq ] nxt → [ sy , mq , nxt ]
+    (sy ∷ sys@(sy′ ∷ _)) (mq ∷ mqs) nxt → (sy , mq , inner sy′) ∷ go sys mqs nxt
+
+_~³_ : Words n × Quantities n → Quantities n → Type
+(ws , qs) ~³ qs′ = VPointwise _~_ (inContext ws qs) qs′

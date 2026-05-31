@@ -45,24 +45,23 @@ open ∣Complies-Ws-HM∣
 instance
   Show-Ws-HM : Show (ws ~ hm)
   Show-Ws-HM {ws = ws} {hm = hm} .show
-    (_≫⟨_⟩≫_≫_ {mqs = mqs2} {mqs′ = mqs3} _ syn _ _) =
+    (_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃} _ syn _ _) =
     let
       `syn = show syn
       ns   = map Str.length (Str.words `syn)
       qs   = meter-qs hm
       `qs  = map show (toList qs)
-      mqs1  = 𝟙-theQuantities (unwords ws) .proj₁
-      `mqs1 = map show (toList $ synizize syn mqs1)
-      `mqs2 = map show (toList $ synizize syn mqs2)
-      `mqs3 = map show (toList mqs3)
-      `mqs23 = map show (toList $ synizize syn mqs2 ⊗ mqs3)
+      mqs₁  = 𝟙-theQuantities (unwords ws) .proj₁
+      `mqs₁ = map show (toList $ synizize syn mqs₁)
+      `mqs₂ = map show (toList $ synizize syn mqs₂)
+      `mqs₃ = map show (toList mqs₃)
+      `mqs₄ = map show (toList $ synizize syn mqs₂ ⊗ mqs₃)
     in
       `syn ◇ "\n"
-    ◇ spaces (map (uncurry pad) $ L.zip `mqs1 ns) ◇ " --𝟙 \n"
-    ◇ spaces (map (uncurry pad) $ L.zip `mqs2 ns) ◇ " --𝟚 \n"
-    ◇ spaces (map (uncurry pad) $ L.zip `mqs3 ns) ◇ " --𝟛 \n"
-    ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗𝟛\n"
-    ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs₁ ns) ◇ " --𝟙 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs₂ ns) ◇ " --𝟚 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs₃ ns) ◇ " --𝟛 \n"
+    ◇ spaces (map (uncurry pad) $ L.zip `mqs₄ ns) ◇ " --𝟚⊗𝟛 \n"
 
   Show-Derivations : Show (Derivations ws)
   -- Show-Derivations .show = lined

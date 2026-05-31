@@ -40,9 +40,21 @@ data Flat (A : Type) : Type where
 Quantities : ℕ → Type
 Quantities = Vec (Flat Quantity)
 
+_⊗₁_ : Op₂ $ Flat Quantity
+_⊗₁_ = λ where
+  (single _) (single q) → single q  -- RIGHT BIASED
+  -- (single q) (single q′) → if q == q′ then single q else *
+  (single q) none → single q
+  (single _) all → all              -- RIGHT BIASED
+  none mq → mq
+  all mq → mq                       -- IMPOSSIBLE
+
+_⊗_ : Op₂ $ Quantities n
+_⊗_ = V.zipWith _⊗₁_
+
 variable
   mq mq′ mq″ : Flat Quantity
-  mqs mqs′ : Quantities n
+  mqs mqs′ mqs₂ mqs₂′ mqs₃ mqs₃′ mqs₄ mqs₄′ : Quantities n
 
 synizize : ∀ {sys : Syllables n} {sys′ : Syllables n′}
   (syn : sys -synizizes*- sys′) →

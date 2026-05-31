@@ -139,22 +139,22 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
   debugVerse explainVerse : String
   debugVerse    =
     let
-      mqs1 , _ , _ = 𝟙-theQuantities (unwords ws)
-      mqs2 , _ , _ = 𝟚-theQuantities ws
-      mqs3 , _ , _ = 𝟛-theQuantities ws
+      mqs₁ , _ , _ = 𝟙-theQuantities (unwords ws)
+      mqs₂ , _ , _ = 𝟚-theQuantities ws
+      mqs₃ , _ , _ = 𝟛-theQuantities ws mqs₂
 
       `ws = show (unwords ws)
       ns = map Str.length (Str.words `ws)
-      `mqs1 = map show (toList mqs1)
-      `mqs2 = map show (toList mqs2)
-      `mqs3 = map show (toList mqs3)
-      `mqs23 = map show (toList $ mqs2 ⊗ mqs3)
+      `mqs₁ = map show (toList mqs₁)
+      `mqs₂ = map show (toList mqs₂)
+      `mqs₃ = map show (toList mqs₃)
+      `mqs₄ = map show (toList $ mqs₂ ⊗ mqs₃)
     in
       `ws ◇ "\n"
-      ◇ spaces (map (uncurry pad) $ L.zip `mqs1 ns) ◇ " --𝟙 \n"
-      ◇ spaces (map (uncurry pad) $ L.zip `mqs2 ns) ◇ " --𝟚 \n"
-      ◇ spaces (map (uncurry pad) $ L.zip `mqs3 ns) ◇ " --𝟛 \n"
-      ◇ spaces (map (uncurry pad) $ L.zip `mqs23 ns) ◇ " --𝟚⊗𝟛\n"
+      ◇ spaces (map (uncurry pad) $ L.zip `mqs₁ ns) ◇ " --𝟙 \n"
+      ◇ spaces (map (uncurry pad) $ L.zip `mqs₂ ns) ◇ " --𝟚 \n"
+      ◇ spaces (map (uncurry pad) $ L.zip `mqs₃ ns) ◇ " --𝟛 \n"
+      ◇ spaces (map (uncurry pad) $ L.zip `mqs₄ ns) ◇ " --𝟚⊗𝟛 \n"
   explainVerse
     with allDerivationsMin ws
   ... | [] = IMPOSSIBLE "Cannot explain non-derivable verse"
