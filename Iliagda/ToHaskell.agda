@@ -143,7 +143,7 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
       mqs₂ , _ , _ = 𝟚-theQuantities ws
       mqs₃ , _ , _ = 𝟛-theQuantities ws mqs₂
 
-      `ws = show (unwords ws)
+      `ws = showSynWs (ws , syn-refl {sys = unwords ws})
       ns = map Str.length (Str.words `ws)
       `mqs₁ = map show (toList mqs₁)
       `mqs₂ = map show (toList mqs₂)

@@ -42,12 +42,20 @@ instance
 open import Iliagda.Prosody.Rules.Level1.Dec
 open ∣Complies-Ws-HM∣
 
+showSynWs : {sys : Syllables n} → (Words n × sys -synizizes*- sys′) → String
+showSynWs = λ where
+  (_ , []) → ""
+  (ws , sy ∷ syn) →
+    let sep = if ¿ Split 1 ws ¿ᵇ then "| " else " "
+    in show sy ◇ sep ◇ showSynWs (dropSy ws , syn)
+  (ws , _∺_ {sy = sy} {sy′ = sy′} _ syn) → show sy ◇ "⁀" ◇ show sy′ ◇ " " ◇ showSynWs (dropSys 2 ws , syn)
+
 instance
   Show-Ws-HM : Show (ws ~ hm)
   Show-Ws-HM {ws = ws} {hm = hm} .show
     (_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃} _ syn _ _) =
     let
-      `syn = show syn
+      `syn = showSynWs (ws , syn)
       ns   = map Str.length (Str.words `syn)
       qs   = meter-qs hm
       `qs  = map show (toList qs)
