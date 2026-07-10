@@ -116,11 +116,13 @@ allPMs ws [] _
 allPMs _ [ q ] _
   = [] , (λ ()) , λ where ([1167/1a] ())
 
+{-
 allPMs ws [ ─ ⨾ · ] _
   = [] , (λ ()) , λ ()
 allPMs ws (─ ∷ · ∷ ─ ∷ _) _
   = [] , (λ ()) , λ ()
-{-
+-- -}
+-- {-
 allPMs ws [ ─ ⨾ · ] _
   with ¿ Split 2 ws ¿
 ... | no ¬sp
@@ -163,7 +165,7 @@ allPMs ws (─ ∷ · ∷ ─ ∷ qs) {.suc (.suc (.suc (.suc m)))} refl
 
   QED : _
   QED = map f pms , sou , com
--}
+-- -}
 allPMs ws (─ ∷ ─ ∷ qs) refl
   -- ** sponde
   using ws′ ← dropSys 2 ws
@@ -193,7 +195,7 @@ allPMs ws (─ ∷ · ∷ · ∷ qs) refl
   using ws′ ← dropSys 3 ws
   with go─·· ← allPMs ws′ qs
   with pms , sound-pms , complete-pms ← go─·· refl
-{-
+-- {-
   with ¿ Split 2 ws ¿
 ... | yes sp
   using dpms , sound-dpms , complete-dpms ← go── refl
@@ -220,7 +222,7 @@ allPMs ws (─ ∷ · ∷ · ∷ qs) refl
   QED : _
   QED = map f pms ++ map df dpms , sou , com
 ... | no ¬sp
--}
+-- -}
   = QED
   where
   f = λ (m , pm) → 1 + m , (─·· ∷ᵖᵐ pm)
@@ -232,7 +234,9 @@ allPMs ws (─ ∷ · ∷ · ∷ qs) refl
 
   com : _
   com (dactyl p) = ∈-map⁺ f (complete-pms p)
-  -- com ([1167/1b] sp _) = ⊥-elim $ ¬sp sp
+-- {-
+  com ([1167/1b] sp _) = ⊥-elim $ ¬sp sp
+-- -}
 
   QED : _
   QED = map f pms , sou , com
@@ -405,8 +409,6 @@ allDerivationsMin = allDerivations′ MinimalSynizeses
 isNonDerivable : Words n → Bool
 isNonDerivable ws = length (allDerivationsMin ws) == 0
 
--- -}
--- -}
 -- -}
 -- -}
 -- -}

@@ -164,15 +164,21 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
     explainVerse1 (_ , _ , d@(_≫⟨_⟩≫_≫_ _ syn _ (reify {qs = qs} _ _))) =
       let
         ws′  = synizizeWords ws syn
-        `ws′ = map show (toList $ unwords ws′)
+        sys′ = toList (unwords ws′)
+        `ws′ = map show sys′
         es   = explain d
         `es  = spaced (toList es)
         ns   = map Str.length (Str.words `es)
         `qs  = map show (toList qs)
+        sqes = L.zip sys′ (L.zip (toList qs) (toList es))
       in
         spaces (map (uncurry pad) $ L.zip `ws′ ns) ◇ "\n"
       ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
       ◇ `es ◇ "\n"
+      ◇ "\n** Logical derivations (natural deduction):\n\n"
+      ◇ explainLogical sqes
+      ◇ "\n** Syllable-by-syllable explanation:\n\n"
+      ◇ explainTextual sqes ◇ "\n"
 {-# COMPILE GHC checkVerse    as checkVerse #-}
 {-# COMPILE GHC checkVerseMin as checkVerseMin #-}
 {-# COMPILE GHC debugVerse    as debugVerse #-}
