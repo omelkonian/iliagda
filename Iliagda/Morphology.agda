@@ -25,7 +25,7 @@ data Letter : Type where
 
 Letters = List Letter
 
-Consonant Vowel Apostrophe Digamma : Pred₀ Letter
+Consonant Vowel Apostrophe Digamma HasDiaeresis : Pred₀ Letter
 Consonant = _∈
   ( Β ∷ β ∷ Γ ∷ γ ∷ Δ ∷ δ ∷ Ζ ∷ ζ
   ∷ Θ ∷ θ ∷ Κ ∷ κ ∷ Λ ∷ ƛ ∷ Μ ∷ μ ∷ Ν ∷ ν
@@ -44,6 +44,11 @@ Vowel = _∈
   ∷ [])
 Apostrophe = _≡ ᾽
 Digamma    = _≡ ϝ
+HasDiaeresis = _∈
+  ( ϊ ∷ ΐ ∷ ῒ ∷ ῗ
+  ∷ ϋ ∷ ΰ ∷ ῢ
+  ∷ [])
+  -- NB: not to be confused with the metrical *diaeresis* of [1167/1b] (foot boundary)
 
 -- ** syllables
 

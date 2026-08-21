@@ -278,3 +278,8 @@ module _ ⦃ _ : P ⁇¹ ⦄ where instance
 
 Last⁺ : (A → Type) → List⁺ A → Type
 Last⁺ P = Last P ∘ toList
+
+-- ** the last two adjacent elements
+
+Last× : Pred₀ (A × A) → Pred₀ (List⁺ A)
+Last× P = Last P ∘ pairs ∘ toList

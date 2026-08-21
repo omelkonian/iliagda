@@ -27,21 +27,14 @@ circumflexPenult? (word w)
 
 -- (547) final αι/oι are counted short *only* for accent
 FinalDiphthong : Pred₀ (Letter × Letter)
-FinalDiphthong = _∈
-  ( (α , ι)
-  ∷ (α , ὶ)
-  ∷ (ο , ι)
-  ∷ (ο , ῖ)
-  ∷ (ο , ἰ)
-  ∷ (ο , ὶ)
-  ∷ (ο , ί)
-  ∷ []
-  )
+FinalDiphthong (l , l′)
+  = (fst-α l × snd-ι l′)  -- αι
+  ⊎ (fst-ο l × snd-ι l′)  -- οι
 
 -- (1164) exception rules
 
 EndsInFinalDiphthong : Syllables n → Type
-EndsInFinalDiphthong = InUlt (Any× FinalDiphthong)
+EndsInFinalDiphthong = InUlt (Last× FinalDiphthong)
 
 -- (575) exception rules
 EndsInApostrophe : Syllables n → Type

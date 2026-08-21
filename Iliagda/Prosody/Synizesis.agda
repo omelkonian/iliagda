@@ -9,6 +9,23 @@ FirstVowel LastVowel : Pred₀ Syllable
 FirstVowel = Vowel ∘ head
 LastVowel  = Vowel ∘ last
 
+record Coalescing (sy sy′ : Syllable) : Type where
+  constructor coalescing
+  field
+    vowels      : LastVowel sy × FirstVowel sy′
+    .¬diaeresis : ¬ HasDiaeresis (head sy′)
+
+no-diaeresis : Coalescing sy sy′ → ¬ HasDiaeresis (head sy′)
+no-diaeresis (coalescing _ ¬d) = ¬-recompute ¬d
+
+instance
+  Dec-Coalescing : Coalescing sy sy′ ⁇
+  Dec-Coalescing {sy} {sy′} .dec
+    with ¿ LastVowel sy × FirstVowel sy′ ¿ | ¿ HasDiaeresis (head sy′) ¿
+  ... | no ¬vv | _      = no $ ¬vv ∘ Coalescing.vowels
+  ... | yes _  | yes d  = no λ c → no-diaeresis c d
+  ... | yes vv | no ¬d  = yes (coalescing vv ¬d)
+
 _⁀_ : Syllable → Syllable → Syllable
 _⁀_ = L.NE._⁺++⁺_
 
@@ -33,8 +50,7 @@ data _-synizizes*-_ where
       (sy ∷ sys) ~ (sy ∷ sys′)
 
   _∺_ :
-      -- TODO: διαλυτικα??
-      LastVowel sy × FirstVowel sy′
+      Coalescing sy sy′
     → sys ~ sys′
     → ⦃ _ : sy″ ≡ sy ⁀ sy′ ⦄
     → ───────────────────────────────
@@ -80,16 +96,6 @@ unwords-∷ʷˢ : unwords (sy ∷ʷˢ ws) ≡ sy ∷ unwords ws
 unwords-∷ʷˢ {ws = []} = refl
 unwords-∷ʷˢ {ws = word _ ∷ _} = refl
 
-_++ʷˢ_ : Syllables m → Words n → Words (m + n)
-[] ++ʷˢ ws = ws
-(sy ∷ sys) ++ʷˢ ws = sy ∷ʷˢ (sys ++ʷˢ ws)
-
-unwords-++ʷˢ : unwords (sys ++ʷˢ ws) ≡ sys V.++ unwords ws
-unwords-++ʷˢ {sys = []} = refl
-unwords-++ʷˢ {sys = sy ∷ sys} {ws = ws} =
-  trans (unwords-∷ʷˢ {ws = sys ++ʷˢ ws})
-        (cong (sy ∷_) $ unwords-++ʷˢ {ws = ws})
-
 synizizeWords : ∀ (ws : Words n) {sys′ : Syllables n′}
   (syn : unwords ws -synizizes*- sys′) →
   Words n′
@@ -99,17 +105,21 @@ synizizeWords (word [ sy ] ∷ []) (.sy ∷ []) =
 synizizeWords (word [ sy ] ∷ (word (sy′ ∷ sys) ∷ ws)) (.sy ∷ syn) =
   -- keep word boundary
   word [ sy ] ∷ synizizeWords (word (sy′ ∷ sys) ∷ ws) syn
-synizizeWords (word [ sy ] ∷ (word (sy′ ∷ sys) ∷ ws)) {_ ∷ sys′} (_ ∺ syn) =
-  -- forget word boundary
-  let syn′ = subst (_~ sys′) (sym $ unwords-++ʷˢ {ws = ws}) syn in
-  (sy ⁀ sy′) ∷ʷˢ synizizeWords (sys ++ʷˢ ws) syn′
+synizizeWords (word [ sy ] ∷ (word [ sy′ ] ∷ ws)) (_ ∺ syn) =
+  -- the two words coalesce into a monosyllable, the boundary after it survives
+  word [ sy ⁀ sy′ ] ∷ synizizeWords ws syn
+synizizeWords (word [ sy ] ∷ (word (sy′ ∷ sys@(_ ∷ _)) ∷ ws)) (_ ∺ syn) =
+  -- the two words coalesce, the rest of the second stays inside the merged word
+  (sy ⁀ sy′) ∷ʷˢ synizizeWords (word sys ∷ ws) syn
 synizizeWords (word (sy ∷ sy′ ∷ sys) ∷ ws) (.sy ∷ syn) =
   -- no word boundary
   sy ∷ʷˢ synizizeWords (word (sy′ ∷ sys) ∷ ws) syn
-synizizeWords (word (sy ∷ sy′ ∷ sys) ∷ ws) {_ ∷ sys′} (_ ∺ syn) =
-  -- no word boundary
-  let syn′ = subst (_~ sys′) (sym $ unwords-++ʷˢ {ws = ws}) syn in
-  (sy ⁀ sy′) ∷ʷˢ synizizeWords (sys ++ʷˢ ws) syn′
+synizizeWords (word (sy ∷ sy′ ∷ []) ∷ ws) (_ ∺ syn) =
+  -- the merge exhausts this word, the boundary after it survives
+  word [ sy ⁀ sy′ ] ∷ synizizeWords ws syn
+synizizeWords (word (sy ∷ sy′ ∷ sys@(_ ∷ _)) ∷ ws) (_ ∺ syn) =
+  -- word-internal merge
+  (sy ⁀ sy′) ∷ʷˢ synizizeWords (word sys ∷ ws) syn
 
 -- ** unique synizesis
 
@@ -117,13 +127,14 @@ Vowel-irr : (p q : Vowel l) → p ≡ q
 Vowel-irr = unique⇒irrelevant auto
   where open import Data.List.Membership.Propositional.Properties.WithK
 
+Coalescing-irr : ∀ {sy sy′} (p q : Coalescing sy sy′) → p ≡ q
+Coalescing-irr (coalescing (lv , fv) ¬d) (coalescing (lv′ , fv′) _) =
+  cong₂ (λ ◆ ◆′ → coalescing (◆ , ◆′) ¬d) (Vowel-irr lv lv′) (Vowel-irr fv fv′)
+
 uniqueSyn : (p q : sys -synizizes*- sys′) → p ≡ q
 uniqueSyn [] [] = refl
 uniqueSyn (sy ∷ p) (.sy ∷ q) = cong (sy ∷_) (uniqueSyn p q)
 uniqueSyn (sy ∷ _) ((_ ∺ _) ⦃ eq ⦄) = ⊥-elim $ ⁀-irrefl eq
 uniqueSyn ((_ ∺ _) ⦃ eq ⦄) (sy ∷ _) = ⊥-elim $ ⁀-irrefl eq
-uniqueSyn (((lv , fv) ∺ p) ⦃ refl ⦄) (((lv′ , fv′) ∺ q) ⦃ refl ⦄)
-  -- rewrite Vowel-irr lv lv′ | Vowel-irr fv fv′
-  = subst (λ ◆ → _ ≡ (◆ , _) ∺ _) (Vowel-irr lv lv′)
-  $ subst (λ ◆ → _ ≡ (_ , ◆) ∺ _) (Vowel-irr fv fv′)
-  $ cong (_ ∺_) (uniqueSyn p q)
+uniqueSyn (_∺_ {sy = sy} {sy′ = sy′} c p ⦃ refl ⦄) ((c′ ∺ q) ⦃ refl ⦄)
+  = cong₂ (λ ◆ ◆′ → (◆ ∺ ◆′) ⦃ refl ⦄) (Coalescing-irr {sy} {sy′} c c′) (uniqueSyn p q)

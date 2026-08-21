@@ -118,6 +118,8 @@ open import Relation.Nullary public
   using (¬_)
 open import Relation.Nullary.Decidable.Core public
   using (Dec; yes; no; ⌊_⌋; ¬?) renaming (map′ to mapDec)
+open import Relation.Nullary.Recomputable public
+  using (¬-recompute)
 open import Relation.Unary public
   using (Pred)
   renaming (_∪_ to _∪¹_; _∩_ to _∩¹_; _⊆_ to _⊆¹_; Decidable to Decidable¹)

@@ -27,7 +27,7 @@ allSynizeses [ sy ] (suc (suc _)) = [] , (λ ()) , λ where (_ ∷ ())
 allSynizeses (sy ∷ sys@(sy′ ∷ _)) 0
   = [] , (λ ()) , λ ()
 allSynizeses (sy ∷ sys@(sy′ ∷ sys′)) n′@(suc n′-1)
-  with ¿ LastVowel sy × FirstVowel sy′ ¿
+  with ¿ Coalescing sy sy′ ¿
 ... | yes vv
 
   -- DON'T DO THE SYNIZESIS
