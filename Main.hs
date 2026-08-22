@@ -63,7 +63,7 @@ fixDoubtfuls = onWord $ \case
   ["ῥα"] -> ["ῥᾰ"]
   ["ῥά"] -> ["ῥᾰ"]
   ["πτε","ρό","εν","τα"] -> ["πτε","ρό","εν","τᾰ"]
-  ["ποƛ","λὰ"] -> ["ποƛ","ƛᾰ"]
+  ["πολ","λὰ"] -> ["πολ","λᾰ"]
   ["ἔρ","γα"] -> ["ἔρ","γᾰ"]
   ["ἀλ","λὰ"] -> ["ἀλ","λᾰ"]
   ["ἄν","τα"] -> ["ἄν","τᾰ"]
@@ -79,7 +79,7 @@ fixDoubtfuls = onWord $ \case
   ["ἐ","λε","ει","νὰ"] -> ["ἐ","λε","ει","νᾰ"]
   -- vrachy ῐ
   ("ἀμ":('φ':i:ls):sys) | i `elem` "ιὶ" -> ("ἀμ":("φῐ" <> ls):sys)
-  ["τει","χε","σι","πƛῆ","τα"] -> ["τει","χε","σῐ","πƛῆ","τα"]
+  ["τει","χε","σι","πλῆ","τα"] -> ["τει","χε","σῐ","πλῆ","τα"]
   ["ἐσ","σι"{-ί-}] -> ["ἐσ","σῐ"]
   ["ἐ","στὶ"] -> ["ἐ","στῐ"]
   ["δ᾽εἰ","νὶ"] -> ["δ᾽εἰ","νῐ"]
@@ -129,7 +129,7 @@ allIndices =
 type Derivations = [[T.Text]]
 
 derivations :: Verse -> Derivations
-derivations = AGDA.checkVerseMin . insertDigamma . fixDoubtfuls
+derivations = AGDA.checkVerseMin . preprocess
 
 showDerivations :: Verse -> Derivations -> T.Text
 showDerivations v (concat -> ds)
@@ -194,5 +194,5 @@ main = getArgs >>= \case
 
   checkVerse :: Verse -> IO ()
   checkVerse (preprocess -> v) = do
-    let ds = derivations v
+    let ds = AGDA.checkVerseMin v
     T.putStrLn $ showDerivations v ds
