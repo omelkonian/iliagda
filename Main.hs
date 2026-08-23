@@ -23,19 +23,16 @@ type Book     = [Verse]
 
 -- ** pre-processing
 
-onLetter :: (Letter -> Letter) -> Verse -> Verse
-onLetter = map . map . map
 onWord :: (Word -> Word) -> Verse -> Verse
 onWord = map
 onVerse :: (Verse -> Verse) -> Verse -> Verse
 onVerse = id
 
-preprocess, insertDigamma, fixDoubtfuls, unlambda :: Verse -> Verse
+preprocess, insertDigamma, fixDoubtfuls :: Verse -> Verse
 preprocess
   = repairVerses
   . insertDigamma
   . fixDoubtfuls
-  . unlambda
 repairVerses = onVerse \case
   (["φί","λε"]:ws) -> (["φη","λε"]:ws)
     -- NB: also remove acute accent to disable [1161]
@@ -97,9 +94,6 @@ fixDoubtfuls = onWord $ \case
   -- ???
   -- ["χάρ","μα"] -> ["χάρ","μᾰ"]
   w -> w
-unlambda = onLetter $ \case
-  'ƛ' -> 'λ'
-  c -> c
 
 -- ** indexing books & verses
 
