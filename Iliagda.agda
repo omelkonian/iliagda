@@ -5,9 +5,6 @@ open import Iliagda.Init
 -- ** Lexical concepts unrelated to meters.
 open import Iliagda.Morphology
 
--- ** Verses from the Iliad.
-open import Iliagda.Verses
-
 -- ** Prosody: the rules of Greek hexameter.
 open import Iliagda.Prosody
 open import Iliagda.Prosody.Synizesis
