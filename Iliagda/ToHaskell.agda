@@ -161,9 +161,9 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
   ... | ds = lined $ map explainVerse1 ds
     where
     explainVerse1 : _ → String
-    explainVerse1 (_ , _ , d@(_≫⟨_⟩≫_≫_ _ syn _ (reify {qs = qs} _ _))) =
+    explainVerse1 (_ , _ , d@(_▷_≫⟨_⟩≫_≫_ {ws″ = ws″} _ _ syn _ (reify {qs = qs} _ _))) =
       let
-        ws′  = synizizeWords ws syn
+        ws′  = synizizeWords ws″ syn
         sys′ = toList (unwords ws′)
         `ws′ = map show sys′
         es   = explain d

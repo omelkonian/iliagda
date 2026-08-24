@@ -8,6 +8,7 @@ open import Iliagda.Morphology
 open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Synizesis
+open import Iliagda.Reading
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level2
 open import Iliagda.Prosody.Rules.Level3
@@ -95,12 +96,13 @@ instance
 
       data _~′_ : Words n → Hexameter n′ → Type where
 
-        _≫⟨_⟩≫_≫_ : ∀ {ws : Words n} {sys′ : Syllables n′} {hm : Hexameter n′} →
-          ∙ ws ~² mqs₂
+        _▷_≫⟨_⟩≫_≫_ : ∀ {ws ws″ : Words n} {sys′ : Syllables n′} {hm : Hexameter n′} →
+          ws -reads- ws″ →
+          ∙ ws″ ~² mqs₂
           -- [586] synizesis
-          → (syn : unwords ws -synizizes*- sys′) →
+          → (syn : unwords ws″ -synizizes*- sys′) →
           let
-            ws′   = synizizeWords ws syn
+            ws′   = synizizeWords ws″ syn
             mqs₂′ = synizize syn mqs₂
           in
           ∙ (ws′ , mqs₂′) ~³ mqs₃

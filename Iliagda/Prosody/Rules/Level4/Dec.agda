@@ -319,6 +319,8 @@ open import Iliagda.Prosody.Rules.Level1.Dec
 open import Iliagda.Prosody.Rules.Level2.Dec
 open import Iliagda.Prosody.Rules.Level3.Dec
 open import Iliagda.Prosody.Synizesis.Dec
+open import Iliagda.Reading
+open import Iliagda.Reading.Dec
 
 module _ (n′ : ℕ) where
   Derivation⟨_⟩ Derivations⟨_⟩ : Words n → Type
@@ -330,53 +332,101 @@ module _ (n′ : ℕ) where
     ∃ λ (ds : List (Hexameter n′)) →
         (∀ {hm} → hm ∈ ds → ws ~ hm)
       × (∀ {hm} → ws ~ hm → hm ∈ ds)
-  allMeterDerivations⟨_⟩ ws
-    using mqs₂ , ws~mqs₂ , complete-mqs₂ ← 𝟚-theQuantities ws
-    using syss , sound-syss , complete-syss ← allSynizeses (unwords ws) n′
-    = ds , sound-ds , complete-ds
-    where
-    mkDerivation : ∀ {sys′} → sys′ ∈ syss → List (Hexameter n′)
+  module _ (ws″ : Words n) where
+    private
+      m2 = 𝟚-theQuantities ws″
+      syz = allSynizeses (unwords ws″) n′
+
+    mqs₂* : Quantities n
+    mqs₂* = m2 .proj₁
+
+    ws″~mqs₂* : ws″ ~² mqs₂*
+    ws″~mqs₂* = m2 .proj₂ .proj₁
+
+    complete-mqs₂* : ∀ {mqs} → ws″ ~² mqs → mqs ≡ mqs₂*
+    complete-mqs₂* = m2 .proj₂ .proj₂
+
+    syss* : List (Syllables n′)
+    syss* = syz .proj₁
+
+    sound-syss* : ∀ {sys′} → sys′ ∈ syss* → unwords ws″ -synizizes*- sys′
+    sound-syss* = syz .proj₂ .proj₁
+
+    complete-syss* : ∀ {sys′} → unwords ws″ -synizizes*- sys′ → sys′ ∈ syss*
+    complete-syss* = syz .proj₂ .proj₂
+
+    mkDerivation : ∀ {sys′} → sys′ ∈ syss* → List (Hexameter n′)
     mkDerivation x∈
-      using syn  ← sound-syss x∈
-      using ws′  ← synizizeWords ws syn
-      using mqs₂′ ← synizize syn mqs₂
+      using syn ← sound-syss* x∈
+      using ws′ ← synizizeWords ws″ syn
+      using mqs₂′ ← synizize syn mqs₂*
       using mqs₃ , _ , _ ← 𝟛-theQuantities ws′ mqs₂′
       using hms , _ , _ ← allHexameters (ws′ , mqs₂′ ⊗ mqs₃)
       = hms
 
+    perReading : List (Hexameter n′)
+    perReading = concat $ mapWith∈ syss* mkDerivation
+
+    readSound : ∀ {hm} → hm ∈ perReading →
+      ∃ λ sys′ → ∃ λ (syn : unwords ws″ -synizizes*- sys′) →
+        let ws′ = synizizeWords ws″ syn; mqs₂′ = synizize syn mqs₂* in
+        ∃ λ mqs₃ → ((ws′ , mqs₂′) ~³ mqs₃) × ((ws′ , mqs₂′ ⊗ mqs₃) ~ hm)
+    readSound {hm} x∈
+      with _ , y∈ , hm∈ ← satisfied′ $ ∈-concat⁻ (mapWith∈ syss* mkDerivation) x∈
+      with _ , z∈ , refl ← L.Any.mapWith∈⁻ syss* mkDerivation y∈
+      using syn ← sound-syss* z∈
+      using ws′ ← synizizeWords ws″ syn
+      using mqs₂′ ← synizize syn mqs₂*
+      using mqs₃ , ws′~mqs₃ , _ ← 𝟛-theQuantities ws′ mqs₂′
+      with hms , sound-hms , _ ← allHexameters (ws′ , mqs₂′ ⊗ mqs₃)
+      = _ , syn , mqs₃ , ws′~mqs₃ , sound-hms hm∈
+
+    readComplete : ∀ {hm : Hexameter n′} {mqs₂ : Quantities n}
+      {sys′ : Syllables n′} {mqs₃ : Quantities n′}
+      (syn : unwords ws″ -synizizes*- sys′) →
+      ws″ ~² mqs₂ →
+      (let ws′ = synizizeWords ws″ syn; mqs₂′ = synizize syn mqs₂ in
+        ((ws′ , mqs₂′) ~³ mqs₃) → ((ws′ , mqs₂′ ⊗ mqs₃) ~ hm) →
+        hm ∈ perReading)
+    readComplete {hm} {mqs₂} syn ws″~ ws′~ ~hm
+      using x∈ ← complete-syss* syn
+      using syn′ ← sound-syss* x∈
+      = L.Any.concat⁺ $ L.Any.mapWith∈⁺ mkDerivation $ -, x∈ , QED
+      where
+      QED : hm ∈ mkDerivation x∈
+      QED
+        using ws′ ← synizizeWords ws″ syn
+        using mqs₂′ ← synizize syn mqs₂
+        using mqs₃* , _ , complete-mqs₃ ← 𝟛-theQuantities ws′ mqs₂′
+        using hms , _ , complete-hms ← allHexameters (ws′ , mqs₂′ ⊗ mqs₃*)
+        with hm∈ ← complete-hms $ subst (λ ◆ → _ , (_ ⊗ ◆) ~ _) (complete-mqs₃ ws′~) ~hm
+        rewrite uniqueSyn syn′ syn | complete-mqs₂* ws″~
+        = hm∈
+
+  allMeterDerivations⟨_⟩ ws
+    using wss , sound-rd , complete-rd ← allReadings ws
+    = ds , sound-ds , complete-ds
+    where
+    perRead : ∀ {ws″} → ws″ ∈ wss → List (Hexameter n′)
+    perRead {ws″} _ = perReading ws″
+
     ds : List (Hexameter n′)
-    ds = concat $ mapWith∈ syss mkDerivation
+    ds = concat $ mapWith∈ wss perRead
 
     sound-ds : ∀ {hm} → hm ∈ ds → ws ~ hm
     sound-ds {hm} x∈
-      with _ , y∈ , hm∈ ← satisfied′ $ ∈-concat⁻ (mapWith∈ syss mkDerivation) x∈
-      with _ , z∈ , refl ← L.Any.mapWith∈⁻ syss mkDerivation y∈
-      using syn ← sound-syss z∈
-      using ws′ ← synizizeWords ws syn
-      using mqs₂′ ← synizize syn mqs₂
-      using mqs₃ , ws′~mqs₃ , _ ← 𝟛-theQuantities ws′ mqs₂′
-      with hms , sound-hms , _ ← allHexameters (ws′ , mqs₂′ ⊗ mqs₃)
-      = ws~mqs₂ ≫⟨ syn ⟩≫ ws′~mqs₃ ≫ sound-hms hm∈
+      with _ , y∈ , hm∈ ← satisfied′ $ ∈-concat⁻ (mapWith∈ wss perRead) x∈
+      with ws″ , z∈ , refl ← L.Any.mapWith∈⁻ wss perRead y∈
+      with _ , syn , _ , ws′~ , ~hm ← readSound ws″ hm∈
+      = sound-rd z∈ ▷ ws″~mqs₂* ws″ ≫⟨ syn ⟩≫ ws′~ ≫ ~hm
 
     complete-ds : ∀ {hm} → ws ~ hm → hm ∈ ds
     complete-ds {hm}
-      (_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃↓} {ws = ws} {sys′ = sys′} ws~ syn ws′~ ~hm)
-      using x∈ ← complete-syss syn
-      using syn′ ← sound-syss x∈
+      (_▷_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃} {ws″ = ws″} {sys′ = sys′} rd ws″~ syn ws′~ ~hm)
+      using x∈ ← complete-rd rd
       = L.Any.concat⁺
-      $ L.Any.mapWith∈⁺ mkDerivation
-      $ -, x∈ , QED
-      where
-
-      QED : hm ∈ mkDerivation x∈
-      QED
-        using ws′ ← synizizeWords ws syn
-        using mqs₂′ ← synizize syn mqs₂
-        using mqs₃ , ws′~mqs₃ , complete-mqs₃ ← 𝟛-theQuantities ws′ mqs₂′
-        using hms , _ , complete-hms ← allHexameters (ws′ , mqs₂′ ⊗ mqs₃)
-        with hm∈ ← complete-hms $ subst (λ ◆ → _ , (_ ⊗ ◆) ~ _) (complete-mqs₃ ws′~) ~hm
-        rewrite uniqueSyn syn′ syn | complete-mqs₂ ws~
-        = hm∈
+      $ L.Any.mapWith∈⁺ perRead
+      $ -, x∈ , readComplete ws″ {hm} {mqs₂} {sys′} {mqs₃} syn ws″~ ws′~ ~hm
 
   allDerivations⟨_⟩ : (ws : Words n) → Derivations⟨_⟩ ws
   allDerivations⟨_⟩ ws = let ds , sound-ds , _ = allMeterDerivations⟨_⟩ ws in

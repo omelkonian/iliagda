@@ -21,6 +21,7 @@ data Explanation : Type where
     [1173]
     [524]
   -- Level 3
+    byLexicon
     [1160]
     [1161]
     [1162]
@@ -54,24 +55,29 @@ explain1 (p ∷ ps) = explain11 p ∷ explain1 ps
     (byNature _) → byNature
     (doubtful _) → ？
 
+lexTag : {sys : Syllables n} {lex : Op₁ (Quantities n)} →
+  sys ~L lex → Explanations n → Explanations n
+lexTag (byLexicon h) es = es V.[ h .ix ]≔ byLexicon
+lexTag (noLex _) es = es
+
 explain2 : {ws : Words n} → ws ~² mqs → Explanations n
 explain2 = λ where
   [] → []
   (p ∷ ps) → explain21 p V.++ explain2 ps
  where
   explain21 : {w : Word n} → w ~ʷ mqs → Explanations n
-  explain21 (𝟙-then-𝟚 p1 p2)
+  explain21 (𝟙-then-L-then-𝟚 p1 pL p2)
     with p2
-  ... | [1164] _ = explain1 p1
-  ... | [574] _ = explain1 p1
-  ... | [575] _ = explain1 p1
-  ... | noop _ = explain1 p1
+  ... | [1164] _ = lexTag pL (explain1 p1)
+  ... | [574] _ = lexTag pL (explain1 p1)
+  ... | [575] _ = lexTag pL (explain1 p1)
+  ... | noop _ = lexTag pL (explain1 p1)
   ... | fromBelow _ _ _ _ p2
     with p2
-  ... | [1160] _ = explain1 p1 ≔ₙ [1160]
-  ... | [1161] _ = explain1 p1 ≔ₙ [1161]
-  ... | [1162] _ _ = explain1 p1 ≔ₙ₋₁ [1162]
-  ... | [1163] _ = explain1 p1 ≔ₙ [1163]
+  ... | [1160] _ = lexTag pL (explain1 p1) ≔ₙ [1160]
+  ... | [1161] _ = lexTag pL (explain1 p1) ≔ₙ [1161]
+  ... | [1162] _ _ = lexTag pL (explain1 p1) ≔ₙ₋₁ [1162]
+  ... | [1163] _ = lexTag pL (explain1 p1) ≔ₙ [1163]
 
 module _ {ctx} (let open QuantityRules ctx) where
 
@@ -169,7 +175,7 @@ _⊕_ = λ where
   = (x ⊕ y ⊕ z ⊕ w) ∷ ⊞ n> p2 syn p3 p4
 
 explain : {hm : Hexameter n′} → ws ~ hm → Explanations n′
-explain (_≫⟨_⟩≫_≫_ {ws = ws} p2 syn p3 p4) = let ws′ = synizizeWords ws syn in
+explain (_▷_≫⟨_⟩≫_≫_ {ws″ = ws″} _ p2 syn p3 p4) = let ws′ = synizizeWords ws″ syn in
   ⊞ Nat.≤-refl (synizizeExplanations syn (explain2 p2))
                (explainSyn syn) (explain3 {ws = ws′} p3) (explain4 p4)
 
@@ -185,6 +191,7 @@ instance
     [522]cc → "[522]cc"
     [1173] → "[1173]"
     [524] → "[524]"
+    byLexicon → "byLexicon"
     [1160] → "[1160]"
     [1161] → "[1161]"
     [1162] → "[1162]"
@@ -224,6 +231,7 @@ ruleURL = λ where
   [522]cc           → lvl3URL ◇ "QuantityRules._~∗_.[522]"
   [1173]            → lvl3URL ◇ "QuantityRules._~∗_.[1173]"
   [524]             → lvl3URL ◇ "QuantityRules._~∗_.[524]"
+  byLexicon            → lvl2URL ◇ "_~L_.byLexicon"
   [1160]            → lvl2URL ◇ "_~%25′_.[1160]"
   [1161]            → lvl2URL ◇ "_~%25′_.[1161]"
   [1162]            → lvl2URL ◇ "_~%25′_.[1162]"
@@ -303,6 +311,9 @@ nd s q = λ where
   [524] → infer ( [ "the short vowel of " ◇ s ◇ " is followed by a mute, then a liquid/nasal" ]
                 ∷ [ [ "the meter requires " ◇ show q ] ] )
     "[524]" (s ⊢~ q)
+  byLexicon → infer ( [ "its α/ι/υ is doubtful by nature (519)" ]
+                 ∷ [ [ "the lexicon declares this word " ◇ show q ◇ " here" ] ] )
+    "byLexicon" (s ⊢~ q)
   [1160] → infer ( [ "the penult of the word bears a circumflex" ]
                  ∷ [ [ s ◇ " is the ultima" ] ] )
     "[1160]" (s ⊢~ ·)
@@ -359,6 +370,9 @@ nlExplain q = λ where
   [524] → "it is a " ◇ mdLink "common syllable" (ruleURL [524])
     ◇ " — its short vowel is followed by a mute and then a liquid or nasal,"
     ◇ " so the verse may treat it either way; here it is read " ◇ quantityWord q ◇ "."
+  byLexicon → "its α/ι/υ is doubtful — orthography does not fix its quantity — and the "
+    ◇ mdLink "lexicon" (ruleURL byLexicon) ◇ " declares this word's vowel "
+    ◇ quantityWord q ◇ " here."
   [1160] → "the penult of its word bears a circumflex, so this ultima "
     ◇ mdLink "must be short" (ruleURL [1160]) ◇ "."
   [1161] → "the long penult of its word bears an acute, so this ultima "

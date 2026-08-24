@@ -9,6 +9,7 @@ open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
+open import Iliagda.Lexicon
 
 -- TODO: how does apostrophe interact with syllables?
 -- i.e. re-index by-construction or not??
@@ -85,9 +86,6 @@ data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
     ────────────────────────────────
     sys ~%′ (_≔ₙ single ·)
 
-unsyllables : Syllables n → Letters
-unsyllables = L.concat ∘ map toList ∘ toList
-
 IsCompound : Syllables n → Type
 IsCompound sys = unsyllables sys ∈
   [ [ ο ⨾ ὔ ⨾ τ ⨾ ε ]
@@ -140,13 +138,33 @@ data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
       ─────────────────────────────────
       sys ~% id
 
+record LexHit {n} (sys : Syllables n) : Type where
+  constructor lexHit
+  field
+    entry   : Entry
+    ix      : Fin n
+    found   : lexLookup (unsyllables sys) ≡ just entry
+    atLocus : locusIx (locusOf (entry .mode)) n ≡ just ix
+    gap     : NonDerivable {B = Quantity} (V.lookup sys ix)
+open LexHit public
+
+data _~L_ : Syllables n → Op₁ (Quantities n) → Type where
+
+  byLexicon : (h : LexHit sys) → sys ~L (V._[ h .ix ]≔ single (h .entry .qty))
+
+  noLex :
+    ¬ LexHit sys
+    ────────────
+    sys ~L id
+
 data _~ʷ_ : Word n → Quantities n → Type where
 
-  𝟙-then-𝟚 : ∀ {f} → let sys = unword w in
+  𝟙-then-L-then-𝟚 : ∀ {lex f} → let sys = unword w in
     ∙ sys ~ mqs
+    ∙ sys ~L lex
     ∙ sys ~% f
-      ───────────────
-      w ~ʷ f mqs
+      ─────────────────
+      w ~ʷ f (lex mqs)
 
 instance
   Complies-W-MQs : Word n -compliesWith- Quantities n
