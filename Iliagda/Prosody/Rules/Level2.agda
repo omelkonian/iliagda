@@ -49,42 +49,40 @@ SingleAccents = LastThree (  Affinely HasAccentSy
                           ∩¹ All (Affinely⁺ HasAccent)
                           )
 
-data _~%′_ : Syllables n → Op₁ (Quantities n) → Type where
+infix 1 _⊨_~%′_ _⊨_~%_
+
+data _⊨_~%′_ : Quantities n → Syllables n → Op₁ (Quantities n) → Type where
 
   -- The vowel of the ultima in every word
   -- having the circumflex on the penult is short (545).
   [1160] :
     InPenult (Any HasCircumflex) sys
     ────────────────────────────────
-    sys ~%′ (_≔ₙ single ·)
+    mqs ⊨ sys ~%′ (_≔ₙ single ·)
 
   -- If a long penult has the acute accent,
   -- then the ultima must be long also.
   [1161] :
-    -- ** add context if you want LEVEL 3
-    -- ∙ toList ult ⊢ penult ↝ ─
-    InPenult ((_~ ─) ∩¹ Any HasAcute) sys
-    ─────────────────────────────────────
-    sys ~%′ (_≔ₙ single ─)
+    ∙ InPenult (_≡ single ─) mqs
+    ∙ InPenult (Any HasAcute) sys
+      ───────────────────────────
+      mqs ⊨ sys ~%′ (_≔ₙ single ─)
 
   -- If the ultima is short and the penult has the acute accent,
   -- then the penult must be short also.
   [1162] :
-    -- ** add context if you want LEVEL 3
-    -- ∙ ctx ⊢ ult ↝ ·
-    ∙ InUlt (_~ ·) sys
-    ∙ InPenult ( (_≁ ─) -- NB: to avoid clash with [1161]
-               ∩¹ Any HasAcute
-               ) sys
-      ────────────────────────
-      sys ~%′ (_≔ₙ₋₁ single ·)
+    ∙ InUlt (_≡ single ·) mqs
+    ∙ InPenult (_≢ single ─) mqs -- NB: to avoid clash with [1161]
+    ∙ InPenult (Any HasAcute) sys
+      ─────────────────────────────
+      mqs ⊨ sys ~%′ (_≔ₙ₋₁ single ·)
 
   -- If the antepenult has the accent,
   -- the vowel of the ultima must be short (544).
   [1163] :
     InAntepenult (Any HasAccent) sys
     ────────────────────────────────
-    sys ~%′ (_≔ₙ single ·)
+    mqs ⊨ sys ~%′ (_≔ₙ single ·)
 
 IsCompound : Syllables n → Type
 IsCompound sys = unsyllables sys ∈
@@ -105,38 +103,38 @@ IsCompound sys = unsyllables sys ∈
 data ApparentException : Syllables n → Type where
   [1165] : IsCompound sys → ApparentException sys
 
-data _~%_ : Syllables n → Op₁ (Quantities n) → Type where
+data _⊨_~%_ : Quantities n → Syllables n → Op₁ (Quantities n) → Type where
 
   [1164] :
     EndsInFinalDiphthong sys
     ────────────────────────
-    sys ~% id
+    mqs ⊨ sys ~% id
 
   [574] :
     ApparentException sys
     ─────────────────────
-    sys ~% id
+    mqs ⊨ sys ~% id
 
   -- (575/583) Elision has taken place.
   [575] :
     EndsInApostrophe sys
     ────────────────────
-    sys ~% id
+    mqs ⊨ sys ~% id
 
   fromBelow : ∀ {f} →
     ∙ ¬ EndsInFinalDiphthong sys
     ∙ ¬ ApparentException sys
     ∙ ¬ EndsInApostrophe sys
     ∙ SingleAccents sys
-    ∙ sys ~%′ f
+    ∙ mqs ⊨ sys ~%′ f
       ───────────────────────────
-      sys ~% f
+      mqs ⊨ sys ~% f
 
   noop :
     ∙ (¬ SingleAccents sys)
-    ⊎ (∀ {f} → ¬ sys ~%′ f)
+    ⊎ (∀ {f} → ¬ (mqs ⊨ sys ~%′ f))
       ─────────────────────────────────
-      sys ~% id
+      mqs ⊨ sys ~% id
 
 record LexHit {n} (sys : Syllables n) : Type where
   constructor lexHit
@@ -162,8 +160,8 @@ data _~ʷ_ : Word n → Quantities n → Type where
   𝟙-then-L-then-𝟚 : ∀ {lex f} → let sys = unword w in
     ∙ sys ~ mqs
     ∙ sys ~L lex
-    ∙ sys ~% f
-      ─────────────────
+    ∙ lex mqs ⊨ sys ~% f
+      ──────────────────
       w ~ʷ f (lex mqs)
 
 instance

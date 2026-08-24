@@ -79,10 +79,7 @@ reportStats nss = unlines (byFeet ++ [""] ++ bySpurious)
 -- Check a single verse from one of the books:
 --    $ iliagda <BOOK>.<VERSE>
 --
--- Explain a single verse from one of the books:
---    $ iliagda explain <BOOK>.<VERSE>
---
--- Explain a single given verse (syllables separated by '-'):
+-- Check a single given verse (syllables separated by '-'):
 --    $ iliagda sy₁-sy₂-...-syₙ <WORD₂> ... <WORDₘ>
 --
 main :: IO ()
@@ -101,9 +98,6 @@ main = getArgs >>= \case
     putStrLn "--------------------------------"
     putStrLn $ reportStats nss
   [s] -> checkVerse =<< readVerse s
-  ["--explain", s] -> do
-    v <- readVerse s
-    T.putStrLn $ AGDA.explainVerse v
   as -> checkVerse (map (splitOn "-") as)
  where
   readVerse :: String -> IO Verse
