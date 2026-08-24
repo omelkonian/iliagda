@@ -10,6 +10,7 @@ open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
 open import Iliagda.Prosody.Rules.Level1.Dec
+open import Iliagda.Lexicon
 open import Iliagda.Prosody.Rules.Level2
 
 instance
@@ -223,6 +224,54 @@ theF sys
     (noop (inj₂ sys≁)) → ⊥-elim $ sys≁ sys~
     (fromBelow _ _ _ _ sys~′) → unique-f sys~′
 
+nonDerivable? : (sy : Syllable) → Dec (NonDerivable {B = Quantity} sy)
+nonDerivable? sy with 𝟙-theQuantity? sy
+... | inj₁ (q , sy~q , _) = no λ nd → nd q sy~q
+... | inj₂ nd = yes nd
+
+lex? : (sys : Syllables n) → Dec (LexHit sys)
+lex? {n} sys = go (lexLookup (unsyllables sys)) refl
+  where
+  go : (m : Maybe Entry) → lexLookup (unsyllables sys) ≡ m → Dec (LexHit sys)
+  go nothing eqL = no λ where
+    (lexHit _ _ eqL′ _ _) → case trans (sym eqL) eqL′ of λ ()
+  go (just e) eqL = go′ (locusIx (locusOf (e .mode)) n) refl
+    where
+    go′ : (mi : Maybe (Fin n)) → locusIx (locusOf (e .mode)) n ≡ mi → Dec (LexHit sys)
+    go′ nothing eqI = no λ where
+      (lexHit _ _ eqL′ eqI′ _) →
+        case May.just-injective (trans (sym eqL) eqL′) of λ where
+          refl → case trans (sym eqI) eqI′ of λ ()
+    go′ (just i) eqI with nonDerivable? (V.lookup sys i)
+    ... | yes d = yes (lexHit e i eqL eqI d)
+    ... | no ¬d = no λ where
+      (lexHit _ _ eqL′ eqI′ d′) →
+        case May.just-injective (trans (sym eqL) eqL′) of λ where
+          refl → case May.just-injective (trans (sym eqI) eqI′) of λ where
+            refl → ¬d d′
+
+lexUnique : {sys : Syllables n} (h h′ : LexHit sys) →
+  (V._[ h′ .ix ]≔ single (h′ .entry .qty)) ≡ (V._[ h .ix ]≔ single (h .entry .qty))
+lexUnique (lexHit _ _ eqL eqI _) (lexHit _ _ eqL′ eqI′ _)
+  with refl ← May.just-injective (trans (sym eqL) eqL′)
+  with refl ← May.just-injective (trans (sym eqI) eqI′)
+  = refl
+
+theL :
+  (sys : Syllables n) →
+  ∃ λ (lex : Op₁ (Quantities n)) →
+      (sys ~L lex)
+    × (∀ {lex′} → sys ~L lex′ → lex′ ≡ lex)
+theL sys with lex? sys
+... | yes h
+  = -, byLexicon h , λ where
+    (byLexicon h′) → lexUnique h h′
+    (noLex ¬h) → ⊥-elim $ ¬h h
+... | no ¬h
+  = id , noLex ¬h , λ where
+    (byLexicon h′) → ⊥-elim $ ¬h h′
+    (noLex _) → refl
+
 𝟚-theQuantities₁ :
   (w : Word n) →
   ∃ λ (mqs : Quantities n) →
@@ -231,10 +280,11 @@ theF sys
 𝟚-theQuantities₁ w
   using sys ← unword w
   using mqs , mqs~ , unique-mqs ← 𝟙-theQuantities sys
+  using lex , lex~ , unique-lex ← theL sys
   using f , f~ , unique-f ← theF sys
-  = f mqs
-  , 𝟙-then-𝟚 mqs~ f~
-  , λ where (𝟙-then-𝟚 mqs~ f~) → cong₂ id (unique-f f~) (unique-mqs mqs~)
+  = f (lex mqs)
+  , 𝟙-then-L-then-𝟚 mqs~ lex~ f~
+  , λ where (𝟙-then-L-then-𝟚 mqs~ lex~ f~) → cong₂ id (unique-f f~) (cong₂ id (unique-lex lex~) (unique-mqs mqs~))
 
 𝟚-theQuantities :
   (ws : Words n) →
