@@ -37,6 +37,19 @@ data Flat (A : Type) : Type where
   none   : Flat A
   all    : Flat A
 
+instance
+  DecEq-Flat : ⦃ DecEq A ⦄ → DecEq (Flat A)
+  DecEq-Flat ._≟_ = λ where
+    (single x) (single y) → mapDec (cong single) (λ where refl → refl) (x ≟ y)
+    (single _) none → no λ ()
+    (single _) all  → no λ ()
+    none (single _) → no λ ()
+    none none       → yes refl
+    none all        → no λ ()
+    all (single _)  → no λ ()
+    all none        → no λ ()
+    all all         → yes refl
+
 Quantities : ℕ → Type
 Quantities = Vec (Flat Quantity)
 

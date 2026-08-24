@@ -136,7 +136,7 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
   open ∣Complies-Ws-HM∣
   open ∣Complies-MQs-HM∣
 
-  debugVerse explainVerse : String
+  debugVerse : String
   debugVerse    =
     let
       mqs₁ , _ , _ = 𝟙-theQuantities (unwords ws)
@@ -155,31 +155,6 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
       ◇ spaces (map (uncurry pad) $ L.zip `mqs₂ ns) ◇ " --𝟚 \n"
       ◇ spaces (map (uncurry pad) $ L.zip `mqs₃ ns) ◇ " --𝟛 \n"
       ◇ spaces (map (uncurry pad) $ L.zip `mqs₄ ns) ◇ " --𝟚⊗𝟛 \n"
-  explainVerse
-    with allDerivationsMin ws
-  ... | [] = IMPOSSIBLE "Cannot explain non-derivable verse"
-  ... | ds = lined $ map explainVerse1 ds
-    where
-    explainVerse1 : _ → String
-    explainVerse1 (_ , _ , d@(_▷_≫⟨_⟩≫_≫_ {ws″ = ws″} _ _ syn _ (reify {qs = qs} _ _))) =
-      let
-        ws′  = synizizeWords ws″ syn
-        sys′ = toList (unwords ws′)
-        `ws′ = map show sys′
-        es   = explain d
-        `es  = spaced (toList es)
-        ns   = map Str.length (Str.words `es)
-        `qs  = map show (toList qs)
-        sqes = L.zip sys′ (L.zip (toList qs) (toList es))
-      in
-        spaces (map (uncurry pad) $ L.zip `ws′ ns) ◇ "\n"
-      ◇ spaces (map (uncurry pad) $ L.zip `qs ns) ◇ "\n"
-      ◇ `es ◇ "\n"
-      ◇ "\n** Logical derivations (natural deduction):\n\n"
-      ◇ explainLogical sqes
-      ◇ "\n** Syllable-by-syllable explanation:\n\n"
-      ◇ explainTextual sqes ◇ "\n"
 {-# COMPILE GHC checkVerse    as checkVerse #-}
 {-# COMPILE GHC checkVerseMin as checkVerseMin #-}
 {-# COMPILE GHC debugVerse    as debugVerse #-}
-{-# COMPILE GHC explainVerse  as explainVerse #-}
