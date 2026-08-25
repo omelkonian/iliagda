@@ -5,7 +5,7 @@ import Prelude hiding (Word)
 import System.Environment (getArgs)
 import System.IO
 import System.CPUTime
-import Control.Monad (forM, when)
+import Control.Monad (forM, forM_, when)
 import Data.List (sort)
 import Data.List.Split (splitOn)
 import Text.Printf (printf)
@@ -13,6 +13,9 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
 import qualified MAlonzo.Code.Iliagda.ToHaskell as AGDA
+import qualified Explanation.Render as Render
+import qualified Explanation.Check as Check
+import Explanation (Explanation (..), Fact (..), ruleName, ruleNames)
 import Books.All (allBooks)
 
 type Letter   = Char
@@ -79,6 +82,13 @@ reportStats nss = unlines (byFeet ++ [""] ++ bySpurious)
 -- Check a single verse from one of the books:
 --    $ iliagda <BOOK>.<VERSE>
 --
+-- Explain a single verse from one of the books, or a given one:
+--    $ iliagda --explain <BOOK>.<VERSE>
+--    $ iliagda --explain sy₁-sy₂-...-syₙ <WORD₂> ... <WORDₘ>
+--
+-- Check the Explanation invariants over a book (or the whole corpus):
+--    $ iliagda --check [BOOK]
+--
 -- Check a single given verse (syllables separated by '-'):
 --    $ iliagda sy₁-sy₂-...-syₙ <WORD₂> ... <WORDₘ>
 --
@@ -97,14 +107,39 @@ main = getArgs >>= \case
     printf "total time: %0.3f sec\n" (diff :: Double)
     putStrLn "--------------------------------"
     putStrLn $ reportStats nss
+  ["--explain", s] -> explainVerse =<< readVerse s
+  ("--explain" : as) -> explainVerse (map (splitOn "-") as)
+  ["--check"] -> checkAll allIndices
+  ["--check", b] -> checkAll [i | i@(b' :.: _) <- allIndices, b' == read b - 1]
   [s] -> checkVerse =<< readVerse s
   as -> checkVerse (map (splitOn "-") as)
  where
+  checkAll :: [VerseIndex] -> IO ()
+  checkAll ixs = do
+    fired <- fmap concat $ forM ixs $ \i -> do
+      let ds = AGDA.explainVerse (getVerse i)
+      fmap concat $ forM ds $ \d@(Explanation _ _ _ fs) -> do
+        mapM_ (\v -> T.putStrLn (T.pack (show i <> ": ") <> v)) (Check.violations d)
+        return [ruleName r | Fact _ r _ _ <- fs]
+    putStrLn "--------------------------------"
+    forM_ ruleNames $ \r ->
+      putStrLn $ T.unpack r <> ": " <> case length (filter (== r) fired) of
+        0 -> "NEVER FIRED"
+        k -> show k
+
   readVerse :: String -> IO Verse
   readVerse s = do
     let i = readVerseIndex s
     putStrLn $ "\nv" <> show i <> ")\n"
     return $ getVerse i
+
+  explainVerse :: Verse -> IO ()
+  explainVerse v = case AGDA.explainVerse v of
+    [] -> putStrLn "∅"
+    ds -> sequence_
+      [ do putStrLn ("  derivation " <> show i <> " of " <> show (length ds))
+           T.putStrLn (Render.render d)
+      | (i, d) <- zip [1 :: Int ..] ds ]
 
   checkVerse :: Verse -> IO ()
   checkVerse v = do
