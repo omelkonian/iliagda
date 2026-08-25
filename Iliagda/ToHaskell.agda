@@ -7,6 +7,8 @@ open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules
 open import Iliagda.Prosody.Rules.Dec
 open import Iliagda.Show
+open import Iliagda.Explanation
+open import Iliagda.Explanation.Explain
 
 RawLetter   = Char
 RawSyllable = List RawLetter
@@ -129,6 +131,28 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
     groupDerivations : Derivations ws → RawDerivations
     groupDerivations = map proj₂ ∘ groupDerivations′
 
+  private
+    groupExplanations′ : Derivations ws → List (Feet × Explanation)
+    groupExplanations′ [] = []
+    groupExplanations′ ((_ , hm , p) ∷ ds)
+      using i ← unmkPM hm
+      using e ← explain p
+      using ies ← groupExplanations′ ds
+      with ¿ i ∈ map proj₁ ies ¿
+    ... | no _
+      = (i , e) ∷ ies
+    ... | yes i∈
+      with _ , y∈ , refl ← ∈-map⁻ proj₁ i∈
+      with _ , e′ ← L.Any.lookup y∈
+      = y∈ ∷= (i , leaner e e′)
+      where
+        leaner : Explanation → Explanation → Explanation
+        leaner a b = if ⌊ length (Explanation.facts a) Nat.<? length (Explanation.facts b) ⌋
+                     then a else b
+
+  explainVerse : List Explanation
+  explainVerse = map proj₂ (groupExplanations′ (allDerivationsMin ws))
+
   checkVerse checkVerseMin : RawDerivations
   checkVerse    = groupDerivations $ allDerivations ws
   checkVerseMin = groupDerivations $ allDerivationsMin ws
@@ -158,3 +182,4 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
 {-# COMPILE GHC checkVerse    as checkVerse #-}
 {-# COMPILE GHC checkVerseMin as checkVerseMin #-}
 {-# COMPILE GHC debugVerse    as debugVerse #-}
+{-# COMPILE GHC explainVerse  as explainVerse #-}
