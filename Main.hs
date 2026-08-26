@@ -102,11 +102,7 @@ main :: IO ()
 main = getArgs >>= \case
   [] -> do
     start <- getCPUTime
-    nss <- forM allIndices $ \i -> let ds = derivations $ getVerse i in do
-      let ns = map length ds
-      putStrLn $ show i <> ": " <> reportDerivations ns
-      hFlush stdout
-      return ns
+    nss <- report allIndices
     end <- getCPUTime
     putStrLn "--------------------------------"
     let diff = (fromIntegral (end - start)) / (10^12)
@@ -115,12 +111,21 @@ main = getArgs >>= \case
     putStrLn $ reportStats nss
   ["--explain", s] -> explainVerse =<< readVerse s
   ("--explain" : as) -> explainVerse (map (splitOn "-") as)
+  ["--derive"] -> () <$ report allIndices
+  ["--derive", b] -> () <$ report [i | i@(b' :.: _) <- allIndices, b' == read b - 1]
   ["--check"] -> checkAll allIndices
   ["--check", b] -> checkAll [i | i@(b' :.: _) <- allIndices, b' == read b - 1]
   ["--json", b] -> emitBook (read b)
   [s] -> checkVerse =<< readVerse s
   as -> checkVerse (map (splitOn "-") as)
  where
+  report :: [VerseIndex] -> IO [[Int]]
+  report ixs = forM ixs $ \i -> let ds = derivations $ getVerse i in do
+    let ns = map length ds
+    putStrLn $ show i <> ": " <> reportDerivations ns
+    hFlush stdout
+    return ns
+
   checkAll :: [VerseIndex] -> IO ()
   checkAll ixs = do
     fired <- fmap concat $ forM ixs $ \i -> do
