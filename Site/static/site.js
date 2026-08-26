@@ -34,8 +34,8 @@ const AGDA = {
   "1168":        [L4, "_\u02E2~\u1D50_.[1168]"],
   "1167a":       [L4, "_\u02E2~\u1D50_.[1167/1a]"],
   "1167b":       [L4, "_\u02E2~\u1D50_.[1167/1b]"],
-  merge:         ["Iliagda.Explanation", "Rule.merge"],
-  "1184":        ["Iliagda.Explanation", "Rule.[1184]"],
+  merge:         ["Iliagda.Prosody.Synizesis", "_-synizizes*-_._∺_"],
+  "1184":        [L4, "∣Complies-MQs-HM∣._~′_.reify"],
 };
 const agdaUrl = r => {
   const t = AGDA[r];
