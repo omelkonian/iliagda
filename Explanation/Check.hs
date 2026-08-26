@@ -17,11 +17,15 @@ violations (Explanation sys ws qs fs) = concat
   , [ "ref " <> tshow r <> " out of range" | Fact _ _ _ (Just r) <- fs, r < 0 || r >= nf ]
   , [ "fact " <> tshow k <> " cites itself"
     | (k, Fact _ _ _ (Just r)) <- zip [0 ..] fs, r == k ]
+  , [ "fact " <> tshow k <> " cites " <> tshow r <> ", which follows it"
+    | (k, Fact _ _ _ (Just r)) <- zip [0 :: Integer ..] fs, r > k ]
   , [ "fact " <> tshow k <> " states " <> tshow mq <> " but its rule asserts "
       <> tshow (AE.ruleQuantity r)
     | (k, Fact _ r mq _) <- zip [0 :: Integer ..] fs, mq /= AE.ruleQuantity r ]
   , [ "text facts not in ascending locus order" | textLoci /= sort textLoci ]
-  , [ "quantity facts not in ascending locus order" | qtyLoci /= sort qtyLoci ]
+  , [ "quantity fact " <> tshow k <> " at locus " <> tshow j
+      <> " precedes locus " <> tshow i <> ", but nothing cites it"
+    | ((k, j), (_, i)) <- zip qtyIx (drop 1 qtyIx), i < j, not (cited k) ]
   , [ "a text fact follows a quantity fact" | any isText (dropWhile isText fs) ]
   , [ "locus " <> tshow i <> ": fact " <> tshow k <> " reaffirms " <> mark a
     | (i, k, a) <- reaffirmations ]
@@ -33,7 +37,11 @@ violations (Explanation sys ws qs fs) = concat
   nf = fromIntegral (length fs)
   isText (Fact _ _ mq _) = mq == Nothing
   textLoci = [ i | f@(Fact i _ _ _) <- fs, isText f ]
-  qtyLoci  = [ i | f@(Fact i _ _ _) <- fs, not (isText f) ]
+  -- Quantity facts run in locus order, save that a fact may be pulled ahead of a lower
+  -- locus to precede the fact that cites it. So an inversion is a violation only when
+  -- nothing cites the fact that jumped.
+  qtyIx = [ (k, i) | (k, f@(Fact i _ _ _)) <- zip [0 :: Integer ..] fs, not (isText f) ]
+  cited k = or [ r == k | Fact _ _ _ (Just r) <- fs ]
   merges = [ j | Fact j Merge{} _ _ <- fs ]
   nmerges = length merges
   metrical i = i - fromIntegral (length [ j | j <- merges, j <= i ])
