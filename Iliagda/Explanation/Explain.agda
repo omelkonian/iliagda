@@ -206,10 +206,10 @@ mtl (muteLiquid {l = l} {l′ = l′} _ ln) =
   l , l′ , (case ln of λ where (inj₁ _) → false; (inj₂ _) → true)
 
 dcLetter : StartsWithDoubleConsonant ls → Letter
-dcLetter (doubleConsonant {l = l} _ _) = l
+dcLetter (doubleConsonant {l = l} _) = l
 
 ccLetters : StartsWithTwoConsonants ls → Letter × Letter
-ccLetters (twoConsonants {l = l} {l′ = l′} _ _ _) = l , l′
+ccLetters (twoConsonants {l = l} {l′ = l′} _ _) = l , l′
 
 swVowel : StartsWithVowel ls → Letter
 swVowel (vowel {l = l} _) = l
