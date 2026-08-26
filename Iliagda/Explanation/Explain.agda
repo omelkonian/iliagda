@@ -442,6 +442,7 @@ explain {ws = ws} {hm = hm}
       nothing → nothing
   in
     explanation
+      1
       (map sylStr (toList sys))
       (wordWidths ws″)
       (map toQ (toList (meter-qs hm)))

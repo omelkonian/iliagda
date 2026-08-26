@@ -144,11 +144,14 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
     ... | yes i∈
       with _ , y∈ , refl ← ∈-map⁻ proj₁ i∈
       with _ , e′ ← L.Any.lookup y∈
-      = y∈ ∷= (i , leaner e e′)
+      = y∈ ∷= (i , tally (leaner e e′))
       where
         leaner : Explanation → Explanation → Explanation
         leaner a b = if ⌊ length (Explanation.facts a) Nat.<? length (Explanation.facts b) ⌋
                      then a else b
+
+        tally : Explanation → Explanation
+        tally x = record x { parses = Explanation.parses e + Explanation.parses e′ }
 
   explainVerse : List Explanation
   explainVerse = map proj₂ (groupExplanations′ (allDerivationsMin ws))

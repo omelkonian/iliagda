@@ -8,7 +8,7 @@ import Explanation
 import qualified MAlonzo.Code.Iliagda.Explanation as AE
 
 violations :: Explanation -> [Text]
-violations (Explanation sys ws qs fs) = concat
+violations (Explanation _ sys ws qs fs) = concat
   [ [ "field lengths disagree: " <> tshow (length sys) <> " written syllables, "
       <> tshow (length qs) <> " quantities, " <> tshow nmerges <> " merges, "
       <> tshow (sum ws) <> " in words"

@@ -45,7 +45,7 @@ data Rule
 data Fact = Fact Integer Rule (Maybe Qty) (Maybe Integer)
   deriving Show
 
-data Explanation = Explanation [Text] [Integer] [Qty] [Fact]
+data Explanation = Explanation Integer [Text] [Integer] [Qty] [Fact]
   deriving Show
 
 -- ** stable identifiers, for tallies and for the wire format
