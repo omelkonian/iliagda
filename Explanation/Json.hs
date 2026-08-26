@@ -87,7 +87,7 @@ fact (Fact i r mq mref) = O $
 -- | @syl@ is the verse as read, one entry per written syllable; @q@ is one letter per
 -- *scanned* syllable, and so is shorter by the number of merges.
 scansion :: Explanation -> J
-scansion (Explanation sys ws qs fs) = O
+scansion (Explanation _ sys ws qs fs) = O
   [ ("syl", A (map S sys))
   , ("w",   A (map N ws))
   , ("q",   S (T.concat (map qty qs)))

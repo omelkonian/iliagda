@@ -86,6 +86,7 @@ mkFact i r = fact i r (quantity r)
 record Explanation : Type where
   constructor explanation
   field
+    parses     : ℕ
     syllables  : List String
     words      : List ℕ
     quantities : List Qty

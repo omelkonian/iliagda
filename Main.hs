@@ -6,9 +6,10 @@ import System.Environment (getArgs)
 import System.IO
 import System.CPUTime
 import Control.Monad (forM, forM_, when)
+import Data.Char (isDigit)
 import Data.List (sort)
 import Data.List.Split (splitOn)
-import Text.Printf (printf)
+import Text.Printf (printf, hPrintf)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
@@ -100,37 +101,20 @@ reportStats nss = unlines (byFeet ++ [""] ++ bySpurious)
 --
 main :: IO ()
 main = getArgs >>= \case
-  [] -> do
-    start <- getCPUTime
-    nss <- report allIndices
-    end <- getCPUTime
-    putStrLn "--------------------------------"
-    let diff = (fromIntegral (end - start)) / (10^12)
-    printf "total time: %0.3f sec\n" (diff :: Double)
-    putStrLn "--------------------------------"
-    putStrLn $ reportStats nss
+  [] -> mapM_ emitBook [1 .. length allBooks]
   ["--explain", s] -> explainVerse =<< readVerse s
   ("--explain" : as) -> explainVerse (map (splitOn "-") as)
-  ["--derive"] -> () <$ report allIndices
-  ["--derive", b] -> () <$ report [i | i@(b' :.: _) <- allIndices, b' == read b - 1]
   ["--check"] -> checkAll allIndices
   ["--check", b] -> checkAll [i | i@(b' :.: _) <- allIndices, b' == read b - 1]
-  ["--json", b] -> emitBook (read b)
+  [s] | all isDigit s -> emitBook (read s)
   [s] -> checkVerse =<< readVerse s
   as -> checkVerse (map (splitOn "-") as)
  where
-  report :: [VerseIndex] -> IO [[Int]]
-  report ixs = forM ixs $ \i -> let ds = derivations $ getVerse i in do
-    let ns = map length ds
-    putStrLn $ show i <> ": " <> reportDerivations ns
-    hFlush stdout
-    return ns
-
   checkAll :: [VerseIndex] -> IO ()
   checkAll ixs = do
     fired <- fmap concat $ forM ixs $ \i -> do
       let ds = AGDA.explainVerse (getVerse i)
-      fmap concat $ forM ds $ \d@(Explanation _ _ _ fs) -> do
+      fmap concat $ forM ds $ \d@(Explanation _ _ _ _ fs) -> do
         mapM_ (\v -> T.putStrLn (T.pack (show i <> ": ") <> v)) (Check.violations d)
         return [ruleName r | Fact _ r _ _ <- fs]
     putStrLn "--------------------------------"
@@ -142,33 +126,35 @@ main = getArgs >>= \case
   emitBook :: Int -> IO ()
   emitBook b = do
     createDirectoryIfMissing True "artifacts/explanations"
+    createDirectoryIfMissing True "artifacts/coverage"
     start <- getCPUTime
+    cov <- openFile ("artifacts/coverage/" <> show b <> ".txt") WriteMode
+    hSetEncoding cov utf8
     vs <- forM (zip [1 ..] (allBooks !! (b - 1))) $ \(n, v) -> do
-      let es = AGDA.explainVerse v
-          t  = Json.verseJson n es
+      let es  = AGDA.explainVerse v
+          ns  = [fromInteger p | Explanation p _ _ _ _ <- es]
+          t   = Json.verseJson n es
           bad = concatMap Check.violations es
-          fired = [ruleName r | Explanation _ _ _ fs <- es, Fact _ r _ _ <- fs]
-      T.length t `seq` putStrLn (show b <> "." <> show n <> ": " <> reportScansions es)
-      -- checked here rather than in a second pass: deriving the corpus twice costs hours
-      mapM_ (\m -> T.putStrLn (T.pack (show b <> "." <> show n <> ": ") <> m)) bad
-      hFlush stdout
-      return (t, null es, length bad, fired)
+          fired = [ruleName r | Explanation _ _ _ _ fs <- es, Fact _ r _ _ <- fs]
+      T.length t `seq` hPutStrLn cov (show b <> "." <> show n <> ": " <> reportDerivations ns)
+      mapM_ (\m -> T.hPutStrLn stderr (T.pack (show b <> "." <> show n <> ": ") <> m)) bad
+      hFlush cov
+      return (t, ns, length bad, fired)
+    hClose cov
     let path = "artifacts/explanations/" <> show b <> ".json"
         vio  = sum [x | (_, _, x, _) <- vs]
         fired = concat [x | (_, _, _, x) <- vs]
+        nss  = [x | (_, x, _, _) <- vs]
     T.writeFile path (Json.bookJson b [t | (t, _, _, _) <- vs])
     end <- getCPUTime
-    printf "wrote %s: %d verses, %d unscanned, %d violations, %0.1f sec\n"
-      path (length vs) (length [() | (_, u, _, _) <- vs, u]) vio
+    hPrintf stderr "wrote %s: %d verses, %d unscanned, %d violations, %0.1f sec\n"
+      path (length vs) (length [() | (_, x, _, _) <- vs, null x]) vio
       ((fromIntegral (end - start) / 10 ^ (12 :: Int)) :: Double)
+    hPutStrLn stderr $ reportStats nss
     forM_ ruleNames $ \r ->
-      putStrLn $ "  " <> T.unpack r <> ": " <> case length (filter (== r) fired) of
+      hPutStrLn stderr $ "  " <> T.unpack r <> ": " <> case length (filter (== r) fired) of
         0 -> "NEVER FIRED"
         k -> show k
-
-  reportScansions :: [Explanation] -> String
-  reportScansions [] = "×"
-  reportScansions es = "✓ " <> show (length es)
 
   readVerse :: String -> IO Verse
   readVerse s = do

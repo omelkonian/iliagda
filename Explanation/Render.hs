@@ -6,7 +6,7 @@ import qualified Data.Text as T
 import Explanation
 
 render :: Explanation -> Text
-render (Explanation sys ws qs fs) = T.unlines $
+render (Explanation _ sys ws qs fs) = T.unlines $
   scansion (scanned fs sys ws) qs ++ [""]
   ++ concat (zipWith (numbered fs sys ws) [1 ..] fs)
 
