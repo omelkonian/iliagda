@@ -383,8 +383,31 @@ byLocus n′ es = map reref sorted
     (λ i → filterᵇ (λ ie → ⌊ ie .proj₂ .locus Nat.≟ i ⌋ 𝔹.∧ p (ie .proj₂)) (indexed es))
     (L.upTo n′)
 
+  byLocus′ : List (ℕ × Fact)
+  byLocus′ = pick isText ++ pick (𝔹.not ∘ isText)
+
+  factAt : ℕ → Maybe (ℕ × Fact)
+  factAt r = L.head (filterᵇ (λ x → ⌊ x .proj₁ Nat.≟ r ⌋) byLocus′)
+
+  emit : ℕ → List ℕ → ℕ × Fact → List ℕ × List (ℕ × Fact)
+  emit zero seen x@(i , _) = i ∷ seen , [ x ]
+  emit (suc f) seen x@(i , e) =
+    if i ∈ᵇ seen then seen , [] else
+    case e .ref of λ where
+      nothing  → i ∷ seen , [ x ]
+      (just r) → if r ∈ᵇ seen then i ∷ seen , [ x ] else
+                 case factAt r of λ where
+                   nothing  → i ∷ seen , [ x ]
+                   (just y) → let seen′ , ys = emit f seen y
+                              in i ∷ seen′ , ys ++ [ x ]
+
   sorted : List (ℕ × Fact)
-  sorted = pick isText ++ pick (𝔹.not ∘ isText)
+  sorted = go byLocus′ (length byLocus′) []
+    where
+    go : List (ℕ × Fact) → ℕ → List ℕ → List (ℕ × Fact)
+    go []       _ _    = []
+    go (x ∷ xs) f seen = let seen′ , ys = emit f seen x
+                         in ys ++ go xs f seen′
 
   ord : List ℕ
   ord = map proj₁ sorted
