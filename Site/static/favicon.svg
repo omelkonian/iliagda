@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .bg { fill: #F5F1E6; }
+    .fg { fill: #201C15; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #17140F; }
+      .fg { fill: #E6DECC; }
+    }
+  </style>
+  <rect class="bg" width="32" height="32"/>
+  <g class="fg" transform="translate(4.41 26.97) scale(0.031073 -0.031073)">
+    <path d="M720 30H645L410 707H370L154 137C139 96 126 70 116 59C99 38 75 29 42 30H26V-1H244V30C224 30 203 33 180 40L176 63C176 104 202 188 254 315C289 396 323 477 358 557L540 30H461V-1H720Z"/>
+  </g>
+</svg>
