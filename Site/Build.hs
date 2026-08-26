@@ -53,15 +53,16 @@ quotesJson = do
 build :: IO ()
 build = do
   createDirectoryIfMissing True "docs/books"
+  tpl <- T.readFile "Site/book.html"
   quotes <- quotesJson
-  mapM_ (buildBook quotes) (zip [1 ..] allBooks)
-  T.writeFile "docs/index.html" indexPage
+  mapM_ (buildBook tpl quotes) (zip [1 ..] allBooks)
+  copyFile "Site/index.html" "docs/index.html"
   static <- listDirectory "Site/static"
   mapM_ (\f -> copyFile ("Site/static/" <> f) ("docs/" <> f)) static
   putStrLn "wrote docs/"
 
-buildBook :: Text -> (Int, [[[String]]]) -> IO (Int, Int)
-buildBook quotes (b, bookWords) = do
+buildBook :: Text -> Text -> (Int, [[[String]]]) -> IO (Int, Int)
+buildBook tpl quotes (b, bookWords) = do
   let path = "artifacts/explanations/" <> show b <> ".json"
   have <- doesFileExist path
   if not have
@@ -73,7 +74,7 @@ buildBook quotes (b, bookWords) = do
       doc <- either (fail . ((path <> ": ") <>)) pure (parseJson raw)
       let vs = bookVerses b bookWords doc
           un = length [() | v <- vs, null (vScansions v)]
-      T.writeFile ("docs/books/" <> show b <> ".html") (bookPage b vs raw quotes)
+      T.writeFile ("docs/books/" <> show b <> ".html") (bookPage tpl b vs raw quotes)
       putStrLn $ "book " <> show b <> ": " <> show (length vs) <> " verses, "
               <> show un <> " unscanned"
       pure (length vs, un)
