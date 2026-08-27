@@ -67,7 +67,7 @@ args = \case
   R1163 c w         -> [ch c, S w]
   Merge l r cross   -> [S l, S r, B cross]
   R522 v p -> ch v : case p of
-    DoubleConsonant c    -> [S "doubleConsonant", ch c]
+    DoubleConsonant c rc -> [S "doubleConsonant", ch c, S (reach rc)]
     TwoConsonants a b rc -> [S "twoConsonants", ch a, ch b, S (reach rc)]
   R1173 q nucleus next cross -> [S (qty q), S nucleus, ch next, B cross]
   R524 q v m l nasal         -> [S (qty q), ch v, ch m, ch l, B nasal]
@@ -76,7 +76,10 @@ args = \case
   R1167b n                   -> [N n]
   R1184                      -> []
   where
-  reach = \case Within -> "within"; NextSyllable -> "nextSyllable"; NextWord -> "nextWord"
+  reach = \case
+    Within -> "within"
+    StraddleSyllable -> "straddleSyllable"; NextSyllable -> "nextSyllable"
+    StraddleWord -> "straddleWord";         NextWord -> "nextWord"
 
 fact :: Fact -> J
 fact (Fact i r mq mref) = O $

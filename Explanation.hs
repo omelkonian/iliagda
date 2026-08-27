@@ -12,11 +12,12 @@ data Ground
   | Circumflex Char
   deriving Show
 
-data Reach = Within | NextSyllable | NextWord
+data Reach
+  = Within | StraddleSyllable | NextSyllable | StraddleWord | NextWord
   deriving (Eq, Show)
 
 data Position
-  = DoubleConsonant Char
+  = DoubleConsonant Char Reach
   | TwoConsonants Char Char Reach
   deriving Show
 
