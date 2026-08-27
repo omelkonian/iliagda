@@ -6,7 +6,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import System.Directory (createDirectoryIfMissing, copyFile, listDirectory, doesFileExist)
 
-import Books.All (allBooks)
+import Corpus (allBooks)
 import Explanation.Json (J (..), parseJson, (.:), jList, jText, jInt)
 import Site.Html
 
