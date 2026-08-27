@@ -218,20 +218,29 @@ module _ {⋯ : Flat Quantity × Context} where
   open QuantityRules ⋯
 
   private
-    spill : Reach
+    spill straddle : Reach
     spill = case ⋯ .proj₂ of λ where
       (outer _) → nextWord
       (inner _) → nextSyllable
+      ∅ → within
+    straddle = case ⋯ .proj₂ of λ where
+      (outer _) → straddleWord
+      (inner _) → straddleSyllable
       ∅ → within
 
   posFB : (v∈ : Any Vowel ls)
     → FollowedBy (StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) v∈
     → Position
   posFB (there v∈) q = posFB v∈ q
-  posFB (here _) (inj₁ dc) = doubleConsonant (chr (dcLetter dc))
+  posFB (here {xs = sys} _) (inj₁ dc) =
+    doubleConsonant (chr (dcLetter dc)) (if ⌊ length sys Nat.≤? 0 ⌋ then spill else within)
   posFB (here {xs = sys} _) (inj₂ cc) =
     let l , l′ = ccLetters cc
-    in twoConsonants (chr l) (chr l′) (if ⌊ length sys Nat.≤? 1 ⌋ then spill else within)
+        reach = case length sys of λ where
+          0 → spill
+          1 → straddle
+          _ → within
+    in twoConsonants (chr l) (chr l′) reach
 
   vowelFB : (v∈ : Any Vowel ls) → FollowedBy StartsWithVowel v∈ → Letter
   vowelFB (there v∈) q = vowelFB v∈ q

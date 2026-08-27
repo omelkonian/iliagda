@@ -25,10 +25,10 @@ data Ground : Type where
   circumflex : Char → Ground
 
 data Reach : Type where
-  within nextSyllable nextWord : Reach
+  within straddleSyllable nextSyllable straddleWord nextWord : Reach
 
 data Position : Type where
-  doubleConsonant : Char → Position
+  doubleConsonant : Char → Reach → Position
   twoConsonants   : Char → Char → Reach → Position
 
 data Match : Type where
@@ -94,7 +94,7 @@ record Explanation : Type where
 
 {-# COMPILE GHC Qty         = data E.Qty         (E.Long | E.Short) #-}
 {-# COMPILE GHC Ground      = data E.Ground      (E.Diphthong | E.LongVowel | E.Circumflex) #-}
-{-# COMPILE GHC Reach       = data E.Reach       (E.Within | E.NextSyllable | E.NextWord) #-}
+{-# COMPILE GHC Reach       = data E.Reach       (E.Within | E.StraddleSyllable | E.NextSyllable | E.StraddleWord | E.NextWord) #-}
 {-# COMPILE GHC Position    = data E.Position    (E.DoubleConsonant | E.TwoConsonants) #-}
 {-# COMPILE GHC Match       = data E.Match       (E.Whole | E.Stem) #-}
 {-# COMPILE GHC Rule        = data E.Rule        (E.Unwritten | E.LongByNature | E.ShortByNature | E.ByLexicon | E.R1160 | E.R1161 | E.R1162 | E.R1163 | E.Merge | E.R522 | E.R1173 | E.R524 | E.R1168 | E.R1167a | E.R1167b | E.R1184) #-}

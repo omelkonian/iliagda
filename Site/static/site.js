@@ -72,8 +72,10 @@ const me = (sc, f) => {
 
 const its = (sc, f, v) => subject(sc, f) === v ? "it " : `its ${g(v)} `;
 
+const OUTSIDE = new Set(["straddleWord", "nextWord"]);
+
 const closedInWord = f =>
-  f.r === "522" && (f.a[1] === "doubleConsonant" || f.a[4] !== "nextWord");
+  f.r === "522" && !OUTSIDE.has(f.a[1] === "doubleConsonant" ? f.a[3] : f.a[4]);
 
 const at = (sc, i, p) => sc.f.some(f => f.i === i && p(f));
 
@@ -96,7 +98,13 @@ const turns = (fs, f) => {
   return !prior || !prior.q ? "is" : prior.q === f.q ? "remains" : "turns";
 };
 
-const REACH = { within: "", nextSyllable: " in the next syllable", nextWord: " of the following word" };
+const WHERE = { straddleSyllable: "the next syllable", straddleWord: "the next word" };
+const OF = { nextSyllable: " of the next syllable", nextWord: " of the next word" };
+
+const cluster = (a, b, r) =>
+  WHERE[r] ? `${g(a)}, and the ${g(b)} of ${WHERE[r]}.`
+  : OF[r]  ? `the ${g(a)} and ${g(b)}${OF[r]}.`
+           : `${g(a)} and ${g(b)}.`;
 const ORDINAL = { 1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth" };
 
 const RULES = {
@@ -156,8 +164,8 @@ const SUPERSEDES = {
       ? `${me(sc, f)} is long by position: its ${g(f.a[0])} is followed by `
       : `${despite(sc, fs, f, "L")} is long: its ${g(f.a[0])} is followed by `)
     + (f.a[1] === "doubleConsonant"
-        ? `the double consonant ${g(f.a[2])}.`
-        : `${g(f.a[2])} and ${g(f.a[3])}${REACH[f.a[4]]}.`)],
+        ? `the double consonant ${g(f.a[2])}${OF[f.a[3]] || ""}.`
+        : cluster(f.a[2], f.a[3], f.a[4]))],
 
   "1168": (sc, fs, f) => ["1168",
     `${despite(sc, fs, f, "L")} is lengthened in thesis: it ends in ${g(f.a[0] + f.a[1])} `

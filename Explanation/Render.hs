@@ -108,7 +108,7 @@ sentence fs sys ws (Fact i r _ mref) = body <> "."
       <> ", which counts long" <> cite
     R522 v p ->
       despite Long <> " is long: its " <> T.singleton v <> " is followed by " <> case p of
-        DoubleConsonant c -> "the double consonant " <> T.singleton c
+        DoubleConsonant c rc -> "the double consonant " <> T.singleton c <> reach rc
         TwoConsonants a b rc -> T.singleton a <> " and " <> T.singleton b <> reach rc
     R1173 q nucleus next cross ->
       me <> " may be shortened: its " <> nucleus <> " stands before vowel-initial "
@@ -152,9 +152,11 @@ qty = \case Long -> "long"; Short -> "short"
 
 reach :: Reach -> Text
 reach = \case
-  Within -> ""
-  NextSyllable -> " in the next syllable"
-  NextWord -> " of the following word"
+  Within -> " [within]"
+  StraddleSyllable -> " [straddle/syl]"
+  NextSyllable -> " [next/syl]"
+  StraddleWord -> " [straddle/word]"
+  NextWord -> " [next/word]"
 
 ordinal :: Integer -> Text
 ordinal n
