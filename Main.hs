@@ -20,7 +20,7 @@ import qualified Explanation.Render as Render
 import qualified Explanation.Check as Check
 import qualified Explanation.Json as Json
 import Explanation (Explanation (..), Fact (..), ruleName, ruleNames)
-import Books.All (allBooks)
+import Corpus (allBooks)
 
 type Letter   = Char
 type Syllable = String
