@@ -178,7 +178,7 @@ homeLink root = "<a class=\"home\" href=\"" <> root <> "index.html\">Index</a>"
 bookPage :: Text -> Int -> [Verse] -> Text -> Text -> Text
 bookPage tpl b verses factsJson quotesJson = fill
   [ ("root", "../")
-  , ("tab", "Iliagda -- Book " <> tshow b)
+  , ("tab", "Book " <> tshow b <> " \8211 Iliagda")
   , ("title", title)
   , ("home", homeLink "../")
   , ("nav", booksNav "" (Just b))
