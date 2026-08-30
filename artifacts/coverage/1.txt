@@ -609,3 +609,38 @@
 1.609: ✓ [1]
 1.610: ✓ [1]
 1.611: ✓ [2,2]
+wrote artifacts/explanations/1.json: 611 verses, 0 unscanned, 0 violations, 496.6 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 596
+2-meter derivations: 13
+3-meter derivations: 1
+4-meter derivations: 1
+
+1-parse derivations: 478
+2-parse derivations: 129
+3-parse derivations: 0
+4-parse derivations: 19
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 3
+
+  unwritten: 3
+  longByNature: 3180
+  shortByNature: 3543
+  byLexicon: 42
+  1160: 139
+  1161: 13
+  1162: 75
+  1163: 254
+  merge: 12
+  522: 1496
+  1173: 233
+  524: 53
+  1168: 16
+  1167a: 41
+  1167b: 11
+  1184: 298

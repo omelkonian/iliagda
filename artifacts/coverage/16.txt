@@ -865,3 +865,33 @@
 16.865: ✓ [1]
 16.866: ✓ [1]
 16.867: ✓ [1]
+wrote artifacts/explanations/16.json: 867 verses, 1 unscanned, 0 violations, 68.4 sec
+
+** STATS **
+
+0-meter derivations: 1
+1-meter derivations: 851
+2-meter derivations: 14
+3-meter derivations: 1
+
+1-parse derivations: 706
+2-parse derivations: 156
+3-parse derivations: 0
+4-parse derivations: 20
+
+  unwritten: NEVER FIRED
+  longByNature: 4004
+  shortByNature: 5342
+  byLexicon: 78
+  1160: 167
+  1161: 39
+  1162: 121
+  1163: 366
+  merge: 8
+  522: 2408
+  1173: 231
+  524: 159
+  1168: 20
+  1167a: 98
+  1167b: 12
+  1184: 423

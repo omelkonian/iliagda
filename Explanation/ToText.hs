@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings, LambdaCase #-}
-module Explanation.Render (render) where
+module Explanation.ToText (printExplanations) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 import Explanation
 
-render :: Explanation -> Text
-render (Explanation _ sys ws qs fs) = T.unlines $
+printExplanations :: Explanation -> Text
+printExplanations (Explanation _ sys ws qs fs) = T.unlines $
   scansion (scanned fs sys ws) qs ++ [""]
   ++ concat (zipWith (numbered fs sys ws) [1 ..] fs)
 
@@ -136,13 +136,13 @@ sentence fs sys ws (Fact i r _ mref) = body <> "."
 at :: [Text] -> Integer -> Text
 at sys i
   | i < 0 || i >= fromIntegral (length sys) =
-      error ("Render: syllable index out of range: " ++ show i)
+      error ("ToText: syllable index out of range: " ++ show i)
   | otherwise = sys !! fromInteger i
 
 wordOf :: [Text] -> [Integer] -> Integer -> Text
 wordOf sys ws i = go sys ws i
   where
-  go _ [] _ = error ("Render: no word contains syllable " ++ show i)
+  go _ [] _ = error ("ToText: no word contains syllable " ++ show i)
   go ss (n : ns) j
     | j < n     = T.concat (take (fromInteger n) ss)
     | otherwise = go (drop (fromInteger n) ss) ns (j - n)

@@ -320,7 +320,6 @@ open import Iliagda.Prosody.Rules.Level2.Dec
 open import Iliagda.Prosody.Rules.Level3.Dec
 open import Iliagda.Prosody.Synizesis.Dec
 open import Iliagda.Reading
-open import Iliagda.Reading.Dec
 
 module _ (n′ : ℕ) where
   Derivation⟨_⟩ Derivations⟨_⟩ : Words n → Type
@@ -422,11 +421,11 @@ module _ (n′ : ℕ) where
 
     complete-ds : ∀ {hm} → ws ~ hm → hm ∈ ds
     complete-ds {hm}
-      (_▷_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃} {ws″ = ws″} {sys′ = sys′} rd ws″~ syn ws′~ ~hm)
+      (_▷_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃} {wsʳ = wsʳ} {sys′ = sys′} rd wsʳ~ syn ws′~ ~hm)
       using x∈ ← complete-rd rd
       = L.Any.concat⁺
       $ L.Any.mapWith∈⁺ perRead
-      $ -, x∈ , readComplete ws″ {hm} {mqs₂} {sys′} {mqs₃} syn ws″~ ws′~ ~hm
+      $ -, x∈ , readComplete wsʳ {hm} {mqs₂} {sys′} {mqs₃} syn wsʳ~ ws′~ ~hm
 
   allDerivations⟨_⟩ : (ws : Words n) → Derivations⟨_⟩ ws
   allDerivations⟨_⟩ ws = let ds , sound-ds , _ = allMeterDerivations⟨_⟩ ws in

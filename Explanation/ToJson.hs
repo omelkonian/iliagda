@@ -5,7 +5,7 @@
 -- MAlonzo. Rule payloads go out positionally, keyed by 'ruleName': a consumer that
 -- renders a rule necessarily knows that rule's shape, and an unknown name is a hard
 -- error rather than a blank.
-module Explanation.Json
+module Explanation.ToJson
   ( verseJson, bookJson
   , J (..), parseJson, (.:), jList, jText, jInt
   ) where

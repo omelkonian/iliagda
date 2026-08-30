@@ -835,3 +835,33 @@
 13.835: ✓ [1]
 13.836: ✓ [1]
 13.837: ✓ [1]
+wrote artifacts/explanations/13.json: 837 verses, 0 unscanned, 0 violations, 51.9 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 820
+2-meter derivations: 16
+3-meter derivations: 1
+
+1-parse derivations: 660
+2-parse derivations: 179
+3-parse derivations: 0
+4-parse derivations: 16
+
+  unwritten: 1
+  longByNature: 3983
+  shortByNature: 5030
+  byLexicon: 85
+  1160: 163
+  1161: 42
+  1162: 112
+  1163: 343
+  merge: 6
+  522: 2277
+  1173: 283
+  524: 82
+  1168: 12
+  1167a: 93
+  1167b: 13
+  1184: 402

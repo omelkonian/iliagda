@@ -106,7 +106,7 @@
 8.106: ✓ [1]
 8.107: ✓ [1]
 8.108: ✓ [1]
-8.109: ×
+8.109: ✓ [1]
 8.110: ✓ [1]
 8.111: ✓ [1]
 8.112: ✓ [1]
@@ -563,3 +563,37 @@
 8.563: ✓ [1]
 8.564: ✓ [2]
 8.565: ✓ [1]
+wrote artifacts/explanations/8.json: 565 verses, 0 unscanned, 0 violations, 39.1 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 545
+2-meter derivations: 19
+3-meter derivations: 1
+
+1-parse derivations: 452
+2-parse derivations: 121
+3-parse derivations: 1
+4-parse derivations: 10
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 2
+
+  unwritten: NEVER FIRED
+  longByNature: 2842
+  shortByNature: 3433
+  byLexicon: 39
+  1160: 120
+  1161: 24
+  1162: 83
+  1163: 236
+  merge: 5
+  522: 1514
+  1173: 179
+  524: 56
+  1168: 10
+  1167a: 61
+  1167b: 13
+  1184: 276

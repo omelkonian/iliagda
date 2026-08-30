@@ -422,3 +422,32 @@
 19.422: ✓ [1]
 19.423: ✓ [1]
 19.424: ✓ [1]
+wrote artifacts/explanations/19.json: 424 verses, 0 unscanned, 0 violations, 24.8 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 411
+2-meter derivations: 13
+
+1-parse derivations: 352
+2-parse derivations: 81
+3-parse derivations: 0
+4-parse derivations: 4
+
+  unwritten: NEVER FIRED
+  longByNature: 2096
+  shortByNature: 2467
+  byLexicon: 33
+  1160: 115
+  1161: 14
+  1162: 65
+  1163: 182
+  merge: 3
+  522: 1147
+  1173: 152
+  524: 51
+  1168: 6
+  1167a: 33
+  1167b: 9
+  1184: 203

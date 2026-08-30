@@ -744,3 +744,38 @@
 15.744: ✓ [1]
 15.745: ✓ [1]
 15.746: ✓ [2]
+wrote artifacts/explanations/15.json: 746 verses, 0 unscanned, 0 violations, 4564.4 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 727
+2-meter derivations: 15
+3-meter derivations: 3
+4-meter derivations: 1
+
+1-parse derivations: 592
+2-parse derivations: 158
+3-parse derivations: 0
+4-parse derivations: 19
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 1
+
+  unwritten: NEVER FIRED
+  longByNature: 3682
+  shortByNature: 4575
+  byLexicon: 60
+  1160: 193
+  1161: 39
+  1162: 95
+  1163: 351
+  merge: 12
+  522: 1975
+  1173: 249
+  524: 79
+  1168: 9
+  1167a: 78
+  1167b: 11
+  1184: 363

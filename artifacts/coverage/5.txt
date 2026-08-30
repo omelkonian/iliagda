@@ -907,3 +907,37 @@
 5.907: ✓ [1]
 5.908: ✓ [1]
 5.909: ✓ [1]
+wrote artifacts/explanations/5.json: 909 verses, 4 unscanned, 0 violations, 117.6 sec
+
+** STATS **
+
+0-meter derivations: 4
+1-meter derivations: 875
+2-meter derivations: 26
+3-meter derivations: 4
+
+1-parse derivations: 740
+2-parse derivations: 180
+3-parse derivations: 0
+4-parse derivations: 17
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 2
+
+  unwritten: NEVER FIRED
+  longByNature: 4384
+  shortByNature: 5531
+  byLexicon: 83
+  1160: 163
+  1161: 43
+  1162: 139
+  1163: 411
+  merge: 14
+  522: 2471
+  1173: 294
+  524: 85
+  1168: 15
+  1167a: 98
+  1167b: 30
+  1184: 467

@@ -11,9 +11,6 @@ open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
 open import Iliagda.Lexicon
 
--- TODO: how does apostrophe interact with syllables?
--- i.e. re-index by-construction or not??
-
 -- ** LEVEL 2: lexical structure
 
 CircumflexPenult : Pred₀ (Word (2 + n))
@@ -45,9 +42,9 @@ HasAccentSy : Syllable → Type
 HasAccentSy = Any HasAccent ∘ toList
 
 SingleAccents : Syllables n → Type
-SingleAccents = LastThree (  Affinely HasAccentSy
-                          ∩¹ All (Affinely⁺ HasAccent)
-                          )
+SingleAccents =
+  LastThree $  Affinely HasAccentSy
+            ∩¹ All (Affinely⁺ HasAccent)
 
 infix 1 _⊨_~%′_ _⊨_~%_
 
@@ -85,7 +82,7 @@ data _⊨_~%′_ : Quantities n → Syllables n → Op₁ (Quantities n) → Typ
     mqs ⊨ sys ~%′ (_≔ₙ single ·)
 
 IsCompound : Syllables n → Type
-IsCompound sys = unsyllables sys ∈
+IsCompound sys = stripProclitic (unsyllables sys) ∈
   [ [ ο ⨾ ὔ ⨾ τ ⨾ ε ]
   ⨾ [ μ ⨾ ή ⨾ τ ⨾ ε ]
   ⨾ [ ο ⨾ ὔ ⨾ τ ⨾ ι ⨾ ς ]
@@ -93,11 +90,12 @@ IsCompound sys = unsyllables sys ∈
   ⨾ [ ἥ ⨾ δ ⨾ ε ]
   ⨾ [ ἤ ⨾ τ ⨾ ε ]
   ⨾ [ ο ⨾ ἵ ⨾ δ ⨾ ε ]
-  ⨾ [ δ ⨾ ᾽ ⨾ ο ⨾ ἵ ⨾ δ ⨾ ε ]
   ⨾ [ α ⨾ ἵ ⨾ δ ⨾ ε ]
   ⨾ [ τ ⨾ ο ⨾ ύ ⨾ σ ⨾ δ ⨾ ε ]
   ⨾ [ τ ⨾ ά ⨾ σ ⨾ δ ⨾ ε ]
+  ⨾ [ τ ⨾ ώ ⨾ δ ⨾ ε ]
   -- INCOMPLETE: add as needed
+  -- c.f. https://el.wiktionary.org/wiki/ὅδε
   ]
 
 data ApparentException : Syllables n → Type where
@@ -136,33 +134,26 @@ data _⊨_~%_ : Quantities n → Syllables n → Op₁ (Quantities n) → Type w
       ─────────────────────────────────
       mqs ⊨ sys ~% id
 
-record LexHit {n} (sys : Syllables n) : Type where
-  constructor lexHit
-  field
-    entry   : Entry
-    ix      : Fin n
-    found   : lexLookup (unsyllables sys) ≡ just entry
-    atLocus : locusIx (locusOf (entry .mode)) n ≡ just ix
-    gap     : NonDerivable {B = Quantity} (V.lookup sys ix)
-open LexHit public
-
 data _~L_ : Syllables n → Op₁ (Quantities n) → Type where
 
-  byLexicon : (h : LexHit sys) → sys ~L (V._[ h .ix ]≔ single (h .entry .qty))
+  lexHit :
+    ∀ (h : LexHit sys) →
+    ─────────────────────────────────────────────
+    sys ~L (V._[ h .ix ]≔ single (h .entry .qty))
 
-  noLex :
+  lexMiss :
     ¬ LexHit sys
     ────────────
     sys ~L id
 
 data _~ʷ_ : Word n → Quantities n → Type where
 
-  𝟙-then-L-then-𝟚 : ∀ {lex f} → let sys = unword w in
+  𝟙-then-L-then-𝟚 : ∀ {f g} → let sys = unword w in
     ∙ sys ~ mqs
-    ∙ sys ~L lex
-    ∙ lex mqs ⊨ sys ~% f
-      ──────────────────
-      w ~ʷ f (lex mqs)
+    ∙ sys ~L f
+    ∙ f mqs ⊨ sys ~% g
+      ────────────────
+      w ~ʷ g (f mqs)
 
 instance
   Complies-W-MQs : Word n -compliesWith- Quantities n

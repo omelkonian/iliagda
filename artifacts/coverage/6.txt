@@ -42,7 +42,7 @@
 6.42: ✓ [1]
 6.43: ✓ [1]
 6.44: ✓ [1]
-6.45: ×
+6.45: ✓ [1]
 6.46: ✓ [2]
 6.47: ✓ [1]
 6.48: ✓ [2]
@@ -527,3 +527,34 @@
 6.527: ✓ [1]
 6.528: ✓ [1]
 6.529: ✓ [1]
+wrote artifacts/explanations/6.json: 529 verses, 1 unscanned, 0 violations, 31.4 sec
+
+** STATS **
+
+0-meter derivations: 1
+1-meter derivations: 509
+2-meter derivations: 15
+3-meter derivations: 3
+4-meter derivations: 1
+
+1-parse derivations: 407
+2-parse derivations: 135
+3-parse derivations: 0
+4-parse derivations: 10
+
+  unwritten: 1
+  longByNature: 2706
+  shortByNature: 3158
+  byLexicon: 38
+  1160: 95
+  1161: 26
+  1162: 54
+  1163: 249
+  merge: NEVER FIRED
+  522: 1390
+  1173: 215
+  524: 56
+  1168: 10
+  1167a: 49
+  1167b: 11
+  1184: 256

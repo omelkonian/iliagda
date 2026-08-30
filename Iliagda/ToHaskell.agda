@@ -113,6 +113,7 @@ module _ (v : RawVerse) (let _ , ws = mkVerse v) where
 
   RawDerivations = List (List String)
 
+  -- TODO: consider different syllabifications (due to synizesis)
   private
     groupDerivations′ : Derivations ws → List (Feet × List String)
     groupDerivations′ [] = []

@@ -469,3 +469,36 @@
 12.469: ✓ [1]
 12.470: ✓ [2]
 12.471: ✓ [2]
+wrote artifacts/explanations/12.json: 471 verses, 1 unscanned, 0 violations, 28.7 sec
+
+** STATS **
+
+0-meter derivations: 1
+1-meter derivations: 456
+2-meter derivations: 14
+
+1-parse derivations: 384
+2-parse derivations: 86
+3-parse derivations: 0
+4-parse derivations: 13
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 1
+
+  unwritten: 1
+  longByNature: 2268
+  shortByNature: 2749
+  byLexicon: 34
+  1160: 83
+  1161: 30
+  1162: 85
+  1163: 225
+  merge: 6
+  522: 1315
+  1173: 133
+  524: 61
+  1168: 10
+  1167a: 52
+  1167b: 10
+  1184: 229

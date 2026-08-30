@@ -55,6 +55,9 @@ HasDiaeresis = _∈
 Syllable  = List⁺ Letter
 Syllables = Vec Syllable
 
+unsyllables : Syllables n → Letters
+unsyllables = L.concat ∘ map toList ∘ toList
+
 -- ** words
 
 data Word : ℕ {- syllables -} → Type where
