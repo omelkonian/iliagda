@@ -127,7 +127,7 @@ const RULES = {
     `${me(sc, f)} is ${QTY[f.a[0]]}: the vocabulary fixes the doubtful vowel of ${g(f.a[1])}`
     + (f.a[2] === "stem" ? ", matched as a stem." : ".")],
 
-  "1160": (sc, f) => ["545",
+  "1160": (sc, f) => ["1160",
     `${me(sc, f)} is short: it is the ultima of ${g(wordOf(sc, f.i))}, whose penult `
     + `${g(f.a[1])} bears the circumflex.`],
 
@@ -139,7 +139,7 @@ const RULES = {
     `${me(sc, f)} is short: it is the penult of ${g(wordOf(sc, f.i))}, bearing the acute `
     + `while the ultima ${g(f.a[1])} is short${cite(f)}.`],
 
-  "1163": (sc, f) => ["544",
+  "1163": (sc, f) => ["1163",
     `${me(sc, f)} is short: it is the ultima of ${g(wordOf(sc, f.i))}, whose antepenult `
     + `${g(f.a[1])} bears the accent.`],
 
@@ -250,17 +250,32 @@ const tokenFor = (verse, i) => {
   return null;
 };
 
+const rulesFor = (verse, a, n) => {
+  const ol = verse.querySelector(".varg.on");
+  if (!ol) return [];
+  return [...ol.querySelectorAll("li[data-i]")]
+    .filter(li => +li.dataset.i >= a && +li.dataset.i < a + n);
+};
+
 let lit = [];
 const clearLit = () => { for (const e of lit) e.classList.remove("lit"); lit = []; };
 const light = e => { if (e) { e.classList.add("lit"); lit.push(e); } };
 
 const hover = e => {
   const li = e.target.closest(".varg li"), pt = e.target.closest("a.pt");
-  if (!li && !pt) { if (lit.length) clearLit(); return; }
+  const syl = e.target.closest(".syl");
+  if (!li && !pt && !syl) { if (lit.length) clearLit(); return; }
   clearLit();
   if (pt) light(pt.closest(".varg").querySelector(`li[data-k="${pt.dataset.k}"]`));
   if (li && li.dataset.i !== undefined)
     light(tokenFor(li.closest(".verse"), +li.dataset.i));
+  if (syl) {
+    const verse = syl.closest(".verse");
+    if (verse.classList.contains("open")) {
+      light(syl);
+      for (const r of rulesFor(verse, +syl.dataset.i, +(syl.dataset.n || 1))) light(r);
+    }
+  }
 };
 document.addEventListener("mouseover", hover);
 

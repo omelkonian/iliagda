@@ -1,6 +1,6 @@
 :root {
   --paper: #F5F1E6; --ink: #201C15; --mid: #4A4335; --soft: #6B6353; --red: #8C2B21;
-  --line: #D9D0BC; --faint: #EBE5D4;
+  --line: #D9D0BC; --hi: #C15644;
   --roman: "EB Garamond", Georgia, serif;
   --greek: "GFS Didot", "EB Garamond", serif;
   --measure: 53.7rem;
@@ -9,13 +9,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #17140F; --ink: #E6DECC; --mid: #C4BBA4; --soft: #9C937F; --red: #C87863;
-    --line: #3A3428; --faint: #221E16;
+    --line: #3A3428; --hi: var(--red);
     --ask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24'%3E%3Ctext x='2' y='19' font-family='Georgia,serif' font-size='20' fill='%23E6DECC' stroke='%2317140F' stroke-width='3' paint-order='stroke'%3E%3F%3C/text%3E%3C/svg%3E") 5 12;
   }
 }
 :root[data-theme="dark"] {
   --paper: #17140F; --ink: #E6DECC; --mid: #C4BBA4; --soft: #9C937F; --red: #C87863;
-  --line: #3A3428; --faint: #221E16;
+  --line: #3A3428; --hi: var(--red);
   --ask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24'%3E%3Ctext x='2' y='19' font-family='Georgia,serif' font-size='20' fill='%23E6DECC' stroke='%2317140F' stroke-width='3' paint-order='stroke'%3E%3F%3C/text%3E%3C/svg%3E") 5 12;
 }
 
@@ -44,8 +44,7 @@ a, a:visited { color: var(--red); }
 .books a { color: var(--mid); text-decoration: none; padding: 0 0.32rem; }
 .books a:hover { color: var(--red); }
 .books a.on { color: var(--red); border-bottom: 1px solid var(--red); }
-.rulebar { max-width: 40rem; margin: 1.2rem auto 0; border: none; border-top: 1px solid var(--ink); position: relative; }
-.rulebar::after { content: ""; position: absolute; left: 0; right: 0; top: 2px; border-top: 1px solid var(--line); }
+.rulebar { max-width: 40rem; margin: 1.2rem auto 0; border: none; border-top: 2px solid var(--ink); }
 
 main { max-width: var(--measure); margin: 0 auto; padding: 2rem 1.2rem 5rem; }
 
@@ -173,7 +172,8 @@ main { max-width: var(--measure); margin: 0 auto; padding: 2rem 1.2rem 5rem; }
 .varg li.lit::before { color: var(--red); }
 .varg li.err { color: var(--red); font-style: italic; }
 
-.syl.lit { color: var(--red); }
+.syl.lit, .syl.lit .sup { color: var(--hi); }
+.syl.lit .nuc::before { color: var(--hi); }
 
 a:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 
