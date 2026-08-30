@@ -96,13 +96,13 @@ instance
 
       data _~′_ : Words n → Hexameter n′ → Type where
 
-        _▷_≫⟨_⟩≫_≫_ : ∀ {ws ws″ : Words n} {sys′ : Syllables n′} {hm : Hexameter n′} →
-          ws -reads- ws″ →
-          ∙ ws″ ~² mqs₂
+        _▷_≫⟨_⟩≫_≫_ : ∀ {ws wsʳ : Words n} {sys′ : Syllables n′} {hm : Hexameter n′}
+          → ws -reads- wsʳ
+          → wsʳ ~² mqs₂
           -- [586] synizesis
-          → (syn : unwords ws″ -synizizes*- sys′) →
+          → (syn : unwords wsʳ -synizizes*- sys′) →
           let
-            ws′   = synizizeWords ws″ syn
+            ws′   = synizizeWords wsʳ syn
             mqs₂′ = synizize syn mqs₂
           in
           ∙ (ws′ , mqs₂′) ~³ mqs₃

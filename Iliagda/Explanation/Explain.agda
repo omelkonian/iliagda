@@ -3,16 +3,11 @@ module Iliagda.Explanation.Explain where
 open import Iliagda.Init
 open import Prelude.Vectors
 open import Iliagda.Morphology
-open import Iliagda.Dec.Core
-open import Iliagda.Prosody.Core
-open import Iliagda.Prosody.Synizesis
-open import Iliagda.Prosody.Rules.Core
-open import Iliagda.Prosody.Rules.Level1
-open import Iliagda.Prosody.Rules.Level2
-open import Iliagda.Prosody.Rules.Level3
-open import Iliagda.Prosody.Rules.Level4
 open import Iliagda.Lexicon
 open import Iliagda.Reading
+open import Iliagda.Prosody
+open import Iliagda.Prosody.Synizesis
+open import Iliagda.Prosody.Rules
 open import Iliagda.Explanation
 
 private variable i o k : ℕ
@@ -52,9 +47,6 @@ getAt (_ ∷ es) (suc r) = getAt es r
 
 appendFact : List Fact → Fact → List Fact
 appendFact es e = es L.∷ʳ e
-
-appendFacts : List Fact → List Fact → List Fact
-appendFacts = _++_
 
 preIx : {sys : Syllables n} {sys′ : Syllables n′}
   → sys -synizizes*- sys′ → ℕ → ℕ
@@ -137,11 +129,11 @@ matchOf (exact _)  = whole
 matchOf (prefix _) = stem
 
 explainLex : ∀ {lex} → Ix → sys ~L lex → List Fact
-explainLex o (byLexicon h) =
+explainLex o (lexHit h) =
   [ mkFact (o + Fi.toℕ (h .ix))
          (byLexicon (toQ (h .entry .qty)) (str (h .entry .key)) (matchOf (h .entry .mode)))
          nothing ]
-explainLex o (noLex _) = []
+explainLex o (lexMiss _) = []
 
 explainNature : Ix → ws ~² mqs → List Fact
 explainNature o [] = []
@@ -429,18 +421,18 @@ open ∣Complies-Ws-HM∣
 
 explain : {ws : Words n} {hm : Hexameter n′} → ws ~ hm → Explanation
 explain {ws = ws} {hm = hm}
-  (_▷_≫⟨_⟩≫_≫_ {ws″ = ws″} rd p₂ syn p₃ (reify {qs = qs} _ p₄)) =
+  (_▷_≫⟨_⟩≫_≫_ {wsʳ = wsʳ} rd p₂ syn p₃ (reify {qs = qs} _ p₄)) =
   let
-    sys  = unwords ws″
+    sys  = unwords wsʳ
     m    = length (toList sys)
     pre  = preIx syn
     acc₀ = explainReads 0 rd
-    acc₁ = appendFacts acc₀ (explainNature 0 p₂)
-    acc₂ = appendFacts acc₁ (explainLexicon 0 p₂)
-    acc₃ = appendFacts acc₂ (explainAccent (resolveIn acc₂) 0 p₂)
-    acc₄ = appendFacts acc₃ (mergeFacts (wordEnds ws) 0 syn)
-    acc₅ = appendFacts acc₄ (reloc pre (explain³ (resolveIn acc₄ ∘ pre) 0 qs p₃))
-    acc₆ = appendFacts acc₅ (reloc pre (explain⁴ (resolveIn acc₅ ∘ pre) 0 0 p₄))
+    acc₁ = acc₀ ◇ explainNature 0 p₂
+    acc₂ = acc₁ ◇ explainLexicon 0 p₂
+    acc₃ = acc₂ ◇ explainAccent (resolveIn acc₂) 0 p₂
+    acc₄ = acc₃ ◇ mergeFacts (wordEnds ws) 0 syn
+    acc₅ = acc₄ ◇ reloc pre (explain³ (resolveIn acc₄ ∘ pre) 0 qs p₃)
+    acc₆ = acc₅ ◇ reloc pre (explain⁴ (resolveIn acc₅ ∘ pre) 0 0 p₄)
     last = m ∸ 1
     ref₁₈₄ = case resolveIn acc₆ last of λ where
       (just r) → case getAt acc₆ r of λ where
@@ -453,6 +445,6 @@ explain {ws = ws} {hm = hm}
     explanation
       1
       (map sylStr (toList sys))
-      (wordWidths ws″)
+      (wordWidths wsʳ)
       (map toQ (toList (meter-qs hm)))
       (byLocus m (prune (absorbed 0 syn) (appendFact acc₆ (mkFact last [1184] ref₁₈₄))))

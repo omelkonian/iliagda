@@ -513,3 +513,37 @@
 22.513: ✓ [1]
 22.514: ✓ [2]
 22.515: ✓ [2]
+wrote artifacts/explanations/22.json: 515 verses, 2 unscanned, 0 violations, 41.3 sec
+
+** STATS **
+
+0-meter derivations: 2
+1-meter derivations: 504
+2-meter derivations: 8
+3-meter derivations: 1
+
+1-parse derivations: 388
+2-parse derivations: 121
+3-parse derivations: 0
+4-parse derivations: 13
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 1
+
+  unwritten: 2
+  longByNature: 2464
+  shortByNature: 3098
+  byLexicon: 58
+  1160: 111
+  1161: 27
+  1162: 89
+  1163: 216
+  merge: 5
+  522: 1367
+  1173: 162
+  524: 71
+  1168: 15
+  1167a: 57
+  1167b: 7
+  1184: 240

@@ -11,13 +11,7 @@ Ref = ℕ
 data Qty : Type where
   long short : Qty
 
-instance
-  DecEq-Qty : DecEq Qty
-  DecEq-Qty ._≟_ = λ where
-    long  long  → yes refl
-    long  short → no λ ()
-    short long  → no λ ()
-    short short → yes refl
+unquoteDecl DecEq-Qty = derive-DecEq [ quote Qty , DecEq-Qty ]
 
 data Ground : Type where
   diphthong  : Char → Char → Ground
@@ -83,14 +77,15 @@ open Fact public
 mkFact : Ix → Rule → Maybe Ref → Fact
 mkFact i r = fact i r (quantity r)
 
+-- an explantion for a *single* scansion (one syllabification, one meter)
 record Explanation : Type where
   constructor explanation
   field
-    parses     : ℕ
-    syllables  : List String
-    words      : List ℕ
-    quantities : List Qty
-    facts      : List Fact
+    parses     : ℕ           -- how many derivations are there for this scansion
+    syllables  : List String -- the syllables of the verse
+    words      : List ℕ      -- word boundaries within the syllables
+    quantities : List Qty    -- the quantities assigned to each syllable
+    facts      : List Fact   -- a sequence of reasoning steps
 
 {-# COMPILE GHC Qty         = data E.Qty         (E.Long | E.Short) #-}
 {-# COMPILE GHC Ground      = data E.Ground      (E.Diphthong | E.LongVowel | E.Circumflex) #-}

@@ -845,3 +845,36 @@
 11.845: ✓ [2]
 11.846: ✓ [4]
 11.847: ✓ [1]
+wrote artifacts/explanations/11.json: 847 verses, 0 unscanned, 0 violations, 52.4 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 828
+2-meter derivations: 19
+
+1-parse derivations: 675
+2-parse derivations: 173
+3-parse derivations: 0
+4-parse derivations: 16
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 2
+
+  unwritten: NEVER FIRED
+  longByNature: 4011
+  shortByNature: 5067
+  byLexicon: 82
+  1160: 193
+  1161: 37
+  1162: 134
+  1163: 365
+  merge: 13
+  522: 2270
+  1173: 261
+  524: 96
+  1168: 27
+  1167a: 113
+  1167b: 16
+  1184: 436

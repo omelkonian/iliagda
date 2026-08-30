@@ -480,3 +480,37 @@
 7.480: ✓ [1]
 7.481: ✓ [1]
 7.482: ✓ [1]
+wrote artifacts/explanations/7.json: 482 verses, 2 unscanned, 0 violations, 27.9 sec
+
+** STATS **
+
+0-meter derivations: 2
+1-meter derivations: 465
+2-meter derivations: 14
+3-meter derivations: 1
+
+1-parse derivations: 403
+2-parse derivations: 85
+3-parse derivations: 1
+4-parse derivations: 6
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 1
+
+  unwritten: NEVER FIRED
+  longByNature: 2467
+  shortByNature: 2799
+  byLexicon: 21
+  1160: 113
+  1161: 32
+  1162: 74
+  1163: 191
+  merge: 5
+  522: 1242
+  1173: 166
+  524: 53
+  1168: 21
+  1167a: 34
+  1167b: 8
+  1184: 224

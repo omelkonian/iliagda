@@ -759,3 +759,33 @@
 17.759: ✓ [1]
 17.760: ✓ [1]
 17.761: ✓ [1]
+wrote artifacts/explanations/17.json: 761 verses, 0 unscanned, 0 violations, 64.7 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 734
+2-meter derivations: 24
+3-meter derivations: 3
+
+1-parse derivations: 621
+2-parse derivations: 157
+3-parse derivations: 2
+4-parse derivations: 11
+
+  unwritten: NEVER FIRED
+  longByNature: 3623
+  shortByNature: 4702
+  byLexicon: 70
+  1160: 162
+  1161: 56
+  1162: 100
+  1163: 313
+  merge: 7
+  522: 2085
+  1173: 256
+  524: 134
+  1168: 31
+  1167a: 73
+  1167b: 15
+  1184: 368

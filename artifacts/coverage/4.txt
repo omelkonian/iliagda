@@ -7,7 +7,7 @@
 4.7: ✓ [1]
 4.8: ✓ [1]
 4.9: ✓ [1]
-4.10: ×
+4.10: ✓ [1]
 4.11: ✓ [1]
 4.12: ✓ [1]
 4.13: ✓ [1]
@@ -542,3 +542,33 @@
 4.542: ✓ [1]
 4.543: ✓ [1]
 4.544: ✓ [1]
+wrote artifacts/explanations/4.json: 544 verses, 3 unscanned, 0 violations, 28.5 sec
+
+** STATS **
+
+0-meter derivations: 3
+1-meter derivations: 526
+2-meter derivations: 13
+3-meter derivations: 2
+
+1-parse derivations: 449
+2-parse derivations: 97
+3-parse derivations: 0
+4-parse derivations: 12
+
+  unwritten: 1
+  longByNature: 2669
+  shortByNature: 3294
+  byLexicon: 47
+  1160: 98
+  1161: 31
+  1162: 65
+  1163: 232
+  merge: 8
+  522: 1452
+  1173: 166
+  524: 59
+  1168: 14
+  1167a: 46
+  1167b: 13
+  1184: 253

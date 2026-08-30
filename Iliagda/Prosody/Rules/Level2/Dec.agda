@@ -34,10 +34,7 @@ instance
 
 module _ (sacc : SingleAccents sys) where
 
-  1160#1161/2 :
-    ¬ ( InPenult (Any HasCircumflex) sys
-      × InPenult (Any HasAcute) sys
-      )
+  1160#1161/2 : ¬ (InPenult (Any HasCircumflex) sys × InPenult (Any HasAcute) sys)
   1160#1161/2 (circPu , acuPu)
     = ¬InPenult singleAccentSy pu
     where
@@ -45,30 +42,21 @@ module _ (sacc : SingleAccents sys) where
     pu = 3All⇒Penult (LastThree-map proj₂ sacc)
        $ InPenult-∩⁺ circPu acuPu
 
-  1160#1163 :
-    ¬ ( InPenult (Any HasCircumflex) sys
-      × InAntepenult (Any HasAccent) sys
-      )
+  1160#1163 : ¬ (InPenult (Any HasCircumflex) sys × InAntepenult (Any HasAccent) sys)
   1160#1163 (circPu , accApu)
     = 3Affinely⇒¬[Penult×Antepenult] (LastThree-map proj₁ sacc) (accPu , accApu)
     where
     accPu : InPenult (Any HasAccent) sys
     accPu = InPenult-map (L.Any.map circ⇒acc) circPu
 
-  1161/2#1163 :
-    ¬ ( InPenult (Any HasAcute) sys
-      × InAntepenult (Any HasAccent) sys
-      )
+  1161/2#1163 : ¬ (InPenult (Any HasAcute) sys × InAntepenult (Any HasAccent) sys)
   1161/2#1163 (acuPu , accApu)
     = 3Affinely⇒¬[Penult×Antepenult] (LastThree-map proj₁ sacc) (accPu , accApu)
     where
     accPu : InPenult (Any HasAccent) sys
     accPu = InPenult-map (L.Any.map acu⇒acc) acuPu
 
-1161#1162 :
-  ¬ ( InPenult (_≡ single ─) mqs
-    × InPenult (_≢ single ─) mqs
-    )
+1161#1162 : ¬ (InPenult (_≡ single ─) mqs × InPenult (_≢ single ─) mqs)
 1161#1162 (p , q)
   = ¬InPenult (λ (p , ¬p) → ¬p p)
   $ InPenult-∩⁺ p q
@@ -234,25 +222,19 @@ lex? {n} sys = go (lexLookup (unsyllables sys)) refl
   where
   go : (m : Maybe Entry) → lexLookup (unsyllables sys) ≡ m → Dec (LexHit sys)
   go nothing eqL = no λ where
-    (lexHit _ _ eqL′ _ _) → case trans (sym eqL) eqL′ of λ ()
+    (lexHit _ _ eqL′ _) → case trans (sym eqL) eqL′ of λ ()
   go (just e) eqL = go′ (locusIx (locusOf (e .mode)) n) refl
     where
     go′ : (mi : Maybe (Fin n)) → locusIx (locusOf (e .mode)) n ≡ mi → Dec (LexHit sys)
     go′ nothing eqI = no λ where
-      (lexHit _ _ eqL′ eqI′ _) →
+      (lexHit _ _ eqL′ eqI′) →
         case May.just-injective (trans (sym eqL) eqL′) of λ where
           refl → case trans (sym eqI) eqI′ of λ ()
-    go′ (just i) eqI with nonDerivable? (V.lookup sys i)
-    ... | yes d = yes (lexHit e i eqL eqI d)
-    ... | no ¬d = no λ where
-      (lexHit _ _ eqL′ eqI′ d′) →
-        case May.just-injective (trans (sym eqL) eqL′) of λ where
-          refl → case May.just-injective (trans (sym eqI) eqI′) of λ where
-            refl → ¬d d′
+    go′ (just i) eqI = yes (lexHit e i eqL eqI)
 
 lexUnique : {sys : Syllables n} (h h′ : LexHit sys) →
   (V._[ h′ .ix ]≔ single (h′ .entry .qty)) ≡ (V._[ h .ix ]≔ single (h .entry .qty))
-lexUnique (lexHit _ _ eqL eqI _) (lexHit _ _ eqL′ eqI′ _)
+lexUnique (lexHit _ _ eqL eqI) (lexHit _ _ eqL′ eqI′)
   with refl ← May.just-injective (trans (sym eqL) eqL′)
   with refl ← May.just-injective (trans (sym eqI) eqI′)
   = refl
@@ -264,13 +246,13 @@ theL :
     × (∀ {lex′} → sys ~L lex′ → lex′ ≡ lex)
 theL sys with lex? sys
 ... | yes h
-  = -, byLexicon h , λ where
-    (byLexicon h′) → lexUnique h h′
-    (noLex ¬h) → ⊥-elim $ ¬h h
+  = -, lexHit h , λ where
+    (lexHit h′) → lexUnique h h′
+    (lexMiss ¬h) → ⊥-elim $ ¬h h
 ... | no ¬h
-  = id , noLex ¬h , λ where
-    (byLexicon h′) → ⊥-elim $ ¬h h′
-    (noLex _) → refl
+  = id , lexMiss ¬h , λ where
+    (lexHit h′) → ⊥-elim $ ¬h h′
+    (lexMiss _) → refl
 
 𝟚-theQuantities₁ :
   (w : Word n) →
@@ -280,14 +262,14 @@ theL sys with lex? sys
 𝟚-theQuantities₁ w
   using sys ← unword w
   using mqs , mqs~ , unique-mqs ← 𝟙-theQuantities sys
-  using lex , lex~ , unique-lex ← theL sys
-  using f , f~ , unique-f ← theF (lex mqs) sys
-  = f (lex mqs)
-  , 𝟙-then-L-then-𝟚 mqs~ lex~ f~
+  using f , f~ , unique-lex ← theL sys
+  using g , g~ , unique-f ← theF (f mqs) sys
+  = g (f mqs)
+  , 𝟙-then-L-then-𝟚 mqs~ f~ g~
   , λ where
-    (𝟙-then-L-then-𝟚 {f = f′} mqs~′ lex~′ f~′) →
-      let eqv = cong₂ id (unique-lex lex~′) (unique-mqs mqs~′) in
-      cong₂ id (unique-f (subst (λ ◆ → ◆ ⊨ sys ~% f′) eqv f~′)) eqv
+    (𝟙-then-L-then-𝟚 {g = g′} mqs~′ f~′ g~′) →
+      let eqv = cong₂ id (unique-lex f~′) (unique-mqs mqs~′) in
+      cong₂ id (unique-f (subst (λ ◆ → ◆ ⊨ sys ~% g′) eqv g~′)) eqv
 
 𝟚-theQuantities :
   (ws : Words n) →

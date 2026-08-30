@@ -37,7 +37,7 @@
 20.37: ✓ [2]
 20.38: ✓ [1,2]
 20.39: ✓ [1]
-20.40: ×
+20.40: ✓ [1]
 20.41: ✓ [1]
 20.42: ✓ [1]
 20.43: ✓ [1]
@@ -501,3 +501,32 @@
 20.501: ✓ [2]
 20.502: ✓ [1]
 20.503: ✓ [1]
+wrote artifacts/explanations/20.json: 503 verses, 0 unscanned, 0 violations, 42.7 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 488
+2-meter derivations: 15
+
+1-parse derivations: 414
+2-parse derivations: 99
+3-parse derivations: 0
+4-parse derivations: 5
+
+  unwritten: 2
+  longByNature: 2483
+  shortByNature: 3012
+  byLexicon: 52
+  1160: 104
+  1161: 45
+  1162: 91
+  1163: 208
+  merge: 10
+  522: 1344
+  1173: 169
+  524: 43
+  1168: 14
+  1167a: 50
+  1167b: 9
+  1184: 226

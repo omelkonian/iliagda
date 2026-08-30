@@ -16,10 +16,10 @@ import qualified Data.Text.IO as T
 import System.Directory (createDirectoryIfMissing)
 
 import qualified MAlonzo.Code.Iliagda.ToHaskell as AGDA
-import qualified Explanation.Render as Render
-import qualified Explanation.Check as Check
-import qualified Explanation.Json as Json
 import Explanation (Explanation (..), Fact (..), ruleName, ruleNames)
+import Explanation.ToText
+import Explanation.ToJson (verseJson, bookJson)
+import Explanation.Check
 import Corpus (allBooks)
 
 type Letter   = Char
@@ -115,7 +115,7 @@ main = getArgs >>= \case
     fired <- fmap concat $ forM ixs $ \i -> do
       let ds = AGDA.explainVerse (getVerse i)
       fmap concat $ forM ds $ \d@(Explanation _ _ _ _ fs) -> do
-        mapM_ (\v -> T.putStrLn (T.pack (show i <> ": ") <> v)) (Check.violations d)
+        mapM_ (\v -> T.putStrLn (T.pack (show i <> ": ") <> v)) (violations d)
         return [ruleName r | Fact _ r _ _ <- fs]
     putStrLn "--------------------------------"
     forM_ ruleNames $ \r ->
@@ -133,28 +133,28 @@ main = getArgs >>= \case
     vs <- forM (zip [1 ..] (allBooks !! (b - 1))) $ \(n, v) -> do
       let es  = AGDA.explainVerse v
           ns  = [fromInteger p | Explanation p _ _ _ _ <- es]
-          t   = Json.verseJson n es
-          bad = concatMap Check.violations es
+          t   = verseJson n es
+          bad = concatMap violations es
           fired = [ruleName r | Explanation _ _ _ _ fs <- es, Fact _ r _ _ <- fs]
       T.length t `seq` hPutStrLn cov (show b <> "." <> show n <> ": " <> reportDerivations ns)
       mapM_ (\m -> T.hPutStrLn stderr (T.pack (show b <> "." <> show n <> ": ") <> m)) bad
       hFlush cov
       return (t, ns, length bad, fired)
-    hClose cov
     let path = "artifacts/explanations/" <> show b <> ".json"
         vio  = sum [x | (_, _, x, _) <- vs]
         fired = concat [x | (_, _, _, x) <- vs]
         nss  = [x | (_, x, _, _) <- vs]
-    T.writeFile path (Json.bookJson b [t | (t, _, _, _) <- vs])
+    T.writeFile path (bookJson b [t | (t, _, _, _) <- vs])
     end <- getCPUTime
-    hPrintf stderr "wrote %s: %d verses, %d unscanned, %d violations, %0.1f sec\n"
+    hPrintf cov $ "\n** STATS **\n\n" <> "wrote %s: %d verses, %d unscanned, %d violations, %0.1f sec\n"
       path (length vs) (length [() | (_, x, _, _) <- vs, null x]) vio
       ((fromIntegral (end - start) / 10 ^ (12 :: Int)) :: Double)
-    hPutStrLn stderr $ reportStats nss
+    hPutStrLn cov reportStats nss
     forM_ ruleNames $ \r ->
-      hPutStrLn stderr $ "  " <> T.unpack r <> ": " <> case length (filter (== r) fired) of
+      hPutStrLn cov $ "  " <> T.unpack r <> ": " <> case length (filter (== r) fired) of
         0 -> "NEVER FIRED"
         k -> show k
+    hClose cov
 
   readVerse :: String -> IO Verse
   readVerse s = do
@@ -167,7 +167,7 @@ main = getArgs >>= \case
     [] -> putStrLn "∅"
     ds -> sequence_
       [ do putStrLn ("  derivation " <> show i <> " of " <> show (length ds))
-           T.putStrLn (Render.render d)
+           T.putStrLn (printExplanations d)
       | (i, d) <- zip [1 :: Int ..] ds ]
 
   checkVerse :: Verse -> IO ()

@@ -20,6 +20,7 @@ data Context : Type where
   ∅     : Context
   inner : Syllable → Context
   outer : Syllable → Context
+  -- TODO: consider the whole next word (for Ζακυνθος, Σκαμανδρος)
 
 variable ctx ctx′ : Context
 

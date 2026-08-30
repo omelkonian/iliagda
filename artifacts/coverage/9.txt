@@ -2,7 +2,7 @@
 9.2: ✓ [2]
 9.3: ✓ [1]
 9.4: ✓ [1]
-9.5: ×
+9.5: ✓ [2]
 9.6: ✓ [1]
 9.7: ✓ [1]
 9.8: ✓ [1]
@@ -711,3 +711,33 @@
 9.711: ✓ [1]
 9.712: ✓ [1]
 9.713: ✓ [1]
+wrote artifacts/explanations/9.json: 713 verses, 0 unscanned, 0 violations, 41.4 sec
+
+** STATS **
+
+0-meter derivations: 0
+1-meter derivations: 690
+2-meter derivations: 22
+3-meter derivations: 1
+
+1-parse derivations: 577
+2-parse derivations: 146
+3-parse derivations: 0
+4-parse derivations: 14
+
+  unwritten: 1
+  longByNature: 3665
+  shortByNature: 4140
+  byLexicon: 52
+  1160: 165
+  1161: 28
+  1162: 80
+  1163: 322
+  merge: 11
+  522: 1888
+  1173: 285
+  524: 61
+  1168: 15
+  1167a: 67
+  1167b: 12
+  1184: 340

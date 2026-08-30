@@ -53,13 +53,13 @@ showSynWs = λ where
 instance
   Show-Ws-HM : Show (ws ~ hm)
   Show-Ws-HM {ws = ws} {hm = hm} .show
-    (_▷_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃} {ws″ = ws″} _ _ syn _ _) =
+    (_▷_≫⟨_⟩≫_≫_ {mqs₂ = mqs₂} {mqs₃ = mqs₃} {wsʳ = wsʳ} _ _ syn _ _) =
     let
-      `syn = showSynWs (ws″ , syn)
+      `syn = showSynWs (wsʳ , syn)
       ns   = map Str.length (Str.words `syn)
       qs   = meter-qs hm
       `qs  = map show (toList qs)
-      mqs₁  = 𝟙-theQuantities (unwords ws″) .proj₁
+      mqs₁  = 𝟙-theQuantities (unwords wsʳ) .proj₁
       `mqs₁ = map show (toList $ synizize syn mqs₁)
       `mqs₂ = map show (toList $ synizize syn mqs₂)
       `mqs₃ = map show (toList mqs₃)

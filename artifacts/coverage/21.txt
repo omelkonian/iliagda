@@ -609,3 +609,37 @@
 21.609: ✓ [1]
 21.610: ✓ [2]
 21.611: ✓ [1]
+wrote artifacts/explanations/21.json: 611 verses, 4 unscanned, 0 violations, 66.0 sec
+
+** STATS **
+
+0-meter derivations: 4
+1-meter derivations: 591
+2-meter derivations: 11
+3-meter derivations: 5
+
+1-parse derivations: 493
+2-parse derivations: 121
+3-parse derivations: 0
+4-parse derivations: 13
+5-parse derivations: 0
+6-parse derivations: 0
+7-parse derivations: 0
+8-parse derivations: 1
+
+  unwritten: NEVER FIRED
+  longByNature: 2968
+  shortByNature: 3792
+  byLexicon: 57
+  1160: 136
+  1161: 28
+  1162: 110
+  1163: 260
+  merge: 11
+  522: 1555
+  1173: 195
+  524: 53
+  1168: 17
+  1167a: 58
+  1167b: 17
+  1184: 301

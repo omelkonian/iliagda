@@ -802,3 +802,33 @@
 24.802: ✓ [1]
 24.803: ✓ [1]
 24.804: ✓ [1]
+wrote artifacts/explanations/24.json: 804 verses, 1 unscanned, 0 violations, 49.5 sec
+
+** STATS **
+
+0-meter derivations: 1
+1-meter derivations: 781
+2-meter derivations: 20
+3-meter derivations: 2
+
+1-parse derivations: 639
+2-parse derivations: 168
+3-parse derivations: 0
+4-parse derivations: 20
+
+  unwritten: 4
+  longByNature: 3987
+  shortByNature: 4811
+  byLexicon: 50
+  1160: 217
+  1161: 33
+  1162: 119
+  1163: 327
+  merge: 13
+  522: 2149
+  1173: 294
+  524: 85
+  1168: 33
+  1167a: 79
+  1167b: 13
+  1184: 426

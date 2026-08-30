@@ -615,3 +615,33 @@
 18.615: ✓ [2]
 18.616: ✓ [1]
 18.617: ✓ [1]
+wrote artifacts/explanations/18.json: 617 verses, 1 unscanned, 0 violations, 37.2 sec
+
+** STATS **
+
+0-meter derivations: 1
+1-meter derivations: 600
+2-meter derivations: 15
+3-meter derivations: 1
+
+1-parse derivations: 500
+2-parse derivations: 120
+3-parse derivations: 1
+4-parse derivations: 12
+
+  unwritten: 1
+  longByNature: 2969
+  shortByNature: 3663
+  byLexicon: 60
+  1160: 140
+  1161: 15
+  1162: 80
+  1163: 340
+  merge: 10
+  522: 1665
+  1173: 202
+  524: 82
+  1168: 15
+  1167a: 66
+  1167b: 6
+  1184: 310

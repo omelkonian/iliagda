@@ -192,7 +192,7 @@
 23.192: ✓ [1]
 23.193: ✓ [1]
 23.194: ✓ [2]
-23.195: ×
+23.195: ✓ [1]
 23.196: ✓ [1]
 23.197: ✓ [1]
 23.198: ✓ [1]
@@ -895,3 +895,32 @@
 23.895: ✓ [1]
 23.896: ✓ [1]
 23.897: ✓ [1]
+wrote artifacts/explanations/23.json: 897 verses, 1 unscanned, 0 violations, 50.7 sec
+
+** STATS **
+
+0-meter derivations: 1
+1-meter derivations: 870
+2-meter derivations: 26
+
+1-parse derivations: 741
+2-parse derivations: 173
+3-parse derivations: 0
+4-parse derivations: 8
+
+  unwritten: 4
+  longByNature: 4300
+  shortByNature: 5399
+  byLexicon: 67
+  1160: 170
+  1161: 44
+  1162: 143
+  1163: 416
+  merge: 13
+  522: 2469
+  1173: 299
+  524: 126
+  1168: 16
+  1167a: 84
+  1167b: 13
+  1184: 482
