@@ -146,10 +146,10 @@ main = getArgs >>= \case
         nss  = [x | (_, x, _, _) <- vs]
     T.writeFile path (bookJson b [t | (t, _, _, _) <- vs])
     end <- getCPUTime
-    hPrintf cov $ "\n** STATS **\n\n" <> "wrote %s: %d verses, %d unscanned, %d violations, %0.1f sec\n"
+    hPrintf cov ("\n** STATS **\n\n" <> "wrote %s: %d verses, %d unscanned, %d violations, %0.1f sec\n")
       path (length vs) (length [() | (_, x, _, _) <- vs, null x]) vio
       ((fromIntegral (end - start) / 10 ^ (12 :: Int)) :: Double)
-    hPutStrLn cov reportStats nss
+    hPutStrLn cov (reportStats nss)
     forM_ ruleNames $ \r ->
       hPutStrLn cov $ "  " <> T.unpack r <> ": " <> case length (filter (== r) fired) of
         0 -> "NEVER FIRED"
