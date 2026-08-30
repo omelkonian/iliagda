@@ -1,6 +1,7 @@
 name: CI
 on:
   push: {branches: main}
+  pull_request:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -14,10 +15,29 @@ jobs:
              omelkonian/agda-stdlib-classes#v2.3
              omelkonian/agda-stdlib-meta#v2.3
           main: Iliagda
-      - run: ghc --make Site/Main.hs -o site -i. && ./site
-      - run: agda --html --html-dir=docs/agda Iliagda.agda
-      - run: touch docs/.nojekyll
-      - uses: peaceiris/actions-gh-pages@v4
+
+      - name: Iliagda - typecheck
+        run: agda Iliagda.agda
+
+      - name: Iliagda - build Agda HTML
+        run: agda --html --html-dir=docs/agda Iliagda.agda
+
+      - name: Iliagda - build website
+        run: ghc --run Site/Main.hs
+
+      - name: Github Pages - do not ignore _underscore files
+        run: touch docs/.nojekyll
+
+      - name: Github Pages - deploy website
+        if: github.ref_name == 'main'
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
+
+      - name: Github Pages - upload action artifact
+        if: github.ref_name != 'main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: iliagda-site
+          path: docs/*
