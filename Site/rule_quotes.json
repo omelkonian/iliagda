@@ -11,6 +11,8 @@
   "1161": "If a long penult has the acute accent, then the ultima must be long also.",
   "1162": "If the ultima is short and the penult has the acute accent, then the penult must be short also.",
   "1163": "If the antepenult has the accent, the vowel of the ultima must be short.",
+  "1164": "Final αι and οι are counted short for the purpose of accent, but must be counted long when marking the feet of the verse.",
+  "1165": "A word written together with an enclitic or inseparable suffix is accented as though the two were still separate.",
   "1167": "If an apparently short final syllable stands where a long is expected, it is probable that the pause of the caesura or diaeresis fills out the time required for the foot.",
   "1168": "Short syllables ending in a single consonant are occasionally lengthened in thesis although the next word begins with a vowel.",
   "1169": "If a long syllable is followed by a short, then the next syllable must be short also.",

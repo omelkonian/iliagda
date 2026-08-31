@@ -75,6 +75,8 @@ args = \case
   R1167a                     -> []
   R1167b n                   -> [N n]
   R1184                      -> []
+  R1164 u blocked            -> [S u, S blocked]
+  R1165 w blocked            -> [S w, S blocked]
   where
   reach = \case
     Within -> "within"

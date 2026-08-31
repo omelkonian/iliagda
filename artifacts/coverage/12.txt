@@ -469,10 +469,10 @@
 12.469: ✓ [1]
 12.470: ✓ [2]
 12.471: ✓ [2]
-wrote artifacts/explanations/12.json: 471 verses, 1 unscanned, 0 violations, 28.7 sec
 
 ** STATS **
 
+wrote artifacts/explanations/12.json: 471 verses, 1 unscanned, 0 violations, 78.9 sec
 0-meter derivations: 1
 1-meter derivations: 456
 2-meter derivations: 14
@@ -502,3 +502,5 @@ wrote artifacts/explanations/12.json: 471 verses, 1 unscanned, 0 violations, 28.
   1167a: 52
   1167b: 10
   1184: 229
+  1164: 98
+  1165: 2

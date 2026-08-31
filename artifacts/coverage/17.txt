@@ -759,10 +759,10 @@
 17.759: ✓ [1]
 17.760: ✓ [1]
 17.761: ✓ [1]
-wrote artifacts/explanations/17.json: 761 verses, 0 unscanned, 0 violations, 64.7 sec
 
 ** STATS **
 
+wrote artifacts/explanations/17.json: 761 verses, 0 unscanned, 0 violations, 137.2 sec
 0-meter derivations: 0
 1-meter derivations: 734
 2-meter derivations: 24
@@ -789,3 +789,5 @@ wrote artifacts/explanations/17.json: 761 verses, 0 unscanned, 0 violations, 64.
   1167a: 73
   1167b: 15
   1184: 368
+  1164: 133
+  1165: 5

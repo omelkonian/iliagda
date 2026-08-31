@@ -845,10 +845,10 @@
 11.845: ✓ [2]
 11.846: ✓ [4]
 11.847: ✓ [1]
-wrote artifacts/explanations/11.json: 847 verses, 0 unscanned, 0 violations, 52.4 sec
 
 ** STATS **
 
+wrote artifacts/explanations/11.json: 847 verses, 0 unscanned, 0 violations, 142.9 sec
 0-meter derivations: 0
 1-meter derivations: 828
 2-meter derivations: 19
@@ -878,3 +878,5 @@ wrote artifacts/explanations/11.json: 847 verses, 0 unscanned, 0 violations, 52.
   1167a: 113
   1167b: 16
   1184: 436
+  1164: 161
+  1165: NEVER FIRED

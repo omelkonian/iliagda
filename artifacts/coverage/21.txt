@@ -609,10 +609,10 @@
 21.609: ✓ [1]
 21.610: ✓ [2]
 21.611: ✓ [1]
-wrote artifacts/explanations/21.json: 611 verses, 4 unscanned, 0 violations, 66.0 sec
 
 ** STATS **
 
+wrote artifacts/explanations/21.json: 611 verses, 4 unscanned, 0 violations, 117.2 sec
 0-meter derivations: 4
 1-meter derivations: 591
 2-meter derivations: 11
@@ -643,3 +643,5 @@ wrote artifacts/explanations/21.json: 611 verses, 4 unscanned, 0 violations, 66.
   1167a: 58
   1167b: 17
   1184: 301
+  1164: 132
+  1165: 4

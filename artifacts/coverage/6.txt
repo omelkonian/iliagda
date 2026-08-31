@@ -527,10 +527,10 @@
 6.527: ✓ [1]
 6.528: ✓ [1]
 6.529: ✓ [1]
-wrote artifacts/explanations/6.json: 529 verses, 1 unscanned, 0 violations, 31.4 sec
 
 ** STATS **
 
+wrote artifacts/explanations/6.json: 529 verses, 1 unscanned, 0 violations, 102.8 sec
 0-meter derivations: 1
 1-meter derivations: 509
 2-meter derivations: 15
@@ -558,3 +558,5 @@ wrote artifacts/explanations/6.json: 529 verses, 1 unscanned, 0 violations, 31.4
   1167a: 49
   1167b: 11
   1184: 256
+  1164: 113
+  1165: 4

@@ -45,6 +45,8 @@ data Rule : Type where
   [1167/1a]     : Rule
   [1167/1b]     : ℕ → Rule
   [1184]        : Rule
+  [1164]        : String → String → Rule
+  [1165]        : String → String → Rule
 
 quantity : Rule → Maybe Qty
 quantity = λ where
@@ -64,6 +66,8 @@ quantity = λ where
   [1167/1a]          → just long
   ([1167/1b] _)      → just long
   [1184]             → just long
+  ([1164] _ _)       → nothing
+  ([1165] _ _)       → nothing
 
 record Fact : Type where
   constructor fact
@@ -92,7 +96,7 @@ record Explanation : Type where
 {-# COMPILE GHC Reach       = data E.Reach       (E.Within | E.StraddleSyllable | E.NextSyllable | E.StraddleWord | E.NextWord) #-}
 {-# COMPILE GHC Position    = data E.Position    (E.DoubleConsonant | E.TwoConsonants) #-}
 {-# COMPILE GHC Match       = data E.Match       (E.Whole | E.Stem) #-}
-{-# COMPILE GHC Rule        = data E.Rule        (E.Unwritten | E.LongByNature | E.ShortByNature | E.ByLexicon | E.R1160 | E.R1161 | E.R1162 | E.R1163 | E.Merge | E.R522 | E.R1173 | E.R524 | E.R1168 | E.R1167a | E.R1167b | E.R1184) #-}
+{-# COMPILE GHC Rule        = data E.Rule        (E.Unwritten | E.LongByNature | E.ShortByNature | E.ByLexicon | E.R1160 | E.R1161 | E.R1162 | E.R1163 | E.Merge | E.R522 | E.R1173 | E.R524 | E.R1168 | E.R1167a | E.R1167b | E.R1184 | E.R1164 | E.R1165) #-}
 {-# COMPILE GHC Fact        = data E.Fact        (E.Fact) #-}
 {-# COMPILE GHC Explanation = data E.Explanation (E.Explanation) #-}
 {-# COMPILE GHC quantity as ruleQuantity #-}

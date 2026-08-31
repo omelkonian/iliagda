@@ -865,10 +865,10 @@
 16.865: ✓ [1]
 16.866: ✓ [1]
 16.867: ✓ [1]
-wrote artifacts/explanations/16.json: 867 verses, 1 unscanned, 0 violations, 68.4 sec
 
 ** STATS **
 
+wrote artifacts/explanations/16.json: 867 verses, 1 unscanned, 0 violations, 143.6 sec
 0-meter derivations: 1
 1-meter derivations: 851
 2-meter derivations: 14
@@ -895,3 +895,5 @@ wrote artifacts/explanations/16.json: 867 verses, 1 unscanned, 0 violations, 68.
   1167a: 98
   1167b: 12
   1184: 423
+  1164: 151
+  1165: 1

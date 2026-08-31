@@ -8,6 +8,7 @@ open import Iliagda.Reading
 open import Iliagda.Prosody
 open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules
+open import Iliagda.Prosody.Rules.Level2.Dec using (theF′?)
 open import Iliagda.Explanation
 
 private variable i o k : ℕ
@@ -38,7 +39,9 @@ resolveIn es i = go 0 es nothing
   where
   go : ℕ → List Fact → Maybe Ref → Maybe Ref
   go _ [] acc = acc
-  go r (e ∷ es) acc = go (suc r) es (if ⌊ e .locus Nat.≟ i ⌋ then just r else acc)
+  go r (e ∷ es) acc with e .locus Nat.≟ i | e .qty
+  ... | yes _ | just _ = go (suc r) es (just r)
+  ... | _     | _      = go (suc r) es acc
 
 getAt : List Fact → ℕ → Maybe Fact
 getAt [] _ = nothing
@@ -147,27 +150,53 @@ explainLexicon o (_∷_ {w = w} (𝟙-then-L-then-𝟚 _ pₗ _) pws) =
 
 module _ (resolve : Ix → Maybe Ref) where
 
-  explain²′ : Ix → ℕ → String → ∀ {f} → mqs ⊨ sys ~%′ f → List Fact
-  explain²′ o k ult = λ where
+  invocation : Ix → ℕ → String → ∀ {f} → mqs ⊨ sys ~%′ f → Ix × Rule × Maybe Ref
+  invocation o k ult = λ where
     ([1160] ip) →
-      [ mkFact (o + k ∸ 1) ([1160] (chr (L.Any.lookup (inPenultContent ip .proj₂)))
-                                 (sylStr (inPenultContent ip .proj₁))) nothing ]
+      o + k ∸ 1
+      , [1160] (chr (L.Any.lookup (inPenultContent ip .proj₂)))
+               (sylStr (inPenultContent ip .proj₁))
+      , nothing
     ([1161] _ ip) →
-      [ mkFact (o + k ∸ 1) ([1161] (chr (L.Any.lookup (inPenultContent ip .proj₂)))
-                                 (sylStr (inPenultContent ip .proj₁)))
-             (resolve (o + k ∸ 2)) ]
+      o + k ∸ 1
+      , [1161] (chr (L.Any.lookup (inPenultContent ip .proj₂)))
+               (sylStr (inPenultContent ip .proj₁))
+      , resolve (o + k ∸ 2)
     ([1162] _ _ ip) →
-      [ mkFact (o + k ∸ 2) ([1162] (chr (L.Any.lookup (inPenultContent ip .proj₂)))
-                                 ult)
-             (resolve (o + k ∸ 1)) ]
+      o + k ∸ 2
+      , [1162] (chr (L.Any.lookup (inPenultContent ip .proj₂))) ult
+      , resolve (o + k ∸ 1)
     ([1163] ia) →
-      [ mkFact (o + k ∸ 1) ([1163] (chr (L.Any.lookup (inAntepenultContent ia .proj₂)))
-                                 (sylStr (inAntepenultContent ia .proj₁))) nothing ]
+      o + k ∸ 1
+      , [1163] (chr (L.Any.lookup (inAntepenultContent ia .proj₂)))
+               (sylStr (inAntepenultContent ia .proj₁))
+      , nothing
+
+  explain²′ : Ix → ℕ → String → ∀ {f} → mqs ⊨ sys ~%′ f → List Fact
+  explain²′ o k ult p = let i , r , mr = invocation o k ult p in [ mkFact i r mr ]
+
+  accentName : Rule → String
+  accentName = λ where
+    ([1160] _ _) → "1160"
+    ([1161] _ _) → "1161"
+    ([1162] _ _) → "1162"
+    ([1163] _ _) → "1163"
+    _            → ""
+
+  stopped : (sys : Syllables n) (mqs : Quantities n)
+    → Ix → ℕ → String → (String → Rule) → List Fact
+  stopped sys mqs o k ult wrap =
+    case ¿ SingleAccents sys ¿ of λ where
+      (yes sacc) → case theF′? mqs sys sacc of λ where
+        (inj₁ (_ , p , _)) → let i , r , _ = invocation o k ult p
+                             in [ mkFact i (wrap (accentName r)) nothing ]
+        (inj₂ _)           → []
+      (no _) → []
 
   explain² : Ix → ℕ → String → ∀ {f} → mqs ⊨ sys ~% f → List Fact
-  explain² o k ult = λ where
-    ([1164] _) → []
-    ([574] _) → []
+  explain² {mqs = mqs} {sys = sys} o k ult = λ where
+    ([1164] _) → stopped sys mqs o k ult ([1164] ult)
+    ([574] _)  → stopped sys mqs o k ult ([1165] (str (unsyllables sys)))
     ([575] _) → []
     (fromBelow _ _ _ _ p) → explain²′ o k ult p
     (noop _) → []
@@ -375,9 +404,9 @@ byLocus : ℕ → List Fact → List Fact
 byLocus n′ es = map reref sorted
   where
   isText : Fact → Bool
-  isText e = case e .qty of λ where
-    nothing  → true
-    (just _) → false
+  isText e = case e .rule of λ where
+    (unwritten _ _ _) → true
+    _                 → false
 
   pick : (Fact → Bool) → List (ℕ × Fact)
   pick p = concatMap

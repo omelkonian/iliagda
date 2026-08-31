@@ -802,10 +802,10 @@
 24.802: ✓ [1]
 24.803: ✓ [1]
 24.804: ✓ [1]
-wrote artifacts/explanations/24.json: 804 verses, 1 unscanned, 0 violations, 49.5 sec
 
 ** STATS **
 
+wrote artifacts/explanations/24.json: 804 verses, 1 unscanned, 0 violations, 96.4 sec
 0-meter derivations: 1
 1-meter derivations: 781
 2-meter derivations: 20
@@ -832,3 +832,5 @@ wrote artifacts/explanations/24.json: 804 verses, 1 unscanned, 0 violations, 49.
   1167a: 79
   1167b: 13
   1184: 426
+  1164: 137
+  1165: 8

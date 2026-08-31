@@ -875,10 +875,10 @@
 2.875: ✓ [1]
 2.876: ✓ [1]
 2.877: ✓ [2,1]
-wrote artifacts/explanations/2.json: 877 verses, 4 unscanned, 0 violations, 48.0 sec
 
 ** STATS **
 
+wrote artifacts/explanations/2.json: 877 verses, 4 unscanned, 0 violations, 156.5 sec
 0-meter derivations: 4
 1-meter derivations: 850
 2-meter derivations: 22
@@ -905,3 +905,5 @@ wrote artifacts/explanations/2.json: 877 verses, 4 unscanned, 0 violations, 48.0
   1167a: 68
   1167b: 6
   1184: 491
+  1164: 168
+  1165: 2

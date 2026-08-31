@@ -501,10 +501,10 @@
 20.501: ✓ [2]
 20.502: ✓ [1]
 20.503: ✓ [1]
-wrote artifacts/explanations/20.json: 503 verses, 0 unscanned, 0 violations, 42.7 sec
 
 ** STATS **
 
+wrote artifacts/explanations/20.json: 503 verses, 0 unscanned, 0 violations, 83.4 sec
 0-meter derivations: 0
 1-meter derivations: 488
 2-meter derivations: 15
@@ -530,3 +530,5 @@ wrote artifacts/explanations/20.json: 503 verses, 0 unscanned, 0 violations, 42.
   1167a: 50
   1167b: 9
   1184: 226
+  1164: 112
+  1165: NEVER FIRED
