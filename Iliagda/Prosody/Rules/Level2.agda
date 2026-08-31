@@ -94,6 +94,9 @@ IsCompound sys = stripProclitic (unsyllables sys) ∈
   ⨾ [ τ ⨾ ο ⨾ ύ ⨾ σ ⨾ δ ⨾ ε ]
   ⨾ [ τ ⨾ ά ⨾ σ ⨾ δ ⨾ ε ]
   ⨾ [ τ ⨾ ώ ⨾ δ ⨾ ε ]
+  ⨾ [ τ ⨾ ή ⨾ ν ⨾ δ ⨾ ε ]
+  ⨾ [ α ⨾ ἴ ⨾ θ ⨾ ε ]
+  ⨾ [ μ ⨾ ή ⨾ τ ⨾ ι ]
   -- INCOMPLETE: add as needed
   -- c.f. https://el.wiktionary.org/wiki/ὅδε
   ]

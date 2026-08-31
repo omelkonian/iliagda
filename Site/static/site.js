@@ -28,6 +28,8 @@ const AGDA = {
   "1161":        [L2, "_\u22A8_~%\u2032_.[1161]"],
   "1162":        [L2, "_\u22A8_~%\u2032_.[1162]"],
   "1163":        [L2, "_\u22A8_~%\u2032_.[1163]"],
+  "1164":        [L2, "_\u22A8_~%_.[1164]"],
+  "1165":        [L2, "ApparentException.[1165]"],
   "522":         [L3, "QuantityRules._~\u2217_.[522]"],
   "1173":        [L3, "QuantityRules._~\u2217_.[1173]"],
   "524":         [L3, "QuantityRules._~\u2217_.[524]"],
@@ -60,7 +62,7 @@ const subject = (sc, f) => {
   return m ? m.a[0] + m.a[1] : sc.syl[f.i];
 };
 
-const NAMES_WORD = new Set(["unwritten", "1160", "1161", "1162", "1163"]);
+const NAMES_WORD = new Set(["unwritten", "1160", "1161", "1162", "1163", "1164", "1165"]);
 
 const me = (sc, f) => {
   const s = subject(sc, f);
@@ -79,8 +81,16 @@ const closedInWord = f =>
 
 const at = (sc, i, p) => sc.f.some(f => f.i === i && p(f));
 
+const EXC = new Set(["1164", "1165"]);
+const ASSERTS = { "1160": "S", "1161": "L", "1162": "S", "1163": "S" };
+
+const qAt = (sc, i) => sc.q[i - sc.f.filter(x => x.r === "merge" && x.i <= i).length];
+
+const inert = (sc, f) => EXC.has(f.r) && ASSERTS[f.a[1]] === qAt(sc, f.i);
+
 const suppressed = (sc, f) =>
-  f.q === "S" && at(sc, f.i, closedInWord) && !at(sc, f.i, x => x.r === "524");
+  (f.q === "S" && at(sc, f.i, closedInWord) && !at(sc, f.i, x => x.r === "524"))
+  || inert(sc, f);
 
 let NUM = null;
 const ref = k => `<a class="pt" data-k="${k}">(${NUM ? NUM.get(k) : k + 1})</a>`;
@@ -106,6 +116,11 @@ const cluster = (a, b, r) =>
   : OF[r]  ? `the ${g(a)} and ${g(b)}${OF[r]}.`
            : `${g(a)} and ${g(b)}.`;
 const ORDINAL = { 1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth" };
+
+const chip = n => `<span class="pharr inline" data-a="${n}" data-r="${n}">${n}</span>`;
+
+const notApply = (sc, f, blocked, ground) =>
+  `${me(sc, f)} is not made ${QTY[ASSERTS[blocked]]} by ${chip(blocked)}: ${ground}.`;
 
 const RULES = {
   unwritten: (sc, f) => ["526",
@@ -142,6 +157,10 @@ const RULES = {
   "1163": (sc, f) => ["1163",
     `${me(sc, f)} is short: it is the ultima of ${g(wordOf(sc, f.i))}, whose antepenult `
     + `${g(f.a[1])} bears the accent.`],
+
+  "1164": (sc, f) => ["1164", notApply(sc, f, f.a[1], "it ends in a diphthong")],
+
+  "1165": (sc, f) => ["1165", notApply(sc, f, f.a[1], `${g(f.a[0])} is a compound`)],
 
   merge: (sc, f) => ["586",
     `${g(f.a[0])} and ${g(f.a[1])} are read as the one syllable ${g(subject(sc, f))}`
@@ -192,7 +211,7 @@ const sentence = (sc, fs, f) => {
 
 const unexplained = sc => {
   const merges = new Set(sc.f.filter(f => f.r === "merge").map(f => f.i));
-  const stated = new Set(sc.f.map(f => f.i));
+  const stated = new Set(sc.f.filter(f => !EXC.has(f.r)).map(f => f.i));
   const out = [];
   let k = 0;
   for (let i = 0; i < sc.syl.length; i++, k++) {
