@@ -744,10 +744,10 @@
 15.744: ✓ [1]
 15.745: ✓ [1]
 15.746: ✓ [2]
-wrote artifacts/explanations/15.json: 746 verses, 0 unscanned, 0 violations, 4564.4 sec
 
 ** STATS **
 
+wrote artifacts/explanations/15.json: 746 verses, 0 unscanned, 0 violations, 7461.1 sec
 0-meter derivations: 0
 1-meter derivations: 727
 2-meter derivations: 15
@@ -779,3 +779,5 @@ wrote artifacts/explanations/15.json: 746 verses, 0 unscanned, 0 violations, 456
   1167a: 78
   1167b: 11
   1184: 363
+  1164: 147
+  1165: 3

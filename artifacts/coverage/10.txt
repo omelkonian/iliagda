@@ -577,10 +577,10 @@
 10.577: ✓ [1]
 10.578: ✓ [2]
 10.579: ✓ [1]
-wrote artifacts/explanations/10.json: 579 verses, 1 unscanned, 0 violations, 35.5 sec
 
 ** STATS **
 
+wrote artifacts/explanations/10.json: 579 verses, 1 unscanned, 0 violations, 97.1 sec
 0-meter derivations: 1
 1-meter derivations: 554
 2-meter derivations: 23
@@ -611,3 +611,5 @@ wrote artifacts/explanations/10.json: 579 verses, 1 unscanned, 0 violations, 35.
   1167a: 72
   1167b: 13
   1184: 259
+  1164: 117
+  1165: 6

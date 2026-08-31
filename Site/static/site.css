@@ -141,6 +141,7 @@ main { max-width: var(--measure); margin: 0 auto; padding: 2rem 1.2rem 5rem; }
   position: relative; cursor: var(--ask), help;
 }
 .varg .pharr:hover { color: var(--red); }
+.varg .pharr.inline { margin-left: 0; }
 
 .pop, .vside .none .why {
   position: absolute; z-index: 5; text-align: left; vertical-align: baseline;

@@ -542,10 +542,10 @@
 4.542: ✓ [1]
 4.543: ✓ [1]
 4.544: ✓ [1]
-wrote artifacts/explanations/4.json: 544 verses, 3 unscanned, 0 violations, 28.5 sec
 
 ** STATS **
 
+wrote artifacts/explanations/4.json: 544 verses, 3 unscanned, 0 violations, 96.8 sec
 0-meter derivations: 3
 1-meter derivations: 526
 2-meter derivations: 13
@@ -572,3 +572,5 @@ wrote artifacts/explanations/4.json: 544 verses, 3 unscanned, 0 violations, 28.5
   1167a: 46
   1167b: 13
   1184: 253
+  1164: 118
+  1165: 1

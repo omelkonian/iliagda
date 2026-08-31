@@ -835,10 +835,10 @@
 13.835: ✓ [1]
 13.836: ✓ [1]
 13.837: ✓ [1]
-wrote artifacts/explanations/13.json: 837 verses, 0 unscanned, 0 violations, 51.9 sec
 
 ** STATS **
 
+wrote artifacts/explanations/13.json: 837 verses, 0 unscanned, 0 violations, 144.8 sec
 0-meter derivations: 0
 1-meter derivations: 820
 2-meter derivations: 16
@@ -865,3 +865,5 @@ wrote artifacts/explanations/13.json: 837 verses, 0 unscanned, 0 violations, 51.
   1167a: 93
   1167b: 13
   1184: 402
+  1164: 159
+  1165: 3
