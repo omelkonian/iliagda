@@ -711,10 +711,10 @@
 9.711: ✓ [1]
 9.712: ✓ [1]
 9.713: ✓ [1]
-wrote artifacts/explanations/9.json: 713 verses, 0 unscanned, 0 violations, 41.4 sec
 
 ** STATS **
 
+wrote artifacts/explanations/9.json: 713 verses, 0 unscanned, 0 violations, 41.1 sec
 0-meter derivations: 0
 1-meter derivations: 690
 2-meter derivations: 22

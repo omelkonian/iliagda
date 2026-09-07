@@ -30,6 +30,8 @@ readings
   ∷ unwritten [ φ ⨾ ι ⨾ ƛ ⨾ ο ⨾ μ ⨾ ε ⨾ ι ⨾ δ ⨾ ὴ ⨾ ς ] μ 1 2
   ∷ unwritten [ φ ⨾ ι ⨾ ƛ ⨾ ο ⨾ μ ⨾ ε ⨾ ι ⨾ δ ⨾ ή ⨾ ς ] μ 1 2
   ∷ unwritten [ ἐ ⨾ ƛ ⨾ ί ⨾ σ ⨾ σ ⨾ ε ⨾ τ ⨾ ο ] ἰ 0 1
+  -- ** Middle Liddell
+  ∷ unwritten [ ὄ ⨾ φ ⨾ ι ⨾ ν ] π 0 1
   -- ** DB-Monro pg.343 footnote
   -- ∷ deletion [ ἀ ⨾ ν ⨾ δ ; ρ ⨾ ο ⨾ τ ⨾ ῆ ⨾ τ ⨾ α ] 1
   -- ∷ deletion [ ἀ ⨾ ν ⨾ δ ; ρ ⨾ ο ⨾ τ ⨾ ῆ ⨾ τ ⨾ ά ] 1

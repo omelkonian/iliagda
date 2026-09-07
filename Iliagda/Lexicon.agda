@@ -91,3 +91,27 @@ record LexHit {n} (sys : Syllables n) : Type where
     found   : lexLookup (unsyllables sys) ≡ just entry
     atLocus : locusIx (locusOf (entry .mode)) n ≡ just ix
 open LexHit public
+
+-- specific words that preclude the firing of [522] (c.f. Level2)
+
+¬doubleConsonantWords : List Letters
+¬doubleConsonantWords =
+  [ [ Ζ ⨾ ά ⨾ κ ⨾ υ ⨾ ν ⨾ θ ⨾ ο ⨾ ν ]
+  ⨾ [ Ζ ⨾ έ ⨾ ƛ ⨾ ε ⨾ ι ⨾ α ⨾ ν ]
+  ⨾ [ Ζ ⨾ ε ⨾ ƛ ⨾ ε ⨾ ί ⨾ η ⨾ ς ]
+  ⨾ [ Ζ ⨾ ε ⨾ ƛ ⨾ ε ⨾ ί ⨾ η ⨾ ς ]
+  ]
+
+¬twoConsonantWords : List Letters
+¬twoConsonantWords =
+  [ [ Σ ⨾ κ ⨾ α ⨾ μ ⨾ ά ⨾ ν ⨾ δ ⨾ ρ ⨾ ι ⨾ ο ⨾ ν ]
+  ⨾ [ Σ ⨾ κ ⨾ α ⨾ μ ⨾ α ⨾ ν ⨾ δ ⨾ ρ ⨾ ί ⨾ ῳ ]
+  ⨾ [ Σ ⨾ κ ⨾ α ⨾ μ ⨾ ά ⨾ ν ⨾ δ ⨾ ρ ⨾ ῳ ]
+  ⨾ [ Σ ⨾ κ ⨾ α ⨾ μ ⨾ ά ⨾ ν ⨾ δ ⨾ ρ ⨾ ο ⨾ υ ]
+  ⨾ [ Σ ⨾ κ ⨾ ά ⨾ μ ⨾ α ⨾ ν ⨾ δ ⨾ ρ ⨾ ο ⨾ ς ]
+  ⨾ [ Σ ⨾ κ ⨾ α ⨾ μ ⨾ ά ⨾ ν ⨾ δ ⨾ ρ ⨾ ι ⨾ ο ⨾ ν ]
+  ⨾ [ Σ ⨾ κ ⨾ ά ⨾ μ ⨾ α ⨾ ν ⨾ δ ⨾ ρ ⨾ ο ⨾ ν ]
+  ⨾ [ Σ ⨾ κ ⨾ ά ⨾ μ ⨾ α ⨾ ν ⨾ δ ⨾ ρ ⨾ ο ⨾ ς ]
+  ⨾ [ Σ ⨾ κ ⨾ ά ⨾ μ ⨾ α ⨾ ν ⨾ δ ⨾ ρ ⨾ ε ]
+  ⨾ [ Σ ⨾ κ ⨾ ά ⨾ μ ⨾ α ⨾ ν ⨾ δ ⨾ ρ ⨾ ο ⨾ ς ]
+  ]

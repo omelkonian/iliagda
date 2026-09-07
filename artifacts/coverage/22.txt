@@ -145,7 +145,7 @@
 22.145: ✓ [1]
 22.146: ✓ [1]
 22.147: ✓ [1]
-22.148: ✓ [1]
+22.148: ✓ [1,1]
 22.149: ✓ [1]
 22.150: ✓ [1]
 22.151: ✓ [4]
@@ -513,16 +513,16 @@
 22.513: ✓ [1]
 22.514: ✓ [2]
 22.515: ✓ [2]
-wrote artifacts/explanations/22.json: 515 verses, 2 unscanned, 0 violations, 41.3 sec
 
 ** STATS **
 
+wrote artifacts/explanations/22.json: 515 verses, 2 unscanned, 0 violations, 33.9 sec
 0-meter derivations: 2
-1-meter derivations: 504
-2-meter derivations: 8
+1-meter derivations: 503
+2-meter derivations: 9
 3-meter derivations: 1
 
-1-parse derivations: 388
+1-parse derivations: 389
 2-parse derivations: 121
 3-parse derivations: 0
 4-parse derivations: 13
@@ -532,18 +532,18 @@ wrote artifacts/explanations/22.json: 515 verses, 2 unscanned, 0 violations, 41.
 8-parse derivations: 1
 
   unwritten: 2
-  longByNature: 2464
-  shortByNature: 3098
+  longByNature: 2469
+  shortByNature: 3100
   byLexicon: 58
   1160: 111
   1161: 27
   1162: 89
-  1163: 216
+  1163: 217
   merge: 5
-  522: 1367
-  1173: 162
+  522: 1369
+  1173: 163
   524: 71
   1168: 15
   1167a: 57
-  1167b: 7
-  1184: 240
+  1167b: 8
+  1184: 241

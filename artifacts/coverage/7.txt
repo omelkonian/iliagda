@@ -326,7 +326,7 @@
 7.326: ✓ [1]
 7.327: ✓ [1]
 7.328: ✓ [1]
-7.329: ×
+7.329: ✓ [1]
 7.330: ✓ [1]
 7.331: ✓ [2]
 7.332: ✓ [1]
@@ -480,16 +480,16 @@
 7.480: ✓ [1]
 7.481: ✓ [1]
 7.482: ✓ [1]
-wrote artifacts/explanations/7.json: 482 verses, 2 unscanned, 0 violations, 27.9 sec
 
 ** STATS **
 
-0-meter derivations: 2
-1-meter derivations: 465
+wrote artifacts/explanations/7.json: 482 verses, 1 unscanned, 0 violations, 27.5 sec
+0-meter derivations: 1
+1-meter derivations: 466
 2-meter derivations: 14
 3-meter derivations: 1
 
-1-parse derivations: 403
+1-parse derivations: 404
 2-parse derivations: 85
 3-parse derivations: 1
 4-parse derivations: 6
@@ -499,18 +499,18 @@ wrote artifacts/explanations/7.json: 482 verses, 2 unscanned, 0 violations, 27.9
 8-parse derivations: 1
 
   unwritten: NEVER FIRED
-  longByNature: 2467
-  shortByNature: 2799
-  byLexicon: 21
-  1160: 113
+  longByNature: 2471
+  shortByNature: 2805
+  byLexicon: 22
+  1160: 114
   1161: 32
   1162: 74
   1163: 191
   merge: 5
-  522: 1242
+  522: 1245
   1173: 166
   524: 53
   1168: 21
   1167a: 34
   1167b: 8
-  1184: 224
+  1184: 225

@@ -7,6 +7,7 @@ open import Iliagda.Prosody.Core
 open import Iliagda.Dec.Core
 open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
+open import Iliagda.Lexicon
 
 -- ** LEVEL 3: syllable context
 
@@ -19,19 +20,20 @@ open import Iliagda.Prosody.Rules.Level1
 data Context : Type where
   ∅     : Context
   inner : Syllable → Context
-  outer : Syllable → Context
-  -- TODO: consider the whole next word (for Ζακυνθος, Σκαμανδρος)
+  outer : ∃Word    → Context
 
 variable ctx ctx′ : Context
 
 data StartsWithDoubleConsonant : Letters → Type where
   doubleConsonant :
-    DoubleConsonant l
-    ──────────────────────────────────
-    StartsWithDoubleConsonant (l ∷ ls)
+    ∙ l ∷ ls ∉ ¬doubleConsonantWords
+    ∙ DoubleConsonant l
+      ──────────────────────────────────
+      StartsWithDoubleConsonant (l ∷ ls)
 
 data StartsWithTwoConsonants : Letters → Type where
   twoConsonants :
+    ∙ l ∷ l′ ∷ ls ∉ ¬twoConsonantWords
     ∙ Consonant l
     ∙ Consonant l′
       ─────────────────────────────────────
@@ -62,9 +64,9 @@ data StartsWithVowel : Letters → Type where
 
 toLetters : Context → Letters
 toLetters = λ where
-  ∅          → []
-  (inner sy) → toList sy
-  (outer sy) → toList sy
+  ∅               → []
+  (inner sy)      → toList sy
+  (outer (_ , w)) → unsyllables (unword w)
 
 FollowedByInner : (Q : Letters → Type) {P : Letter → Type} {ls : Letters} →
   Any P ls → Type
@@ -89,7 +91,6 @@ module QuantityRules (⋯ : Flat Quantity × Context) (let mq , next = ⋯) wher
     -- long by position
     [522] :
       (v∈ : Any Vowel sy) →
-      -- ∙ ¬ [526/1167.2] ... (lexicon-based)
       ∙ FollowedBy (StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) v∈
         ────────────────────────────────────────────────────────────────────
         sy ~∗ ─
@@ -151,7 +152,7 @@ inContext (w ∷ ws) qs = go (unword w) (V.take _ qs) (next ws)
   where
   next : Words n → Context
   next []      = ∅
-  next (w ∷ _) = outer $ firstSyllable w
+  next (w ∷ _) = outer (-, w)
 
   go : Syllables n
       → Quantities n

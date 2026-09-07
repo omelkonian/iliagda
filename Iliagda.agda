@@ -17,6 +17,8 @@ open import Iliagda.Prosody.Rules.Dec
 
 -- ** Pretty-printing rule explanations.
 open import Iliagda.Show
+open import Iliagda.Explanation
+open import Iliagda.Explanation.Explain
 
 -- ** Functions to extract to Haskell.
 open import Iliagda.ToHaskell

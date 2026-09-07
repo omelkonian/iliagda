@@ -609,10 +609,10 @@
 1.609: ✓ [1]
 1.610: ✓ [1]
 1.611: ✓ [2,2]
-wrote artifacts/explanations/1.json: 611 verses, 0 unscanned, 0 violations, 496.6 sec
 
 ** STATS **
 
+wrote artifacts/explanations/1.json: 611 verses, 0 unscanned, 0 violations, 465.6 sec
 0-meter derivations: 0
 1-meter derivations: 596
 2-meter derivations: 13
