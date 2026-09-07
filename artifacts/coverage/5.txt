@@ -33,7 +33,7 @@
 5.33: ✓ [1]
 5.34: ✓ [1]
 5.35: ✓ [1]
-5.36: ×
+5.36: ✓ [1]
 5.37: ✓ [2]
 5.38: ✓ [1]
 5.39: ✓ [1]
@@ -46,7 +46,7 @@
 5.46: ✓ [1]
 5.47: ✓ [1]
 5.48: ✓ [1]
-5.49: ✓ [2]
+5.49: ✓ [1]
 5.50: ✓ [1]
 5.51: ✓ [1]
 5.52: ✓ [2]
@@ -74,7 +74,7 @@
 5.74: ✓ [4]
 5.75: ✓ [1]
 5.76: ✓ [1]
-5.77: ×
+5.77: ✓ [1]
 5.78: ✓ [1]
 5.79: ✓ [1,1]
 5.80: ✓ [1]
@@ -771,7 +771,7 @@
 5.771: ✓ [1]
 5.772: ✓ [1]
 5.773: ✓ [1]
-5.774: ×
+5.774: ✓ [1]
 5.775: ✓ [2]
 5.776: ✓ [2]
 5.777: ✓ [1]
@@ -907,17 +907,17 @@
 5.907: ✓ [1]
 5.908: ✓ [1]
 5.909: ✓ [1]
-wrote artifacts/explanations/5.json: 909 verses, 4 unscanned, 0 violations, 117.6 sec
 
 ** STATS **
 
-0-meter derivations: 4
-1-meter derivations: 875
+wrote artifacts/explanations/5.json: 909 verses, 1 unscanned, 0 violations, 118.5 sec
+0-meter derivations: 1
+1-meter derivations: 878
 2-meter derivations: 26
 3-meter derivations: 4
 
-1-parse derivations: 740
-2-parse derivations: 180
+1-parse derivations: 744
+2-parse derivations: 179
 3-parse derivations: 0
 4-parse derivations: 17
 5-parse derivations: 0
@@ -926,18 +926,18 @@ wrote artifacts/explanations/5.json: 909 verses, 4 unscanned, 0 violations, 117.
 8-parse derivations: 2
 
   unwritten: NEVER FIRED
-  longByNature: 4384
-  shortByNature: 5531
-  byLexicon: 83
-  1160: 163
+  longByNature: 4395
+  shortByNature: 5552
+  byLexicon: 84
+  1160: 164
   1161: 43
   1162: 139
-  1163: 411
-  merge: 14
-  522: 2471
+  1163: 413
+  merge: 13
+  522: 2481
   1173: 294
   524: 85
   1168: 15
   1167a: 98
   1167b: 30
-  1184: 467
+  1184: 468

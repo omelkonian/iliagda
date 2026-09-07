@@ -563,10 +563,10 @@
 8.563: ✓ [1]
 8.564: ✓ [2]
 8.565: ✓ [1]
-wrote artifacts/explanations/8.json: 565 verses, 0 unscanned, 0 violations, 39.1 sec
 
 ** STATS **
 
+wrote artifacts/explanations/8.json: 565 verses, 0 unscanned, 0 violations, 36.4 sec
 0-meter derivations: 0
 1-meter derivations: 545
 2-meter derivations: 19

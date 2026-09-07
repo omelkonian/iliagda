@@ -895,10 +895,10 @@
 23.895: ✓ [1]
 23.896: ✓ [1]
 23.897: ✓ [1]
-wrote artifacts/explanations/23.json: 897 verses, 1 unscanned, 0 violations, 50.7 sec
 
 ** STATS **
 
+wrote artifacts/explanations/23.json: 897 verses, 1 unscanned, 0 violations, 52.6 sec
 0-meter derivations: 1
 1-meter derivations: 870
 2-meter derivations: 26

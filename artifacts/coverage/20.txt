@@ -501,10 +501,10 @@
 20.501: ✓ [2]
 20.502: ✓ [1]
 20.503: ✓ [1]
-wrote artifacts/explanations/20.json: 503 verses, 0 unscanned, 0 violations, 42.7 sec
 
 ** STATS **
 
+wrote artifacts/explanations/20.json: 503 verses, 0 unscanned, 0 violations, 31.5 sec
 0-meter derivations: 0
 1-meter derivations: 488
 2-meter derivations: 15
@@ -515,14 +515,14 @@ wrote artifacts/explanations/20.json: 503 verses, 0 unscanned, 0 violations, 42.
 4-parse derivations: 5
 
   unwritten: 2
-  longByNature: 2483
+  longByNature: 2484
   shortByNature: 3012
   byLexicon: 52
   1160: 104
   1161: 45
-  1162: 91
+  1162: 92
   1163: 208
-  merge: 10
+  merge: 9
   522: 1344
   1173: 169
   524: 43

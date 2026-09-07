@@ -205,7 +205,7 @@
 12.205: ✓ [2]
 12.206: ✓ [1]
 12.207: ✓ [4]
-12.208: ×
+12.208: ✓ [1]
 12.209: ✓ [1]
 12.210: ✓ [1]
 12.211: ✓ [1]
@@ -469,15 +469,15 @@
 12.469: ✓ [1]
 12.470: ✓ [2]
 12.471: ✓ [2]
-wrote artifacts/explanations/12.json: 471 verses, 1 unscanned, 0 violations, 28.7 sec
 
 ** STATS **
 
-0-meter derivations: 1
-1-meter derivations: 456
+wrote artifacts/explanations/12.json: 471 verses, 0 unscanned, 0 violations, 29.6 sec
+0-meter derivations: 0
+1-meter derivations: 457
 2-meter derivations: 14
 
-1-parse derivations: 384
+1-parse derivations: 385
 2-parse derivations: 86
 3-parse derivations: 0
 4-parse derivations: 13
@@ -486,19 +486,19 @@ wrote artifacts/explanations/12.json: 471 verses, 1 unscanned, 0 violations, 28.
 7-parse derivations: 0
 8-parse derivations: 1
 
-  unwritten: 1
-  longByNature: 2268
-  shortByNature: 2749
+  unwritten: 2
+  longByNature: 2273
+  shortByNature: 2757
   byLexicon: 34
   1160: 83
   1161: 30
-  1162: 85
-  1163: 225
-  merge: 6
-  522: 1315
+  1162: 86
+  1163: 226
+  merge: 5
+  522: 1318
   1173: 133
   524: 61
   1168: 10
   1167a: 52
   1167b: 10
-  1184: 229
+  1184: 230

@@ -121,7 +121,7 @@
 21.121: ✓ [2]
 21.122: ✓ [1]
 21.123: ✓ [1]
-21.124: ×
+21.124: ✓ [1]
 21.125: ✓ [2]
 21.126: ✓ [1]
 21.127: ✓ [2]
@@ -220,7 +220,7 @@
 21.220: ✓ [1]
 21.221: ✓ [1]
 21.222: ✓ [1]
-21.223: ×
+21.223: ✓ [1]
 21.224: ✓ [1]
 21.225: ✓ [2]
 21.226: ✓ [1]
@@ -302,7 +302,7 @@
 21.302: ✓ [1]
 21.303: ✓ [2,2]
 21.304: ✓ [1]
-21.305: ×
+21.305: ✓ [1]
 21.306: ✓ [1]
 21.307: ✓ [1]
 21.308: ×
@@ -600,7 +600,7 @@
 21.600: ✓ [2]
 21.601: ✓ [1]
 21.602: ✓ [1]
-21.603: ✓ [1]
+21.603: ✓ [1,1]
 21.604: ✓ [1]
 21.605: ✓ [1,2]
 21.606: ✓ [2]
@@ -609,16 +609,16 @@
 21.609: ✓ [1]
 21.610: ✓ [2]
 21.611: ✓ [1]
-wrote artifacts/explanations/21.json: 611 verses, 4 unscanned, 0 violations, 66.0 sec
 
 ** STATS **
 
-0-meter derivations: 4
-1-meter derivations: 591
-2-meter derivations: 11
+wrote artifacts/explanations/21.json: 611 verses, 1 unscanned, 0 violations, 48.6 sec
+0-meter derivations: 1
+1-meter derivations: 593
+2-meter derivations: 12
 3-meter derivations: 5
 
-1-parse derivations: 493
+1-parse derivations: 497
 2-parse derivations: 121
 3-parse derivations: 0
 4-parse derivations: 13
@@ -628,18 +628,18 @@ wrote artifacts/explanations/21.json: 611 verses, 4 unscanned, 0 violations, 66.
 8-parse derivations: 1
 
   unwritten: NEVER FIRED
-  longByNature: 2968
-  shortByNature: 3792
-  byLexicon: 57
-  1160: 136
+  longByNature: 2981
+  shortByNature: 3823
+  byLexicon: 58
+  1160: 137
   1161: 28
   1162: 110
-  1163: 260
-  merge: 11
-  522: 1555
-  1173: 195
-  524: 53
+  1163: 262
+  merge: 10
+  522: 1570
+  1173: 197
+  524: 54
   1168: 17
   1167a: 58
   1167b: 17
-  1184: 301
+  1184: 304

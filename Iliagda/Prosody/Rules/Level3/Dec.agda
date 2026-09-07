@@ -17,17 +17,17 @@ open import Iliagda.Prosody.Rules.Level3
 StartsWithDoubleConsonant? : (ls : Letters) → Dec (StartsWithDoubleConsonant ls)
 StartsWithDoubleConsonant? []       = no λ ()
 StartsWithDoubleConsonant? (l ∷ ls) =
-  mapDec doubleConsonant (λ where (doubleConsonant dc) → dc)
-         ¿ DoubleConsonant l ¿
+  mapDec (uncurry doubleConsonant)
+         (λ where (doubleConsonant p dc) → p , dc)
+         dec
 
 StartsWithTwoConsonants? : (ls : Letters) → Dec (StartsWithTwoConsonants ls)
 StartsWithTwoConsonants? []            = no λ ()
 StartsWithTwoConsonants? (_ ∷ [])      = no λ ()
-StartsWithTwoConsonants? (l ∷ l′ ∷ ls)
-  with ¿ Consonant l ¿ | ¿ Consonant l′ ¿
-... | yes cl | yes cl′ = yes (twoConsonants cl cl′)
-... | no ¬cl | _       = no λ where (twoConsonants cl _)  → ¬cl  cl
-... | _      | no ¬cl′ = no λ where (twoConsonants _  cl′) → ¬cl′ cl′
+StartsWithTwoConsonants? (l ∷ l′ ∷ ls) =
+  mapDec (λ (p , c , c') → twoConsonants p c c')
+         (λ where (twoConsonants p c c') → p , c , c')
+         dec
 
 StartsWithVowel? : (ls : Letters) → Dec (StartsWithVowel ls)
 StartsWithVowel? []       = no λ ()
