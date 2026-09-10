@@ -130,6 +130,15 @@ sentence fs sys ws (Fact i r _ mref) = body <> "."
       <> " foot as a spondee" <> cite
     R1184 ->
       me <> " counts long: it is the last syllable of the verse" <> cite
+    R1164 _ blocked ->
+      me <> " is not made " <> asserted blocked <> " by [" <> blocked
+      <> "]: it ends in a diphthong"
+    R1165 w blocked ->
+      me <> " is not made " <> asserted blocked <> " by [" <> blocked
+      <> "]: " <> w <> " is a compound"
+    NotLengthening w blocked ->
+      me <> " is not made " <> asserted blocked <> " by [" <> blocked
+      <> "]: " <> w <> " does not trigger lengthening by position"
 
 -- ** helpers
 
@@ -149,6 +158,15 @@ wordOf sys ws i = go sys ws i
 
 qty :: Qty -> Text
 qty = \case Long -> "long"; Short -> "short"
+
+asserted :: Text -> Text
+asserted = \case
+  "1160" -> "short"
+  "1161" -> "long"
+  "1162" -> "short"
+  "1163" -> "short"
+  "522"  -> "long"
+  _      -> "short"
 
 reach :: Reach -> Text
 reach = \case

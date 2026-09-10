@@ -910,7 +910,7 @@
 
 ** STATS **
 
-wrote artifacts/explanations/5.json: 909 verses, 1 unscanned, 0 violations, 118.5 sec
+wrote artifacts/explanations/5.json: 909 verses, 1 unscanned, 0 violations, 358.0 sec
 0-meter derivations: 1
 1-meter derivations: 878
 2-meter derivations: 26
@@ -941,3 +941,6 @@ wrote artifacts/explanations/5.json: 909 verses, 1 unscanned, 0 violations, 118.
   1167a: 98
   1167b: 30
   1184: 468
+  1164: 160
+  1165: 13
+  notLengthening: 4

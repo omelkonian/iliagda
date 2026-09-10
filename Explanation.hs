@@ -41,6 +41,9 @@ data Rule
   | R1167a
   | R1167b Integer
   | R1184
+  | R1164 Text Text
+  | R1165 Text Text
+  | NotLengthening Text Text
   deriving Show
 
 data Fact = Fact Integer Rule (Maybe Qty) (Maybe Integer)
@@ -69,9 +72,13 @@ ruleName = \case
   R1167a          -> "1167a"
   R1167b{}        -> "1167b"
   R1184           -> "1184"
+  R1164{}         -> "1164"
+  R1165{}         -> "1165"
+  NotLengthening{} -> "notLengthening"
 
 ruleNames :: [Text]
 ruleNames =
   [ "unwritten", "longByNature", "shortByNature", "byLexicon"
   , "1160", "1161", "1162", "1163"
-  , "merge", "522", "1173", "524", "1168", "1167a", "1167b", "1184" ]
+  , "merge", "522", "1173", "524", "1168", "1167a", "1167b", "1184"
+  , "1164", "1165", "notLengthening" ]

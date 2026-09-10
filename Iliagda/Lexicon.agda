@@ -92,7 +92,7 @@ record LexHit {n} (sys : Syllables n) : Type where
     atLocus : locusIx (locusOf (entry .mode)) n ≡ just ix
 open LexHit public
 
--- specific words that preclude the firing of [522] (c.f. Level2)
+-- specific words that preclude the firing of [522] (c.f. Level3)
 
 ¬doubleConsonantWords : List Letters
 ¬doubleConsonantWords =

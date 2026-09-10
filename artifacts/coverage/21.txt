@@ -612,7 +612,7 @@
 
 ** STATS **
 
-wrote artifacts/explanations/21.json: 611 verses, 1 unscanned, 0 violations, 48.6 sec
+wrote artifacts/explanations/21.json: 611 verses, 1 unscanned, 0 violations, 137.5 sec
 0-meter derivations: 1
 1-meter derivations: 593
 2-meter derivations: 12
@@ -643,3 +643,6 @@ wrote artifacts/explanations/21.json: 611 verses, 1 unscanned, 0 violations, 48.
   1167a: 58
   1167b: 17
   1184: 304
+  1164: 133
+  1165: 4
+  notLengthening: 5
