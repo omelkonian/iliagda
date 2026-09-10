@@ -22,9 +22,9 @@ violations (Explanation _ sys ws qs fs) = concat
   , [ "fact " <> tshow k <> " states " <> tshow mq <> " but its rule asserts "
       <> tshow (AE.ruleQuantity r)
     | (k, Fact _ r mq _) <- zip [0 :: Integer ..] fs, mq /= AE.ruleQuantity r ]
-  , [ "fact " <> tshow k <> " blocks " <> b <> ", which is not an accent rule"
+  , [ "fact " <> tshow k <> " blocks " <> b <> ", which asserts no quantity"
     | (k, Fact _ r _ _) <- zip [0 :: Integer ..] fs
-    , Just b <- [blocked r], b `notElem` ["1160", "1161", "1162", "1163"] ]
+    , Just b <- [blocked r], b `notElem` asserters ]
   , [ "text facts not in ascending locus order" | textLoci /= sort textLoci ]
   , [ "quantity fact " <> tshow k <> " at locus " <> tshow j
       <> " precedes locus " <> tshow i <> ", but nothing cites it"
@@ -41,7 +41,12 @@ violations (Explanation _ sys ws qs fs) = concat
   isText (Fact _ r _ _) = isReading r
   isReading Unwritten{} = True
   isReading _           = False
-  blocked = \case R1164 _ b -> Just b; R1165 _ b -> Just b; _ -> Nothing
+  blocked = \case
+    R1164 _ b          -> Just b
+    R1165 _ b          -> Just b
+    NotLengthening _ b -> Just b
+    _                  -> Nothing
+  asserters = ["1160", "1161", "1162", "1163", "522"]
   textLoci = [ i | f@(Fact i _ _ _) <- fs, isText f ]
   -- Quantity facts run in locus order, save that a fact may be pulled ahead of a lower
   -- locus to precede the fact that cites it. So an inversion is a violation only when

@@ -26,18 +26,20 @@ variable ctx ctx′ : Context
 
 data StartsWithDoubleConsonant : Letters → Type where
   doubleConsonant :
-    ∙ l ∷ ls ∉ ¬doubleConsonantWords
-    ∙ DoubleConsonant l
-      ──────────────────────────────────
-      StartsWithDoubleConsonant (l ∷ ls)
+    DoubleConsonant l
+    ──────────────────────────────────
+    StartsWithDoubleConsonant (l ∷ ls)
 
 data StartsWithTwoConsonants : Letters → Type where
   twoConsonants :
-    ∙ l ∷ l′ ∷ ls ∉ ¬twoConsonantWords
     ∙ Consonant l
     ∙ Consonant l′
       ─────────────────────────────────────
       StartsWithTwoConsonants (l ∷ l′ ∷ ls)
+
+Lengthening : Pred₀ Letters
+Lengthening = (StartsWithDoubleConsonant ∩¹ (_∉ ¬doubleConsonantWords))
+            ∪¹ (StartsWithTwoConsonants  ∩¹ (_∉ ¬twoConsonantWords))
 
 Mute Liquid Nasal : Letter → Type
 Mute   = _∈ [ Β ⨾ β ⨾ Γ ⨾ γ ⨾ Δ ⨾ δ ⨾ Θ ⨾ θ ⨾ Κ ⨾ κ ⨾ Π ⨾ π ⨾ Τ ⨾ τ ⨾ Φ ⨾ φ ⨾ Χ ⨾ χ ]
@@ -91,8 +93,8 @@ module QuantityRules (⋯ : Flat Quantity × Context) (let mq , next = ⋯) wher
     -- long by position
     [522] :
       (v∈ : Any Vowel sy) →
-      ∙ FollowedBy (StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) v∈
-        ────────────────────────────────────────────────────────────────────
+      ∙ FollowedBy Lengthening v∈
+        ─────────────────────────
         sy ~∗ ─
 
     -- (572)

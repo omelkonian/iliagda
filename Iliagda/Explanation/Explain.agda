@@ -9,6 +9,7 @@ open import Iliagda.Prosody
 open import Iliagda.Prosody.Synizesis
 open import Iliagda.Prosody.Rules
 open import Iliagda.Prosody.Rules.Level2.Dec using (theF′?)
+open import Iliagda.Prosody.Rules.Level3.Dec using (∃-vowel-followedBy; doubleOrTwo?; lengthening?)
 open import Iliagda.Explanation
 
 private variable i o k : ℕ
@@ -227,10 +228,10 @@ mtl (muteLiquid {l = l} {l′ = l′} _ ln) =
   l , l′ , (case ln of λ where (inj₁ _) → false; (inj₂ _) → true)
 
 dcLetter : StartsWithDoubleConsonant ls → Letter
-dcLetter (doubleConsonant {l = l} _ _) = l
+dcLetter (doubleConsonant {l = l} _) = l
 
 ccLetters : StartsWithTwoConsonants ls → Letter × Letter
-ccLetters (twoConsonants {l = l} {l′ = l′} _ _ _) = l , l′
+ccLetters (twoConsonants {l = l} {l′ = l′} _ _) = l , l′
 
 swVowel : StartsWithVowel ls → Letter
 swVowel (vowel {l = l} _) = l
@@ -250,12 +251,12 @@ module _ {⋯ : Flat Quantity × Context} where
       ∅ → within
 
   posFB : (v∈ : Any Vowel ls)
-    → FollowedBy (StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) v∈
+    → FollowedBy Lengthening v∈
     → Position
   posFB (there v∈) q = posFB v∈ q
-  posFB (here {xs = sys} _) (inj₁ dc) =
+  posFB (here {xs = sys} _) (inj₁ (dc , _)) =
     doubleConsonant (chr (dcLetter dc)) (if ⌊ length sys Nat.≤? 0 ⌋ then spill else within)
-  posFB (here {xs = sys} _) (inj₂ cc) =
+  posFB (here {xs = sys} _) (inj₂ (cc , _)) =
     let l , l′ = ccLetters cc
         reach = case length sys of λ where
           0 → spill
@@ -299,11 +300,21 @@ module _ (resolve : Ix → Maybe Ref) where
       let m , l , nas = mtlOuter v∈ pf
       in mkFact i ([524] qt (chr (L.Any.lookup v∈)) (chr m) (chr l) nas) (resolve i)
 
+  blocked³ : ∀ (mq : Flat Quantity) (ctx : Context) → Ix → Syllable → List Fact
+  blocked³ mq ctx i sy
+    with ∃-vowel-followedBy (mq , ctx) doubleOrTwo? (toList sy)
+       | ∃-vowel-followedBy (mq , ctx) lengthening?  (toList sy)
+  ... | yes _ | no _ = [ mkFact i (notLengthening (str (toLetters ctx)) "522") nothing ]
+  ... | _     | _    = []
+
   explain³′ : ∀ {mq ctx} → Ix → Quantity → (mq , ctx) ⊢ sy ~? mq′ → List Fact
-  explain³′ i rq = λ where
-    (QuantityRules.ambiguous _) → []
-    (QuantityRules.certain {q = q} p _) → [ explain³∗ i (toQ q) p ]
-    (QuantityRules.ambivalent _ p·) → [ explain³∗ i (toQ rq) p· ]
+  explain³′ {sy = sy} {mq = mq} {ctx = ctx} i rq p = blocked³ mq ctx i sy ++ pos p
+    where
+    pos : ∀ {mq″} → (mq , ctx) ⊢ sy ~? mq″ → List Fact
+    pos = λ where
+      (QuantityRules.ambiguous _) → []
+      (QuantityRules.certain {q = q} p′ _) → [ explain³∗ i (toQ q) p′ ]
+      (QuantityRules.ambivalent _ p·) → [ explain³∗ i (toQ rq) p· ]
 
   explain³ : ∀ {xs : Vec (Syllable × Flat Quantity × Context) n} {mqs : Quantities n}
     → Ix → Vec Quantity n → VPointwise _~_ xs mqs → List Fact

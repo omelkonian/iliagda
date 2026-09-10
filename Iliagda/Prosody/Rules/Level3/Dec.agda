@@ -11,23 +11,38 @@ open import Iliagda.Prosody.Rules.Core
 open import Iliagda.Prosody.Rules.Level1
 open import Iliagda.Prosody.Rules.Level1.Dec
 open import Iliagda.Prosody.Rules.Level3
+open import Iliagda.Lexicon
 
 -- ** StartsWith predicates
 
 StartsWithDoubleConsonant? : (ls : Letters) → Dec (StartsWithDoubleConsonant ls)
 StartsWithDoubleConsonant? []       = no λ ()
 StartsWithDoubleConsonant? (l ∷ ls) =
-  mapDec (uncurry doubleConsonant)
-         (λ where (doubleConsonant p dc) → p , dc)
-         dec
+  mapDec doubleConsonant (λ where (doubleConsonant dc) → dc)
+         ¿ DoubleConsonant l ¿
 
 StartsWithTwoConsonants? : (ls : Letters) → Dec (StartsWithTwoConsonants ls)
 StartsWithTwoConsonants? []            = no λ ()
 StartsWithTwoConsonants? (_ ∷ [])      = no λ ()
-StartsWithTwoConsonants? (l ∷ l′ ∷ ls) =
-  mapDec (λ (p , c , c') → twoConsonants p c c')
-         (λ where (twoConsonants p c c') → p , c , c')
-         dec
+StartsWithTwoConsonants? (l ∷ l′ ∷ ls)
+  with ¿ Consonant l ¿ | ¿ Consonant l′ ¿
+... | yes cl | yes cl′ = yes (twoConsonants cl cl′)
+... | no ¬cl | _       = no λ where (twoConsonants cl _)  → ¬cl  cl
+... | _      | no ¬cl′ = no λ where (twoConsonants _  cl′) → ¬cl′ cl′
+
+doubleOrTwo? : (ls : Letters) → Dec ((StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) ls)
+doubleOrTwo? ls with StartsWithDoubleConsonant? ls | StartsWithTwoConsonants? ls
+... | yes dc  | _      = yes (inj₁ dc)
+... | no  _   | yes tc = yes (inj₂ tc)
+... | no  ¬dc | no ¬tc = no λ where (inj₁ dc) → ¬dc dc ; (inj₂ tc) → ¬tc tc
+
+lengthening? : (ls : Letters) → Dec (Lengthening ls)
+lengthening? ls
+  with StartsWithDoubleConsonant? ls ×-dec ¬? ¿ ls ∈ ¬doubleConsonantWords ¿
+     | StartsWithTwoConsonants? ls ×-dec ¬? ¿ ls ∈ ¬twoConsonantWords ¿
+... | yes dc  | _      = yes (inj₁ dc)
+... | no  _   | yes tc = yes (inj₂ tc)
+... | no  ¬dc | no ¬tc = no λ where (inj₁ dc) → ¬dc dc ; (inj₂ tc) → ¬tc tc
 
 StartsWithVowel? : (ls : Letters) → Dec (StartsWithVowel ls)
 StartsWithVowel? []       = no λ ()
@@ -141,17 +156,10 @@ module _ (⋯ : Flat Quantity × Context) (let fq , next = ⋯) where
 module QuantityDec fq next (let ⋯ = fq , next) where
   open QuantityRules ⋯
 
-  private
-    doubleOrTwo? : (ls : Letters) → Dec ((StartsWithDoubleConsonant ∪¹ StartsWithTwoConsonants) ls)
-    doubleOrTwo? ls with StartsWithDoubleConsonant? ls | StartsWithTwoConsonants? ls
-    ... | yes dc  | _      = yes (inj₁ dc)
-    ... | no  _   | yes tc = yes (inj₂ tc)
-    ... | no  ¬dc | no ¬tc = no λ where (inj₁ dc) → ¬dc dc ; (inj₂ tc) → ¬tc tc
-
   -- sy ~∗ ─
   dec-~∗─ : (sy : Syllable) → Dec (sy ~∗ ─)
   dec-~∗─ sy
-    with ∃-vowel-followedBy ⋯ doubleOrTwo? (toList sy)
+    with ∃-vowel-followedBy ⋯ lengthening? (toList sy)
   ... | yes (v∈ , fb) = yes ([522] v∈ fb)
   ... | no  ¬522
 

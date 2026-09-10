@@ -136,6 +136,9 @@ sentence fs sys ws (Fact i r _ mref) = body <> "."
     R1165 w blocked ->
       me <> " is not made " <> asserted blocked <> " by [" <> blocked
       <> "]: " <> w <> " is a compound"
+    NotLengthening w blocked ->
+      me <> " is not made " <> asserted blocked <> " by [" <> blocked
+      <> "]: " <> w <> " does not trigger lengthening by position"
 
 -- ** helpers
 
@@ -162,6 +165,7 @@ asserted = \case
   "1161" -> "long"
   "1162" -> "short"
   "1163" -> "short"
+  "522"  -> "long"
   _      -> "short"
 
 reach :: Reach -> Text

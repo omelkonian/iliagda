@@ -81,8 +81,8 @@ const closedInWord = f =>
 
 const at = (sc, i, p) => sc.f.some(f => f.i === i && p(f));
 
-const EXC = new Set(["1164", "1165"]);
-const ASSERTS = { "1160": "S", "1161": "L", "1162": "S", "1163": "S" };
+const EXC = new Set(["1164", "1165", "notLengthening"]);
+const ASSERTS = { "1160": "S", "1161": "L", "1162": "S", "1163": "S", "522": "L" };
 
 const qAt = (sc, i) => sc.q[i - sc.f.filter(x => x.r === "merge" && x.i <= i).length];
 
@@ -162,6 +162,9 @@ const RULES = {
 
   "1165": (sc, f) => ["1165", notApply(sc, f, f.a[1], `${g(f.a[0])} is a compound`)],
 
+  notLengthening: (sc, f) => [null,
+    notApply(sc, f, f.a[1], `${g(f.a[0])} does not trigger lengthening by position`)],
+
   merge: (sc, f) => ["586",
     `${g(f.a[0])} and ${g(f.a[1])} are read as the one syllable ${g(subject(sc, f))}`
     + (f.a[2] ? ", across the word boundary" : "") + ", which counts long."],
@@ -232,7 +235,10 @@ function renderArgument(ol) {
     return text === null
       ? `<li class="err" data-k="${k}">unknown rule: ${esc(f.r)}</li>`
       : `<li data-k="${k}" data-i="${f.i}">${text}`
-        + `<span class="pharr" data-a="${pharr}" data-r="${esc(f.r)}">${pharr}</span></li>`;
+        + (pharr
+           ? `<span class="pharr" data-a="${pharr}" data-r="${esc(f.r)}">${pharr}</span>`
+           : "")
+        + `</li>`;
   });
 
   for (const u of unexplained(sc))
