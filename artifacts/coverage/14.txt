@@ -522,7 +522,7 @@
 
 ** STATS **
 
-wrote artifacts/explanations/14.json: 521 verses, 1 unscanned, 0 violations, 30.8 sec
+wrote artifacts/explanations/14.json: 521 verses, 1 unscanned, 0 violations, 85.0 sec
 0-meter derivations: 1
 1-meter derivations: 508
 2-meter derivations: 12
@@ -548,3 +548,6 @@ wrote artifacts/explanations/14.json: 521 verses, 1 unscanned, 0 violations, 30.
   1167a: 62
   1167b: 8
   1184: 243
+  1164: 104
+  1165: 4
+  notLengthening: NEVER FIRED
